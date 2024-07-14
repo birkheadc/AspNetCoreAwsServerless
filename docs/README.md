@@ -1,0 +1,1 @@
+# AspNetCore Aws Serverless API Template

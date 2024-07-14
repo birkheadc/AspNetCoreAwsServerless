@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCoreAwsServerless", "AspNetCoreAwsServerless", "{D30A18D5-E34C-4A87-9199-09020B45D20B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2E5DC42B-8FF9-48F7-86BF-30929D58DB04}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreAwsServerless", "src\AspNetCoreAwsServerless\AspNetCoreAwsServerless.csproj", "{CDA33E6C-69AD-480E-AA31-165EB491C1DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EF5A4DD5-F758-400A-9C2B-757B4987720B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreAwsServerless.Tests", "test\AspNetCoreAwsServerless.Tests\AspNetCoreAwsServerless.Tests.csproj", "{5A3E0720-805D-4924-875D-E1527D8BE569}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDA33E6C-69AD-480E-AA31-165EB491C1DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA33E6C-69AD-480E-AA31-165EB491C1DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA33E6C-69AD-480E-AA31-165EB491C1DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA33E6C-69AD-480E-AA31-165EB491C1DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3E0720-805D-4924-875D-E1527D8BE569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3E0720-805D-4924-875D-E1527D8BE569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3E0720-805D-4924-875D-E1527D8BE569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3E0720-805D-4924-875D-E1527D8BE569}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E5DC42B-8FF9-48F7-86BF-30929D58DB04} = {D30A18D5-E34C-4A87-9199-09020B45D20B}
+		{CDA33E6C-69AD-480E-AA31-165EB491C1DE} = {2E5DC42B-8FF9-48F7-86BF-30929D58DB04}
+		{EF5A4DD5-F758-400A-9C2B-757B4987720B} = {D30A18D5-E34C-4A87-9199-09020B45D20B}
+		{5A3E0720-805D-4924-875D-E1527D8BE569} = {EF5A4DD5-F758-400A-9C2B-757B4987720B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F3DC1F54-CFB2-4FA1-8065-2C4EC906DC2C}
+	EndGlobalSection
+EndGlobal
