@@ -1,2 +1,11 @@
 # Todo
-- Copy everything from old template
+## Create 3 branches that auto deploy to different environments:
+  - Production, the environment that outside users use
+  - Staging, where changes are aggragated in an environment that is as similar to Production as possible, so that changes can be pushed from there to Production as releases
+  - Development, where individual changes to code can be pushed to see how they react to the serverless environment. Resources in Development are also used when developing Locally.
+
+Probably use CDK and github actions to configure automatic deployment.
+
+The created resource should either have a static url (maybe using area 53) or somehow export the new URL in a way that another application (usually the frontend) can automatically update.
+
+## Tests must all pass before merging into Staging or Production?
