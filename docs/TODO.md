@@ -9,3 +9,13 @@ Probably use CDK and github actions to configure automatic deployment.
 The created resource should either have a static url (maybe using area 53) or somehow export the new URL in a way that another application (usually the frontend) can automatically update.
 
 ## Tests must all pass before merging into Staging or Production?
+
+## Create account type or permission system
+
+## Implement 0Auth
+
+## Logging
+
+## Local app should connect to Development resources on AWS
+
+## Get AWS config working (region, profile, etc)
