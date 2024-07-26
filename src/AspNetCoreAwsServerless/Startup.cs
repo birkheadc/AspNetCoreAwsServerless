@@ -1,4 +1,6 @@
-﻿using AspNetCoreAwsServerless.Converters.Books;
+﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
+using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Sums;
@@ -20,6 +22,9 @@ public class Startup
     services.AddAuthorization();
     services.AddAuthentication();
 
+    services.AddAWSService<IAmazonDynamoDB>();
+    services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+
     services.AddScoped<ISumsService, SumsService>();
 
     services.AddScoped<IBooksService, BooksService>();
@@ -27,6 +32,8 @@ public class Startup
     services.AddScoped<IBooksConverter, BooksConverter>();
 
     services.AddControllers();
+
+    services.AddSwaggerGen();
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -35,6 +42,8 @@ public class Startup
     if (env.IsDevelopment())
     {
       app.UseDeveloperExceptionPage();
+      app.UseSwagger();
+      app.UseSwaggerUI();
     }
 
     if (!env.IsDevelopment())
