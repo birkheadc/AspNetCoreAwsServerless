@@ -1,27 +1,51 @@
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.Model;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 
 namespace AspNetCoreAwsServerless.Repositories.Books;
 
-public class BooksRepository : IBooksRepository
+public class BooksRepository(IDynamoDBContext context) : IBooksRepository
 {
-  public Task Delete(Id<Book> id)
+  private readonly IDynamoDBContext _context = context;
+
+  public async Task Delete(Id<Book> id)
   {
     throw new NotImplementedException();
   }
 
-  public Task<Book> Get(Id<Book> id)
+  public async Task<Book> Get(Id<Book> id)
   {
     throw new NotImplementedException();
   }
 
-  public Task<IEnumerable<Book>> GetAll()
+  public async Task<IEnumerable<Book>> GetAll()
   {
-    throw new NotImplementedException();
+    try
+    {
+      List<ScanCondition> conditions = [];
+      return await _context.ScanAsync<Book>(conditions).GetRemainingAsync();
+    }
+    catch (Exception exception)
+    {
+      // Todo: Logging
+      Console.WriteLine($"Failed to fetch all books. {exception}");
+      throw new InternalServerErrorException("");
+    }
   }
 
-  public Task<Book> Put(Book book)
+  public async Task<Book> Put(Book book)
   {
-    throw new NotImplementedException();
+    try
+    {
+      await _context.SaveAsync(book);
+      return book;
+    }
+    catch (Exception exception)
+    {
+      // Todo: Logging
+      Console.WriteLine($"Failed to put book. {book} {exception}");
+      throw new InternalServerErrorException("");
+    }
   }
 }
