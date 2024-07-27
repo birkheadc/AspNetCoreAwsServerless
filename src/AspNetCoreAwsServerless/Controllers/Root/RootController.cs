@@ -1,17 +1,23 @@
+using AspNetCoreAwsServerless.Config.Root;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCoreAwsServerless.Controllers.Root;
 
 [ApiController]
 [Route("")]
-public class RootController : ControllerBase
+public class RootController(IOptions<RootOptions> config) : ControllerBase
 {
+  private readonly RootOptions _config = config.Value;
+
   [HttpGet]
-  public async Task<string> Get()
+  public async Task<ActionResult<string>> Get()
   {
     return await Task.Run(
       () =>
-        $"You have reached Colby's ASP.NET Core Aws Serverless Template API Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}"
+        Ok(
+          $"{_config.Greeting}\nEnvironment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}"
+        )
     );
   }
 }

@@ -11,8 +11,8 @@ public class SumsController(ISumsService sumsService) : ControllerBase
   private readonly ISumsService _sumsService = sumsService;
 
   [HttpPost]
-  public async Task<int> Sum([FromBody] SumCreateDto dto)
+  public async Task<ActionResult<int>> Sum([FromBody] SumCreateDto dto)
   {
-    return await _sumsService.Sum(dto);
+    return Ok(await _sumsService.Sum(dto));
   }
 }
