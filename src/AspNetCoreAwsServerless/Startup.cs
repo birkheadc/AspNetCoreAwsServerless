@@ -1,5 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.Extensions.NETCore.Setup;
+using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
@@ -22,9 +24,20 @@ public class Startup
     services.AddAuthorization();
     services.AddAuthentication();
 
-    services.AddAWSService<IAmazonDynamoDB>();
+    // Create and register custom configuration that can be injected via IOptions<RootOptions>
+    services.Configure<RootOptions>(Configuration.GetSection("Root"));
+
+    // Configure AWS services
+    AWSOptions awsOptions = Configuration.GetAWSOptions();
+    services.AddAWSService<IAmazonDynamoDB>(awsOptions);
+
+    DynamoDBContextConfig? dynamoDBContextConfig =
+      Configuration.GetSection("DynamoDBContext").Get<DynamoDBContextConfig>() ?? new();
+    services.AddSingleton(dynamoDBContextConfig);
+
     services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
+    // Register application services
     services.AddScoped<ISumsService, SumsService>();
 
     services.AddScoped<IBooksService, BooksService>();
@@ -33,6 +46,7 @@ public class Startup
 
     services.AddControllers();
 
+    // Register Swagger to easily make manual calls to the API
     services.AddSwaggerGen();
   }
 
