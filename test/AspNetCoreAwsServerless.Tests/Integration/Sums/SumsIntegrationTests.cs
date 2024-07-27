@@ -20,6 +20,8 @@ public class SumsIntegrationTests(WebApplicationFactory<Program> factory)
     response?.EnsureSuccessStatusCode();
 
     var content = response?.Content.ReadAsStringAsync().Result;
+    Assert.NotNull(content);
+
     var actual = JsonConvert.DeserializeObject<int>(content);
 
     Assert.Equal(expected, actual);
