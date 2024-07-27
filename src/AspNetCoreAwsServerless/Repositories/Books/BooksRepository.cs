@@ -44,7 +44,7 @@ public class BooksRepository(IDynamoDBContext context) : IBooksRepository
     catch (Exception exception)
     {
       // Todo: Logging
-      Console.WriteLine($"Failed to put book. {book} {exception}");
+      Console.WriteLine($"Failed to put book. {book.Id} {exception}");
       throw new InternalServerErrorException("");
     }
   }
