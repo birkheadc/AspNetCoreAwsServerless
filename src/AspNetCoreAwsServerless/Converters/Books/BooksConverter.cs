@@ -25,7 +25,7 @@ public class BooksConverter : IBooksConverter
     Book book =
       new()
       {
-        Id = dto.Id,
+        Id = new(dto.Id),
         Title = dto.Title,
         Author = dto.Author,
         Pages = dto.Pages
@@ -51,7 +51,7 @@ public class BooksConverter : IBooksConverter
     BookDto dto =
       new()
       {
-        Id = book.Id,
+        Id = book.Id.ToString(),
         Title = book.Title,
         Author = book.Author,
         Pages = book.Pages
