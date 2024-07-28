@@ -17,7 +17,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [HttpGet]
   public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
   {
-    var books = await _service.GetAll();
+    IEnumerable<Book> books = await _service.GetAll();
     return Ok(books.Select(_converter.ToDto));
   }
 

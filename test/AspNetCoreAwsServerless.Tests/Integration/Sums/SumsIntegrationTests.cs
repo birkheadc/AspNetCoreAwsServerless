@@ -13,16 +13,16 @@ public class SumsIntegrationTests(WebApplicationFactory<Program> factory)
   [Theory, MemberData(nameof(Post_ReturnsCorrectSum_Data))]
   public async Task Post_ReturnsCorrectSum(SumCreateDto dto, int expected)
   {
-    var client = _factory.CreateClient();
+    HttpClient client = _factory.CreateClient();
     string uri = "/sums";
 
-    var response = await client.PostAsJsonAsync(uri, dto);
+    HttpResponseMessage? response = await client.PostAsJsonAsync(uri, dto);
     response?.EnsureSuccessStatusCode();
 
-    var content = response?.Content.ReadAsStringAsync().Result;
+    string? content = response?.Content.ReadAsStringAsync().Result;
     Assert.NotNull(content);
 
-    var actual = JsonConvert.DeserializeObject<int>(content);
+    int actual = JsonConvert.DeserializeObject<int>(content);
 
     Assert.Equal(expected, actual);
   }

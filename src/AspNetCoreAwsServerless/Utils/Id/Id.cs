@@ -11,7 +11,7 @@ public readonly struct Id<T>
 
   public Id(string value)
   {
-    var val = Guid.Parse(value);
+    Guid val = Guid.Parse(value);
     CheckValue(val);
     _value = val;
   }
