@@ -14,13 +14,4 @@ The created resource should either have a static url (maybe using area 53) or so
 
 ## Implement 0Auth
 
-## Logging
-
-## Local app should connect to Development resources on AWS
-
 ## Get AWS config working (region, profile, etc)
-
-## Automocking for unit tests
-
-## Add error handling middleware
-https://learn.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-8.0
