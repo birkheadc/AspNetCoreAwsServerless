@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Books;
@@ -15,37 +16,32 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   private readonly IBooksConverter _converter = converter;
 
   [HttpGet]
-  public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
+  public async Task<ActionResult<List<BookDto>>> GetAll()
   {
-    Result<IEnumerable<Book>> result = await _service.GetAll();
-    if (result.IsSuccess)
-    {
-      return Ok(result);
-    }
-    return Ok(books.Select(_converter.ToDto));
+    ApiResult<List<Book>> result = await _service.GetAll();
+    return result.GetObjectResult(_converter.ToDto);
   }
 
   [HttpGet]
   [Route("/{id}")]
   public async Task<ActionResult<BookDto>> Get([FromRoute] Id<Book> id)
   {
-    Result<Book> result = await _service.Get(id);
-    result.
-    return Ok(_converter.ToDto(book));
+    ApiResult<Book> result = await _service.Get(id);
+    return result.GetObjectResult(_converter.ToDto);
   }
 
   [HttpPost]
   public async Task<ActionResult<BookDto>> Create([FromBody] BookCreateDto createDto)
   {
-    Book book = await _service.Create(createDto);
-    return Ok(_converter.ToDto(book));
+    ApiResult<Book> result = await _service.Create(createDto);
+    return result.GetObjectResult(_converter.ToDto);
   }
 
   [HttpPut]
   public async Task<ActionResult<BookDto>> Put([FromBody] BookPutDto putDto)
   {
-    Book book = await _service.Put(putDto);
-    return Ok(_converter.ToDto(book));
+    ApiResult<Book> result = await _service.Put(putDto);
+    return result.GetObjectResult(_converter.ToDto);
   }
 
   [HttpPatch]
@@ -55,15 +51,15 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
     [FromBody] BookPatchDto patchDto
   )
   {
-    Book book = await _service.Patch(id, patchDto);
-    return Ok(_converter.ToDto(book));
+    ApiResult<Book> result = await _service.Patch(id, patchDto);
+    return result.GetObjectResult(_converter.ToDto);
   }
 
   [HttpDelete]
   [Route("/{id}")]
   public async Task<ActionResult> Delete([FromRoute] Id<Book> id)
   {
-    await _service.Delete(id);
-    return Ok();
+    ApiResult result = await _service.Delete(id);
+    return result.GetObjectResult();
   }
 }

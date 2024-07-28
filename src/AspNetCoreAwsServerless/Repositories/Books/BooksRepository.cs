@@ -38,8 +38,8 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     }
     catch (Exception exception)
     {
-      _logger.LogError("Failed to fetch all books. {exception}", exception);
-      return new ApiResultErrors();
+      _logger.LogCritical("Failed to fetch all books. {exception}", exception);
+      return ApiResultErrors.InternalServerError;
     }
   }
 
@@ -52,8 +52,8 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     }
     catch (Exception exception)
     {
-      _logger.LogError("Failed to put book {book}. {exception}", book, exception);
-      return new ApiResultErrors();
+      _logger.LogCritical("Failed to put book {book}. {exception}", book, exception);
+      return ApiResultErrors.InternalServerError;
     }
   }
 }

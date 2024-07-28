@@ -28,6 +28,11 @@ public class ApiResult
     Errors = errors;
   }
 
+  public ObjectResult GetObjectResult()
+  {
+    return IsSuccess ? (ObjectResult)Results.Ok() : Errors.Problem;
+  }
+
   public static ApiResult Success() => new();
 
   public static ApiResult<T> Success<T>(T value) => new(value);
@@ -61,6 +66,16 @@ public class ApiResult<T>
     IsSuccess = false;
     Value = default;
     Errors = errors;
+  }
+
+  public ObjectResult GetObjectResult()
+  {
+    return IsSuccess ? (ObjectResult)Results.Ok(Value) : Errors.Problem;
+  }
+
+  public ObjectResult GetObjectResult(Func<T, object> converter)
+  {
+    return IsSuccess ? (ObjectResult)Results.Ok(converter(Value)) : Errors.Problem;
   }
 
   public static ApiResult<T> Success(T value) => new(value);
