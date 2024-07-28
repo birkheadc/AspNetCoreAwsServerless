@@ -4,6 +4,7 @@ using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Result;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
@@ -47,9 +48,10 @@ public class BooksServiceTests
     mocker.GetMock<IBooksRepository>().Setup(mock => mock.Get(expected.Id)).ReturnsAsync(expected);
 
     BooksService service = mocker.CreateInstance<BooksService>();
-    Book actual = await service.Get(expected.Id);
+    ApiResult<Book> result = await service.Get(expected.Id);
 
-    Assert.Equal(expected, actual);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value);
   }
 
   [Fact]
@@ -62,9 +64,10 @@ public class BooksServiceTests
     mocker.GetMock<IBooksRepository>().Setup(mock => mock.GetAll()).ReturnsAsync(expected);
 
     BooksService service = mocker.CreateInstance<BooksService>();
-    IEnumerable<Book> actual = await service.GetAll();
+    ApiResult<List<Book>> result = await service.GetAll();
 
-    Assert.Equal(expected, actual);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value);
   }
 
   [Fact]
@@ -99,9 +102,10 @@ public class BooksServiceTests
       .Returns(expected);
 
     BooksService service = mocker.CreateInstance<BooksService>();
-    Book actual = await service.Create(dto);
+    ApiResult<Book> result = await service.Create(dto);
 
-    Assert.Equal(expected, actual);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value);
   }
 
   [Fact]
@@ -112,7 +116,7 @@ public class BooksServiceTests
     BookPutDto dto =
       new()
       {
-        Id = _testBooks[2].Id,
+        Id = _testBooks[2].Id.ToString(),
         Title = "New Title",
         Author = "New Author",
         Pages = 150
@@ -121,7 +125,7 @@ public class BooksServiceTests
     Book expected =
       new()
       {
-        Id = dto.Id,
+        Id = new(dto.Id),
         Title = dto.Title,
         Author = dto.Author,
         Pages = dto.Pages
@@ -137,9 +141,10 @@ public class BooksServiceTests
       .Returns(expected);
 
     BooksService service = mocker.CreateInstance<BooksService>();
-    Book actual = await service.Put(dto);
+    ApiResult<Book> result = await service.Put(dto);
 
-    Assert.Equal(expected, actual);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value);
   }
 
   [Fact]
@@ -172,9 +177,10 @@ public class BooksServiceTests
       .Returns(expected);
 
     BooksService service = mocker.CreateInstance<BooksService>();
-    Book actual = await service.Patch(_testBooks[0].Id, dto);
+    ApiResult<Book> result = await service.Patch(_testBooks[0].Id, dto);
 
-    Assert.Equal(expected, actual);
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value);
   }
 
   [Fact]

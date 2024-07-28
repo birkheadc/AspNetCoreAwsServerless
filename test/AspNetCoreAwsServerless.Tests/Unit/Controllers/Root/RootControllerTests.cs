@@ -1,22 +1,30 @@
+using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Controllers.Root;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Moq.AutoMock;
 using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Controllers.Root
 {
   public class RootControllerTests
   {
+    private readonly RootOptions options = new() { Greeting = "Test Greeting!" };
+
     [Fact]
     public async void Get_ReturnsGreeting()
     {
-      RootController controller = new();
+      string expected = options.Greeting;
 
-      string GREETING =
-        $"You have reached Colby's ASP.NET Core Aws Serverless Template API Environment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}";
-      string expected = GREETING;
+      AutoMocker mocker = new();
 
-      string actual = await controller.Get();
+      mocker.GetMock<IOptions<RootOptions>>().SetupGet(mock => mock.Value).Returns(options);
 
-      Assert.Equal(expected, actual);
+      RootController controller = mocker.CreateInstance<RootController>();
+      ActionResult<string> result = await controller.Get();
+
+      OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
+      Assert.Equal(expected, okObjectResult.Value);
     }
   }
 }

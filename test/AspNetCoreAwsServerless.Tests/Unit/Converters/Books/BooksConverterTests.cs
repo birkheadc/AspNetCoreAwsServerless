@@ -44,7 +44,7 @@ public class BooksConverterTests
     BookPutDto dto =
       new()
       {
-        Id = id,
+        Id = id.ToString(),
         Title = "New Book Title",
         Author = "New Author",
         Pages = 125
@@ -53,7 +53,7 @@ public class BooksConverterTests
     Book expected =
       new()
       {
-        Id = dto.Id,
+        Id = id,
         Title = dto.Title,
         Author = dto.Author,
         Pages = dto.Pages
