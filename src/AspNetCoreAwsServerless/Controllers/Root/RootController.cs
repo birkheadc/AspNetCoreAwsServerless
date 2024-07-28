@@ -20,4 +20,11 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
         )
     );
   }
+
+  [HttpGet]
+  [Route("/e")]
+  public IActionResult ThrowError()
+  {
+    throw new Exception("Intentional Exception");
+  }
 }
