@@ -15,9 +15,9 @@ variable "function_name" {
 }
 
 variable "handler" {
-
+  type = string
 }
 
 variable "environment_variables" {
-
+  type = map(string)
 }
