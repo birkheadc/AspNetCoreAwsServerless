@@ -13,12 +13,7 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
   [HttpGet]
   public async Task<ActionResult<string>> Get()
   {
-    return await Task.Run(
-      () =>
-        Ok(
-          $"{_config.Greeting}\nEnvironment: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}"
-        )
-    );
+    return await Task.Run(() => Ok(_config.Greeting));
   }
 
   [HttpGet]
