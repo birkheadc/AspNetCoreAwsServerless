@@ -7,7 +7,7 @@ namespace AspNetCoreAwsServerless.Repositories.Books;
 public interface IBooksRepository
 {
   public Task<ApiResult<Book>> Get(Id<Book> id);
-  public Task<ApiResult<IEnumerable<Book>>> GetAll();
+  public Task<ApiResult<List<Book>>> GetAll();
   public Task<ApiResult<Book>> Put(Book book);
   public Task<ApiResult> Delete(Id<Book> id);
 }

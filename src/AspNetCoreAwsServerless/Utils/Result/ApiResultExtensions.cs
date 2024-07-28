@@ -16,7 +16,7 @@ public static class ApiResultExtensions
     return Results.Problem(
       statusCode: StatusCodes.Status400BadRequest,
       title: "Bad Request",
-      extensions: new Dictionary<string, object?> { { "errors", apiResult.Error } }
+      extensions: new Dictionary<string, object?> { { "errors", apiResult.Errors } }
     );
   }
 }

@@ -28,7 +28,7 @@ public class BooksService(IBooksRepository repository, IBooksConverter converter
     return await _repository.Get(id);
   }
 
-  public async Task<ApiResult<IEnumerable<Book>>> GetAll()
+  public async Task<ApiResult<List<Book>>> GetAll()
   {
     return await _repository.GetAll();
   }

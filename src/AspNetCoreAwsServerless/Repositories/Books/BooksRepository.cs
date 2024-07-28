@@ -24,22 +24,22 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     throw new NotImplementedException();
   }
 
-  public async Task<ApiResult<IEnumerable<Book>>> GetAll()
+  public async Task<ApiResult<List<Book>>> GetAll()
   {
     _logger.LogInformation("Getting all books...");
     try
     {
       List<ScanCondition> conditions = [];
 
-      IEnumerable<Book> books = await _context.ScanAsync<Book>(conditions).GetRemainingAsync();
-      _logger.LogInformation("Found all books. Count: {count}", books.Count());
+      List<Book> books = await _context.ScanAsync<Book>(conditions).GetRemainingAsync();
+      _logger.LogInformation("Found all books. Count: {count}", books.Count);
 
-      return ApiResult.Success(books);
+      return books;
     }
     catch (Exception exception)
     {
       _logger.LogError("Failed to fetch all books. {exception}", exception);
-      return new ApiResultError();
+      return new ApiResultErrors();
     }
   }
 
@@ -53,7 +53,7 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     catch (Exception exception)
     {
       _logger.LogError("Failed to put book {book}. {exception}", book, exception);
-      return new ApiResultError();
+      return new ApiResultErrors();
     }
   }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,53 +9,65 @@ namespace AspNetCoreAwsServerless.Utils.Result;
 
 public class ApiResult
 {
+  [MemberNotNullWhen(returnValue: false, nameof(Errors))]
   public bool IsSuccess { get; }
-  public bool IsFailure => !IsSuccess;
-  public ApiResultError? Error { get; }
 
-  private ApiResult()
+  [MemberNotNullWhen(returnValue: true, nameof(Errors))]
+  public bool IsFailure => !IsSuccess;
+  public ApiResultErrors? Errors { get; }
+
+  public ApiResult()
   {
     IsSuccess = true;
-    Error = default;
+    Errors = default;
   }
 
-  public ApiResult(ApiResultError error)
+  public ApiResult(ApiResultErrors errors)
   {
     IsSuccess = false;
-    Error = error;
+    Errors = errors;
   }
 
-  public static ApiResult Success() => new() { };
+  public static ApiResult Success() => new();
 
   public static ApiResult<T> Success<T>(T value) => new(value);
 
-  public static ApiResult Failure(ApiResultError error) => new(error);
+  public static ApiResult Failure(ApiResultErrors errors) => new(errors);
+
+  public static implicit operator ApiResult(ApiResultErrors errors) => new(errors);
 }
 
 public class ApiResult<T>
 {
+  [MemberNotNullWhen(returnValue: true, nameof(Value))]
+  [MemberNotNullWhen(returnValue: false, nameof(Errors))]
   public bool IsSuccess { get; }
+
+  [MemberNotNullWhen(returnValue: false, nameof(Value))]
+  [MemberNotNullWhen(returnValue: true, nameof(Errors))]
   public bool IsFailure => !IsSuccess;
   public T? Value { get; }
-  public ApiResultError? Error { get; }
+  public ApiResultErrors? Errors { get; }
 
   public ApiResult(T value)
   {
     IsSuccess = true;
     Value = value;
-    Error = default;
+    Errors = default;
   }
 
-  public ApiResult(ApiResultError error)
+  public ApiResult(ApiResultErrors errors)
   {
     IsSuccess = false;
     Value = default;
-    Error = error;
+    Errors = errors;
   }
 
   public static ApiResult<T> Success(T value) => new(value);
 
-  public static ApiResult<T> Failure(ApiResultError error) => new(error);
+  public static ApiResult<T> Failure(ApiResultErrors errors) => new(errors);
 
-  public static implicit operator ApiResult<T>(ApiResultError error) => ApiResult<T>.Failure(error);
+  public static implicit operator ApiResult<T>(T value) => new(value);
+
+  public static implicit operator ApiResult<T>(ApiResultErrors errors) => new(errors);
 }

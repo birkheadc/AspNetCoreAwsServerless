@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 
 namespace AspNetCoreAwsServerless.Utils.Result;
 
-public class ApiResultError { }
+public class ApiResultErrors { }
