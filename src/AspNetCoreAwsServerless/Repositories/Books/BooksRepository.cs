@@ -5,31 +5,39 @@ using AspNetCoreAwsServerless.Utils.Id;
 
 namespace AspNetCoreAwsServerless.Repositories.Books;
 
-public class BooksRepository(IDynamoDBContext context) : IBooksRepository
+public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> logger)
+  : IBooksRepository
 {
   private readonly IDynamoDBContext _context = context;
+  private readonly ILogger<BooksRepository> _logger = logger;
 
   public async Task Delete(Id<Book> id)
   {
+    _logger.LogInformation("Delete Book Id: ${id}", id);
     throw new NotImplementedException();
   }
 
   public async Task<Book> Get(Id<Book> id)
   {
+    _logger.LogInformation("Get Book Id: ${id}", id);
     throw new NotImplementedException();
   }
 
   public async Task<IEnumerable<Book>> GetAll()
   {
+    _logger.LogInformation("Getting all books...");
     try
     {
       List<ScanCondition> conditions = [];
-      return await _context.ScanAsync<Book>(conditions).GetRemainingAsync();
+
+      List<Book> books = await _context.ScanAsync<Book>(conditions).GetRemainingAsync();
+      _logger.LogInformation("Found all books. Count: {count}", books.Count);
+
+      return books;
     }
     catch (Exception exception)
     {
-      // Todo: Logging
-      Console.WriteLine($"Failed to fetch all books. {exception}");
+      _logger.LogError("Failed to fetch all books. {exception}", exception);
       throw new InternalServerErrorException("");
     }
   }
@@ -43,8 +51,7 @@ public class BooksRepository(IDynamoDBContext context) : IBooksRepository
     }
     catch (Exception exception)
     {
-      // Todo: Logging
-      Console.WriteLine($"Failed to put book. {book.Id} {exception}");
+      _logger.LogError("Failed to put book {book}. {exception}", book, exception);
       throw new InternalServerErrorException("");
     }
   }
