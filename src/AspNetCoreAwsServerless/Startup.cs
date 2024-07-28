@@ -6,21 +6,21 @@ using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Sums;
+using Serilog;
+using Serilog.Events;
 
 namespace AspNetCoreAwsServerless;
 
-public class Startup
+public class Startup(IConfiguration configuration)
 {
-  public Startup(IConfiguration configuration)
-  {
-    Configuration = configuration;
-  }
-
-  public IConfiguration Configuration { get; }
+  public IConfiguration Configuration { get; } = configuration;
 
   // This method gets called by the runtime. Use this method to add services to the container
   public void ConfigureServices(IServiceCollection services)
   {
+    Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
+    services.AddSerilog();
+
     services.AddAuthorization();
     services.AddAuthentication();
 
@@ -53,9 +53,11 @@ public class Startup
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
   {
+    // Use Serilog to log requests rather than AspNetCore's default logging
+    app.UseSerilogRequestLogging();
+
     if (env.IsDevelopment())
     {
-      app.UseDeveloperExceptionPage();
       app.UseSwagger();
       app.UseSwaggerUI();
     }
