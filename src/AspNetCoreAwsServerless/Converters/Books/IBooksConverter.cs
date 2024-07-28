@@ -9,4 +9,5 @@ public interface IBooksConverter
   public Book ToEntity(BookPutDto dto);
   public Book ToEntity(BookPatchDto dto, Book book);
   public BookDto ToDto(Book book);
+  public List<BookDto> ToDto(List<Book> books);
 }
