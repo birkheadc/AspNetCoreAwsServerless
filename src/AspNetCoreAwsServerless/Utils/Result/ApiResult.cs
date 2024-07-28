@@ -8,29 +8,53 @@ namespace AspNetCoreAwsServerless.Utils.Result;
 
 public class ApiResult
 {
-  public bool IsSuccess { get; set; }
+  public bool IsSuccess { get; }
   public bool IsFailure => !IsSuccess;
-  public ApiResultError? Error { get; set; }
+  public ApiResultError? Error { get; }
 
-  public static ApiResult Success() => new() { IsSuccess = true };
+  private ApiResult()
+  {
+    IsSuccess = true;
+    Error = default;
+  }
 
-  public static ApiResult<T> Success<T>(T value) => new() { IsSuccess = true, Value = value };
+  public ApiResult(ApiResultError error)
+  {
+    IsSuccess = false;
+    Error = error;
+  }
 
-  public static ApiResult Failure(ApiResultError error) =>
-    new() { IsSuccess = false, Error = error };
+  public static ApiResult Success() => new() { };
+
+  public static ApiResult<T> Success<T>(T value) => new(value);
+
+  public static ApiResult Failure(ApiResultError error) => new(error);
 }
 
 public class ApiResult<T>
 {
-  public bool IsSuccess { get; set; }
+  public bool IsSuccess { get; }
   public bool IsFailure => !IsSuccess;
-  public T? Value { get; set; }
-  public ApiResultError? Error { get; set; }
+  public T? Value { get; }
+  public ApiResultError? Error { get; }
 
-  public static ApiResult<T> Success(T value) => new() { IsSuccess = true, Value = value };
+  public ApiResult(T value)
+  {
+    IsSuccess = true;
+    Value = value;
+    Error = default;
+  }
 
-  public static ApiResult<T> Failure(ApiResultError error) =>
-    new() { IsSuccess = false, Error = error };
+  public ApiResult(ApiResultError error)
+  {
+    IsSuccess = false;
+    Value = default;
+    Error = error;
+  }
+
+  public static ApiResult<T> Success(T value) => new(value);
+
+  public static ApiResult<T> Failure(ApiResultError error) => new(error);
 
   public static implicit operator ApiResult<T>(ApiResultError error) => ApiResult<T>.Failure(error);
 }
