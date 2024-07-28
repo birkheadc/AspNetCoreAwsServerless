@@ -1,6 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
 using AspNetCoreAwsServerless.Utils.Id;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace AspNetCoreAwsServerless.Entities.Books;
 

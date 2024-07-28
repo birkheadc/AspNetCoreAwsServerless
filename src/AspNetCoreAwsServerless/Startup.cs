@@ -7,7 +7,6 @@ using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Sums;
 using Serilog;
-using Serilog.Events;
 
 namespace AspNetCoreAwsServerless;
 

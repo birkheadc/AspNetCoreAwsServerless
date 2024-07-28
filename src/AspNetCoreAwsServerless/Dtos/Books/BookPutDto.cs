@@ -1,6 +1,3 @@
-using AspNetCoreAwsServerless.Entities.Books;
-using AspNetCoreAwsServerless.Utils.Id;
-
 namespace AspNetCoreAwsServerless.Dtos.Books;
 
 public record BookPutDto
