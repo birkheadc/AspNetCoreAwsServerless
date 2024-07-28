@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Services.Books;
 
@@ -11,35 +12,39 @@ public class BooksService(IBooksRepository repository, IBooksConverter converter
   private readonly IBooksRepository _repository = repository;
   private readonly IBooksConverter _converter = converter;
 
-  public async Task<Book> Create(BookCreateDto dto)
+  public async Task<ApiResult<Book>> Create(BookCreateDto dto)
   {
     Book book = _converter.ToEntity(dto);
     return await _repository.Put(book);
   }
 
-  public async Task Delete(Id<Book> id)
+  public async Task<ApiResult> Delete(Id<Book> id)
   {
-    await _repository.Delete(id);
+    return await _repository.Delete(id);
   }
 
-  public async Task<Book> Get(Id<Book> id)
+  public async Task<ApiResult<Book>> Get(Id<Book> id)
   {
     return await _repository.Get(id);
   }
 
-  public async Task<IEnumerable<Book>> GetAll()
+  public async Task<ApiResult<IEnumerable<Book>>> GetAll()
   {
     return await _repository.GetAll();
   }
 
-  public async Task<Book> Patch(Id<Book> id, BookPatchDto dto)
+  public async Task<ApiResult<Book>> Patch(Id<Book> id, BookPatchDto dto)
   {
-    Book book = await _repository.Get(id);
-    Book newBook = _converter.ToEntity(dto, book);
+    ApiResult<Book> result = await _repository.Get(id);
+    if (result.IsFailure)
+    {
+      return result;
+    }
+    Book newBook = _converter.ToEntity(dto, result.Value);
     return await _repository.Put(newBook);
   }
 
-  public async Task<Book> Put(BookPutDto dto)
+  public async Task<ApiResult<Book>> Put(BookPutDto dto)
   {
     Book book = _converter.ToEntity(dto);
     return await _repository.Put(book);

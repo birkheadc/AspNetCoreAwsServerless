@@ -17,7 +17,11 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [HttpGet]
   public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
   {
-    IEnumerable<Book> books = await _service.GetAll();
+    Result<IEnumerable<Book>> result = await _service.GetAll();
+    if (result.IsSuccess)
+    {
+      return Ok(result);
+    }
     return Ok(books.Select(_converter.ToDto));
   }
 
@@ -25,7 +29,8 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [Route("/{id}")]
   public async Task<ActionResult<BookDto>> Get([FromRoute] Id<Book> id)
   {
-    Book book = await _service.Get(id);
+    Result<Book> result = await _service.Get(id);
+    result.
     return Ok(_converter.ToDto(book));
   }
 
