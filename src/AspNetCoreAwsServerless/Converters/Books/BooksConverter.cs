@@ -58,4 +58,14 @@ public class BooksConverter : IBooksConverter
       };
     return dto;
   }
+
+  public List<BookDto> ToDto(List<Book> books)
+  {
+    List<BookDto> dtos = [];
+    foreach (Book book in books)
+    {
+      dtos.Add(ToDto(book));
+    }
+    return dtos;
+  }
 }
