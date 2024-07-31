@@ -26,10 +26,4 @@ public class RootControllerTests
     OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
     Assert.Equal(expected, okObjectResult.Value);
   }
-
-  [Fact]
-  public void Fails()
-  {
-    Assert.False(true);
-  }
 }
