@@ -39,6 +39,9 @@ jobs:
         run: terraform -chdir="infra" validate -no-color
 
       - name: Terraform Plan
-        id: plan
         run: terraform -chdir="infra" plan -var-file="development.tfvars" -no-color
+        continue-on-error: false
+
+      - name: Terraform Apply
+        run: terraform -chdir="infra" apply -var-file="development.tfvars" -auto-approve -no-color
         continue-on-error: false
