@@ -19,3 +19,7 @@ Terraform stuff is in the `infra` folder
 - Apply changes
 
   `terraform apply`
+
+### Secrets
+
+Secrets related to deployment (access keys for aws) are kept as GitHub repository secrets
