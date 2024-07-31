@@ -30,6 +30,6 @@ public class RootControllerTests
   [Fact]
   public void Fails()
   {
-    Assert.False(false);
+    Assert.False(true);
   }
 }
