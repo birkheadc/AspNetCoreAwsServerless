@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   region  = "ap-southeast-2"
-  profile = "personal"
+  profile = "personal-cicd"
 }
 
 resource "aws_dynamodb_table" "books_table" {
