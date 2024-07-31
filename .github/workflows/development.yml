@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Setup Dotnet
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
 
       - name: Build Api
         run: dotnet publish ./src/AspNetCoreAwsServerless/AspNetCoreAwsServerless.csproj
@@ -35,7 +35,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
-        run: terraform -chdir="infra" init
+        run: terraform -chdir="infra" -backend-config=backend.conf init
 
       - name: Terraform Format
         run: terraform -chdir="infra" fmt -check

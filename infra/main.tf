@@ -1,4 +1,5 @@
 terraform {
+  backend "s3" {}
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -10,8 +11,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
-  # profile = "personal-cicd"
+  region  = "ap-southeast-2"
+  profile = "personal-cicd"
 }
 
 resource "aws_dynamodb_table" "books_table" {
@@ -33,6 +34,8 @@ resource "aws_s3_bucket" "lambda_bucket" {
 module "iam_policies" {
   source     = "./modules/iam_policies"
   table_name = aws_dynamodb_table.books_table.name
+  app_name   = var.app_name
+  stage_name = var.env_name
 }
 
 module "api_lambda_function" {

@@ -15,3 +15,11 @@ The created resource should either have a static url (maybe using area 53) or so
 ## Implement 0Auth
 
 ## Get AWS config working (region, profile, etc)
+
+Figure out how to get terraform working in github actions. Something to do with state not being saved, so terraform tries to create everything from scratch every time. Should state be saved in src control, or store those artifacts somewhere else?
+
+Also, now need to somehow destroy all the aws resources that the apply made without saving state. Uhhh...
+
+Also double check that `actions/setup-dotnet@v4` is valid. I used `v1` before and it worked. `v4` appears to be most recent.
+
+Also check if I need to declare which version of dotnet. Should be fine to just use latest...
