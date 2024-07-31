@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v4
 
       - name: Run Tests
-        run: ./run-tests
+        run: dotnet test
         continue-on-error: false
 
       - name: Build Api
