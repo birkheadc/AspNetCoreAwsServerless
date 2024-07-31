@@ -40,7 +40,7 @@ module "iam_policies" {
 module "api_lambda_function" {
   source        = "./modules/lambda_function"
   bucket_id     = aws_s3_bucket.lambda_bucket.id
-  publish_dir   = "${path.module}/../src/${var.app_name}/bin/Release/net8.0/linux-x64/publish"
+  publish_dir   = "${path.module}/../../src/${var.app_name}/bin/Release/net8.0/linux-x64/publish"
   zip_file      = "build.zip"
   function_name = "${var.app_name}_${var.env_name}"
   handler       = "${var.app_name}::${var.app_name}.LambdaEntryPoint::FunctionHandlerAsync"
