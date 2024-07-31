@@ -35,7 +35,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
-        run: terraform -chdir="infra" -backend-config=backend.conf init
+        run: terraform -chdir="infra" init -backend-config=backend.conf
 
       - name: Terraform Format
         run: terraform -chdir="infra" fmt -check
