@@ -18,11 +18,17 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v1
 
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v1
+
+      - name: Build Api
+        run: dotnet publish
+
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
