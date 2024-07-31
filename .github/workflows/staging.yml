@@ -1,0 +1,57 @@
+name: Deploy To Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+env:
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  AWS_REGION: "ap-southeast-2"
+
+jobs:
+  terraform-deploy:
+    name: Deploy Staging Api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v1
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+
+      - name: Run Tests
+        run: ./run-tests
+        continue-on-error: false
+
+      - name: Build Api
+        run: dotnet publish ./src/AspNetCoreAwsServerless/AspNetCoreAwsServerless.csproj
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        run: terraform -chdir="infra" init -backend-config=backend.conf
+
+      - name: Terraform Format
+        run: terraform -chdir="infra" fmt -check
+        continue-on-error: false
+
+      - name: Terraform Validate
+        run: terraform -chdir="infra" validate -no-color
+
+      - name: Terraform Plan
+        run: terraform -chdir="infra" plan -var-file="staging.tfvars" -no-color
+        continue-on-error: false
+
+      - name: Terraform Apply
+        run: terraform -chdir="infra" apply -var-file="staging.tfvars" -auto-approve -no-color
+        continue-on-error: false
