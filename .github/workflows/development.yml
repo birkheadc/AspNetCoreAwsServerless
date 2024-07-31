@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v1
 
       - name: Build Api
-        run: dotnet publish
+        run: dotnet publish ./src/AspNetCoreAwsServerless/AspNetCoreAwsServerless.csproj
 
       - name: Terraform Setup
         uses: hashicorp/setup-terraform@v3
