@@ -39,19 +39,19 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
-        run: terraform -chdir="infra" init -backend-config=backend.conf
+        run: terraform -chdir="infra/staging" init -backend-config=backend.conf
 
       - name: Terraform Format
-        run: terraform -chdir="infra" fmt -check
+        run: terraform -chdir="infra/staging" fmt -check
         continue-on-error: false
 
       - name: Terraform Validate
-        run: terraform -chdir="infra" validate -no-color
+        run: terraform -chdir="infra/staging" validate -no-color
 
       - name: Terraform Plan
-        run: terraform -chdir="infra" plan -var-file="staging.tfvars" -no-color
+        run: terraform -chdir="infra/staging" plan -no-color
         continue-on-error: false
 
       - name: Terraform Apply
-        run: terraform -chdir="infra" apply -var-file="staging.tfvars" -auto-approve -no-color
+        run: terraform -chdir="infra/staging" apply -auto-approve -no-color
         continue-on-error: false
