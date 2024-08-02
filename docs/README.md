@@ -40,6 +40,10 @@ Deployment is done automatically when pushing to certain branches. In order to d
   - Partition Key: LockID (string)
   - Default settings
 
+## Auth
+
+Authentication / Authorization uses AWS Cognito.
+
 ## How to create a new project with this template
 
 - Copy or clone the entire repository
