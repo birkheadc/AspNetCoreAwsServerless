@@ -1,4 +1,5 @@
 using AspNetCoreAwsServerless.Config.Root;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -21,5 +22,13 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
   public IActionResult ThrowError()
   {
     throw new Exception("Intentional Exception");
+  }
+
+  [HttpGet]
+  [Route("/secure")]
+  [Authorize]
+  public async Task<ActionResult<string>> GetSecure()
+  {
+    return await Task.Run(() => Ok(_config.Greeting));
   }
 }

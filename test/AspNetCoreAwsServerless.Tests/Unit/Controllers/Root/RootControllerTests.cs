@@ -26,4 +26,20 @@ public class RootControllerTests
     OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
     Assert.Equal(expected, okObjectResult.Value);
   }
+
+  [Fact]
+  public async Task GetSecure_ReturnsGreeting()
+  {
+    string expected = options.Greeting;
+
+    AutoMocker mocker = new();
+
+    mocker.GetMock<IOptions<RootOptions>>().SetupGet(mock => mock.Value).Returns(options);
+
+    RootController controller = mocker.CreateInstance<RootController>();
+    ActionResult<string> result = await controller.GetSecure();
+
+    OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, okObjectResult.Value);
+  }
 }
