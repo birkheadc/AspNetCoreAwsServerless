@@ -55,7 +55,7 @@ public class Startup(IConfiguration configuration)
     // Use Serilog to log requests rather than AspNetCore's default logging
     app.UseSerilogRequestLogging();
 
-    app.UseExceptionHandler("/errors");
+    // app.UseExceptionHandler("/errors");
 
     if (env.IsDevelopment())
     {
