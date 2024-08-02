@@ -70,12 +70,12 @@ public class ApiResult<T>
 
   public ObjectResult GetObjectResult()
   {
-    return IsSuccess ? (ObjectResult)Results.Ok(Value) : Errors.Problem;
+    return IsSuccess ? new ObjectResult(Value) { StatusCode = 200 } : Errors.Problem;
   }
 
   public ObjectResult GetObjectResult(Func<T, object> converter)
   {
-    return IsSuccess ? (ObjectResult)Results.Ok(converter(Value)) : Errors.Problem;
+    return IsSuccess ? new ObjectResult(converter(Value)) { StatusCode = 200 } : Errors.Problem;
   }
 
   public static ApiResult<T> Success(T value) => new(value);
