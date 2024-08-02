@@ -26,7 +26,7 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
 
   [HttpGet]
   [Route("/secure")]
-  [Authorize]
+  // [Authorize]
   public async Task<ActionResult<string>> GetSecure()
   {
     return await Task.Run(() => Ok(_config.Greeting));
