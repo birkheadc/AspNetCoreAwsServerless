@@ -16,10 +16,10 @@ public class SumsIntegrationTests(WebApplicationFactory<Program> factory)
     HttpClient client = _factory.CreateClient();
     string uri = "/sums";
 
-    HttpResponseMessage? response = await client.PostAsJsonAsync(uri, dto);
-    response?.EnsureSuccessStatusCode();
+    HttpResponseMessage response = await client.PostAsJsonAsync(uri, dto);
+    response.EnsureSuccessStatusCode();
 
-    string? content = response?.Content.ReadAsStringAsync().Result;
+    string content = response.Content.ReadAsStringAsync().Result;
     Assert.NotNull(content);
 
     int actual = JsonConvert.DeserializeObject<int>(content);
