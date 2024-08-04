@@ -46,4 +46,5 @@ public class ApiResultErrors
 
   public static readonly ApiResultErrors InternalServerError = new(500);
   public static readonly ApiResultErrors NotFound = new(404);
+  public static readonly ApiResultErrors BadRequest = new(400);
 }

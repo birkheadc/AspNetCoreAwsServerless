@@ -18,6 +18,16 @@ public class BooksService(IBooksRepository repository, IBooksConverter converter
     return await _repository.Put(book);
   }
 
+  public async Task<ApiResult> CreateMany(BookCreateManyDto dto)
+  {
+    List<Book> books = [];
+    foreach (BookCreateDto book in dto.Books)
+    {
+      books.Add(_converter.ToEntity(book));
+    }
+    return await _repository.PutMany(books);
+  }
+
   public async Task<ApiResult> Delete(Id<Book> id)
   {
     return await _repository.Delete(id);

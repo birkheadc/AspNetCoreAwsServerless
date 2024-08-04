@@ -54,8 +54,7 @@ public class BooksRepositoryTests
   {
     Book expected = _testBooks[0];
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock => mock.LoadAsync<Book>(It.IsAny<Id<Book>>(), It.IsAny<CancellationToken>()))
       .ReturnsAsync(_testBooks[0]);
 
@@ -85,8 +84,7 @@ public class BooksRepositoryTests
   {
     Book expected = _testBooks[0];
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock => mock.LoadAsync<Book>(It.IsAny<object>(), It.IsAny<CancellationToken>()))
       .ThrowsAsync(new InternalServerErrorException(""));
 
@@ -103,8 +101,7 @@ public class BooksRepositoryTests
   {
     List<Book> expected = _testBooks;
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock =>
         mock.ScanAsync<Book>(It.IsAny<List<ScanCondition>>(), It.IsAny<DynamoDBOperationConfig>())
       )
@@ -126,8 +123,7 @@ public class BooksRepositoryTests
   {
     List<Book> expected = _testBooks;
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock =>
         mock.ScanAsync<Book>(It.IsAny<List<ScanCondition>>(), It.IsAny<DynamoDBOperationConfig>())
       )
@@ -162,8 +158,7 @@ public class BooksRepositoryTests
   {
     Book expected = _testBooks[0];
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock => mock.SaveAsync(It.IsAny<Book>(), It.IsAny<CancellationToken>()))
       .Throws(new InternalServerErrorException(""));
 
@@ -192,14 +187,50 @@ public class BooksRepositoryTests
   {
     Id<Book> id = _testBooks[0].Id;
 
-    _mocker
-      .GetMock<IDynamoDBContext>()
+    _dynamoMock
       .Setup(mock => mock.DeleteAsync<Book>(It.IsAny<Id<Book>>(), It.IsAny<CancellationToken>()))
       .Throws(new InternalServerErrorException(""));
 
     ApiResult result = await _repository.Delete(id);
 
     _dynamoMock.Verify(mock => mock.DeleteAsync<Book>(id, default), Times.Once);
+
+    Assert.False(result.IsSuccess);
+    Assert.Equal(500, result.Errors.StatusCode);
+  }
+
+  // Todo: This test fails because BatchWrite<T> is not mockable.
+  // [Fact]
+  // public async Task PutMany_CallsCreateBatchWrite_AndCallsExecuteAsync()
+  // {
+  //   List<Book> expected = _testBooks;
+
+  //   Mock<BatchWrite<Book>> _batchWriteMock = _mocker.GetMock<BatchWrite<Book>>();
+  //   _dynamoMock
+  //     .Setup(mock => mock.CreateBatchWrite<Book>(It.IsAny<DynamoDBOperationConfig>()))
+  //     .Returns(_batchWriteMock.Object);
+
+  //   var result = await _repository.PutMany(expected);
+
+  //   _dynamoMock.Verify(mock => mock.CreateBatchWrite<Book>(default), Times.Once);
+  //   _batchWriteMock.Verify(mock => mock.AddPutItems(expected), Times.Once);
+  //   _batchWriteMock.Verify(mock => mock.ExecuteAsync(default), Times.Once);
+
+  //   Assert.True(result.IsSuccess);
+  // }
+
+  [Fact]
+  public async Task PutMany_WhenError_ReturnsInternalServerError()
+  {
+    List<Book> expected = _testBooks;
+
+    _dynamoMock
+      .Setup(mock => mock.CreateBatchWrite<Book>(It.IsAny<DynamoDBOperationConfig>()))
+      .Throws<Exception>();
+
+    var result = await _repository.PutMany(expected);
+
+    _dynamoMock.Verify(mock => mock.CreateBatchWrite<Book>(default), Times.Once);
 
     Assert.False(result.IsSuccess);
     Assert.Equal(500, result.Errors.StatusCode);

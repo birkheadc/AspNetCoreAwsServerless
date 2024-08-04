@@ -9,5 +9,6 @@ public interface IBooksRepository
   public Task<ApiResult<Book>> Get(Id<Book> id);
   public Task<ApiResult<List<Book>>> GetAll();
   public Task<ApiResult<Book>> Put(Book book);
+  public Task<ApiResult> PutMany(List<Book> books);
   public Task<ApiResult> Delete(Id<Book> id);
 }

@@ -70,14 +70,36 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
 
   public async Task<ApiResult<Book>> Put(Book book)
   {
+    _logger.LogInformation("Putting book ${id}...", book.Id);
     try
     {
       await _context.SaveAsync(book);
+      _logger.LogInformation("Successfully put book ${id}", book.Id);
       return ApiResult.Success(book);
     }
     catch (Exception exception)
     {
       _logger.LogCritical("Failed to put book {book}. {exception}", book, exception);
+      return ApiResultErrors.InternalServerError;
+    }
+  }
+
+  public async Task<ApiResult> PutMany(List<Book> books)
+  {
+    _logger.LogInformation("Attempting to put {num} books", books.Count);
+    try
+    {
+      BatchWrite<Book> batchWrite = _context.CreateBatchWrite<Book>();
+      batchWrite.AddPutItems(books);
+
+      await batchWrite.ExecuteAsync();
+
+      _logger.LogInformation("Successfully put {num} books", books.Count);
+      return ApiResult.Success();
+    }
+    catch (Exception exception)
+    {
+      _logger.LogCritical("Failed to create many books. {exception}", exception);
       return ApiResultErrors.InternalServerError;
     }
   }

@@ -41,12 +41,14 @@ public class BooksServiceTests
   private readonly AutoMocker _mocker;
   private readonly BooksService _service;
   private readonly Mock<IBooksRepository> _repositoryMock;
+  private readonly Mock<IBooksConverter> _converterMock;
 
   public BooksServiceTests()
   {
     _mocker = new();
     _service = _mocker.CreateInstance<BooksService>();
     _repositoryMock = _mocker.GetMock<IBooksRepository>();
+    _converterMock = _mocker.GetMock<IBooksConverter>();
   }
 
   [Fact]
@@ -54,7 +56,7 @@ public class BooksServiceTests
   {
     Book expected = _testBooks[1];
 
-    _mocker.GetMock<IBooksRepository>().Setup(mock => mock.Get(expected.Id)).ReturnsAsync(expected);
+    _repositoryMock.Setup(mock => mock.Get(expected.Id)).ReturnsAsync(expected);
 
     ApiResult<Book> result = await _service.Get(expected.Id);
 
@@ -69,7 +71,7 @@ public class BooksServiceTests
   {
     List<Book> expected = _testBooks;
 
-    _mocker.GetMock<IBooksRepository>().Setup(mock => mock.GetAll()).ReturnsAsync(expected);
+    _repositoryMock.Setup(mock => mock.GetAll()).ReturnsAsync(expected);
 
     ApiResult<List<Book>> result = await _service.GetAll();
 
@@ -99,14 +101,8 @@ public class BooksServiceTests
         Pages = dto.Pages
       };
 
-    _mocker
-      .GetMock<IBooksRepository>()
-      .Setup(mock => mock.Put(It.IsAny<Book>()))
-      .ReturnsAsync((Book input) => input);
-    _mocker
-      .GetMock<IBooksConverter>()
-      .Setup(mock => mock.ToEntity(It.IsAny<BookCreateDto>()))
-      .Returns(expected);
+    _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book input) => input);
+    _converterMock.Setup(mock => mock.ToEntity(It.IsAny<BookCreateDto>())).Returns(expected);
 
     ApiResult<Book> result = await _service.Create(dto);
 
@@ -137,14 +133,8 @@ public class BooksServiceTests
         Pages = dto.Pages
       };
 
-    _mocker
-      .GetMock<IBooksRepository>()
-      .Setup(mock => mock.Put(It.IsAny<Book>()))
-      .ReturnsAsync((Book book) => book);
-    _mocker
-      .GetMock<IBooksConverter>()
-      .Setup(mock => mock.ToEntity(It.IsAny<BookPutDto>()))
-      .Returns(expected);
+    _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
+    _converterMock.Setup(mock => mock.ToEntity(It.IsAny<BookPutDto>())).Returns(expected);
 
     ApiResult<Book> result = await _service.Put(dto);
 
@@ -168,16 +158,9 @@ public class BooksServiceTests
         Pages = _testBooks[0].Pages
       };
 
-    _mocker
-      .GetMock<IBooksRepository>()
-      .Setup(mock => mock.Get(It.IsAny<Id<Book>>()))
-      .ReturnsAsync(_testBooks[0]);
-    _mocker
-      .GetMock<IBooksRepository>()
-      .Setup(mock => mock.Put(It.IsAny<Book>()))
-      .ReturnsAsync((Book book) => book);
-    _mocker
-      .GetMock<IBooksConverter>()
+    _repositoryMock.Setup(mock => mock.Get(It.IsAny<Id<Book>>())).ReturnsAsync(_testBooks[0]);
+    _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
+    _converterMock
       .Setup(mock => mock.ToEntity(It.IsAny<BookPatchDto>(), It.IsAny<Book>()))
       .Returns(expected);
 
@@ -197,5 +180,51 @@ public class BooksServiceTests
     await _service.Delete(expected);
 
     _repositoryMock.Verify(mock => mock.Delete(expected), Times.Once);
+  }
+
+  [Fact]
+  public async Task CreateMany_CallsConverterToEntity_AndCallsRepositoryPut()
+  {
+    BookCreateManyDto dto =
+      new()
+      {
+        Books =
+        [
+          new()
+          {
+            Title = "Book 1",
+            Author = "Author 1",
+            Pages = 100
+          },
+          new()
+          {
+            Title = "Book 2",
+            Author = "Author 2",
+            Pages = 200
+          },
+          new()
+          {
+            Title = "Book 3",
+            Author = "Author 3",
+            Pages = 300
+          }
+        ]
+      };
+
+    List<Book> expected = _testBooks;
+
+    for (int i = 0; i < dto.Books.Count; i++)
+    {
+      _converterMock.Setup(mock => mock.ToEntity(dto.Books[i])).Returns(expected[i]);
+    }
+
+    _repositoryMock
+      .Setup(mock => mock.PutMany(It.IsAny<List<Book>>()))
+      .ReturnsAsync(ApiResult.Success());
+
+    ApiResult result = await _service.CreateMany(dto);
+
+    _repositoryMock.Verify(mock => mock.PutMany(expected), Times.Once);
+    Assert.True(result.IsSuccess);
   }
 }
