@@ -1,3 +1,4 @@
+using Amazon.DynamoDBv2.Model;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Controllers.Root;
 using Microsoft.AspNetCore.Mvc;
@@ -11,20 +12,31 @@ public class RootControllerTests
 {
   private readonly RootOptions options = new() { Greeting = "Test Greeting!" };
 
+  private readonly AutoMocker _mocker;
+  private readonly RootController _controller;
+
+  public RootControllerTests()
+  {
+    _mocker = new();
+    _mocker.GetMock<IOptions<RootOptions>>().SetupGet(mock => mock.Value).Returns(options);
+    _controller = _mocker.CreateInstance<RootController>();
+  }
+
   [Fact]
   public async Task Get_ReturnsGreeting()
   {
     string expected = options.Greeting;
 
-    AutoMocker mocker = new();
-
-    mocker.GetMock<IOptions<RootOptions>>().SetupGet(mock => mock.Value).Returns(options);
-
-    RootController controller = mocker.CreateInstance<RootController>();
-    ActionResult<string> result = await controller.Get();
+    ActionResult<string> result = await _controller.Get();
 
     OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
     Assert.Equal(expected, okObjectResult.Value);
+  }
+
+  [Fact]
+  public void ThrowError_ThrowsError()
+  {
+    Assert.Throws<Exception>(_controller.ThrowError);
   }
 
   [Fact]
@@ -32,12 +44,7 @@ public class RootControllerTests
   {
     string expected = options.Greeting;
 
-    AutoMocker mocker = new();
-
-    mocker.GetMock<IOptions<RootOptions>>().SetupGet(mock => mock.Value).Returns(options);
-
-    RootController controller = mocker.CreateInstance<RootController>();
-    ActionResult<string> result = await controller.GetSecure();
+    ActionResult<string> result = await _controller.GetSecure();
 
     OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
     Assert.Equal(expected, okObjectResult.Value);

@@ -9,6 +9,13 @@ namespace AspNetCoreAwsServerless.Tests.Unit.Converters.Books;
 
 public class BooksConverterTests
 {
+  private readonly BooksConverter _converter;
+
+  public BooksConverterTests()
+  {
+    _converter = new();
+  }
+
   [Fact]
   public void ToEntity_WhenBookCreateDto_ReturnsCorrectEntity()
   {
@@ -29,8 +36,7 @@ public class BooksConverterTests
         Pages = dto.Pages
       };
 
-    BooksConverter converter = new();
-    Book actual = converter.ToEntity(dto);
+    Book actual = _converter.ToEntity(dto);
 
     Assert.Equal(expected.Title, actual.Title);
     Assert.Equal(expected.Author, expected.Author);
@@ -59,8 +65,7 @@ public class BooksConverterTests
         Pages = dto.Pages
       };
 
-    BooksConverter converter = new();
-    Book actual = converter.ToEntity(dto);
+    Book actual = _converter.ToEntity(dto);
 
     Assert.Equal(expected.Id, actual.Id);
     Assert.Equal(expected.Title, actual.Title);
@@ -92,8 +97,7 @@ public class BooksConverterTests
         Pages = oldBook.Pages
       };
 
-    BooksConverter converter = new();
-    Book actual = converter.ToEntity(dto, oldBook);
+    Book actual = _converter.ToEntity(dto, oldBook);
 
     Assert.Equivalent(expected, actual);
   }

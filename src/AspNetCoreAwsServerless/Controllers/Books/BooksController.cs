@@ -19,47 +19,47 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   public async Task<ActionResult<List<BookDto>>> GetAll()
   {
     ApiResult<List<Book>> result = await _service.GetAll();
-    return result.GetObjectResult(_converter.ToDto);
+    return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpGet]
-  [Route("/{id}")]
-  public async Task<ActionResult<BookDto>> Get([FromRoute] Id<Book> id)
+  [Route("{id}")]
+  public async Task<ActionResult<BookDto>> Get([FromRoute] Guid id)
   {
     ApiResult<Book> result = await _service.Get(id);
-    return result.GetObjectResult(_converter.ToDto);
+    return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpPost]
   public async Task<ActionResult<BookDto>> Create([FromBody] BookCreateDto createDto)
   {
     ApiResult<Book> result = await _service.Create(createDto);
-    return result.GetObjectResult(_converter.ToDto);
+    return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpPut]
   public async Task<ActionResult<BookDto>> Put([FromBody] BookPutDto putDto)
   {
     ApiResult<Book> result = await _service.Put(putDto);
-    return result.GetObjectResult(_converter.ToDto);
+    return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpPatch]
   [Route("/{id}")]
   public async Task<ActionResult<BookDto>> Patch(
-    [FromRoute] Id<Book> id,
+    [FromRoute] Guid id,
     [FromBody] BookPatchDto patchDto
   )
   {
     ApiResult<Book> result = await _service.Patch(id, patchDto);
-    return result.GetObjectResult(_converter.ToDto);
+    return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpDelete]
   [Route("/{id}")]
-  public async Task<ActionResult> Delete([FromRoute] Id<Book> id)
+  public async Task<ActionResult> Delete([FromRoute] Guid id)
   {
     ApiResult result = await _service.Delete(id);
-    return result.GetObjectResult();
+    return result.GetActionResult();
   }
 }

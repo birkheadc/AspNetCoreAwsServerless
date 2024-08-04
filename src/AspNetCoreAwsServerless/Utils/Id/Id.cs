@@ -32,4 +32,8 @@ public readonly struct Id<T>
   {
     return _value.ToString();
   }
+
+  public static implicit operator Id<T>(string s) => new(s);
+
+  public static implicit operator Id<T>(Guid id) => new(id);
 }

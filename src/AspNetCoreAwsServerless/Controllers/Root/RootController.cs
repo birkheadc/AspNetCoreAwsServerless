@@ -21,7 +21,7 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
   [Route("/e")]
   public IActionResult ThrowError()
   {
-    throw new Exception("Intentional Exception");
+    throw new Exception();
   }
 
   [HttpGet]

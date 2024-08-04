@@ -28,9 +28,9 @@ public class ApiResult
     Errors = errors;
   }
 
-  public ObjectResult GetObjectResult()
+  public ActionResult GetActionResult()
   {
-    return IsSuccess ? (ObjectResult)Results.Ok() : Errors.Problem;
+    return IsSuccess ? new StatusCodeResult(200) : Errors.Problem;
   }
 
   public static ApiResult Success() => new();
@@ -68,12 +68,12 @@ public class ApiResult<T>
     Errors = errors;
   }
 
-  public ObjectResult GetObjectResult()
+  public ActionResult GetActionResult()
   {
     return IsSuccess ? new ObjectResult(Value) { StatusCode = 200 } : Errors.Problem;
   }
 
-  public ObjectResult GetObjectResult(Func<T, object> converter)
+  public ActionResult GetActionResult(Func<T, object> converter)
   {
     return IsSuccess ? new ObjectResult(converter(Value)) { StatusCode = 200 } : Errors.Problem;
   }

@@ -15,13 +15,38 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
   public async Task<ApiResult> Delete(Id<Book> id)
   {
     _logger.LogInformation("Delete Book Id: ${id}", id);
-    throw new NotImplementedException();
+    try
+    {
+      await _context.DeleteAsync<Book>(id);
+      _logger.LogInformation("Deleted book Id: ${id} (Book may or may not have been present!)", id);
+      return ApiResult.Success();
+    }
+    catch (Exception exception)
+    {
+      _logger.LogWarning("Failed to delete book Id: {id}. {exception}", id, exception);
+      return ApiResultErrors.InternalServerError;
+    }
   }
 
   public async Task<ApiResult<Book>> Get(Id<Book> id)
   {
-    _logger.LogInformation("Get Book Id: ${id}", id);
-    throw new NotImplementedException();
+    _logger.LogInformation("Get book Id: ${id}", id);
+    try
+    {
+      Book? book = await _context.LoadAsync<Book>(id);
+      if (book is null)
+      {
+        _logger.LogWarning("Failed to get book Id: {id}. Id not present in database.", id);
+        return ApiResultErrors.NotFound;
+      }
+      _logger.LogInformation("Found book Id: {id}", id);
+      return book;
+    }
+    catch (Exception exception)
+    {
+      _logger.LogWarning("Failed to get book Id: {id}. {exception}", id, exception);
+      return ApiResultErrors.InternalServerError;
+    }
   }
 
   public async Task<ApiResult<List<Book>>> GetAll()
@@ -38,7 +63,7 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     }
     catch (Exception exception)
     {
-      _logger.LogCritical("Failed to fetch all books. {exception}", exception);
+      _logger.LogCritical("Failed to get all books. {exception}", exception);
       return ApiResultErrors.InternalServerError;
     }
   }

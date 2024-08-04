@@ -11,12 +11,15 @@ public class ApiResultErrors
   public int StatusCode { get; }
   public List<ApiResultError> Errors { get; } = [];
   public ObjectResult Problem =>
-    (ObjectResult)
+    new(
       Results.Problem(
         statusCode: StatusCode,
-        title: "Bad Request",
         extensions: new Dictionary<string, object?> { { "errors", Errors } }
-      );
+      )
+    )
+    {
+      StatusCode = StatusCode
+    };
 
   public ApiResultErrors(int statusCode)
   {
@@ -42,4 +45,5 @@ public class ApiResultErrors
   }
 
   public static readonly ApiResultErrors InternalServerError = new(500);
+  public static readonly ApiResultErrors NotFound = new(404);
 }
