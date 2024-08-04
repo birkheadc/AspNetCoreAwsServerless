@@ -9,3 +9,7 @@ The created resource should either have a static url (maybe using area 53) or so
 ## Create account type or permission system
 
 ## Implement
+
+## Testing environment
+
+Need to create a 4th environment that can be deployed, reset to 0, then used for integration and/or e2e tests, then taken back down.
