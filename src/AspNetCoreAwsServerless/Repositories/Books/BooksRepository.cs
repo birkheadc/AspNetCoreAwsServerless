@@ -1,19 +1,24 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
+using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCoreAwsServerless.Repositories.Books;
 
-public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> logger)
-  : IBooksRepository
+public class BooksRepository(
+  IOptions<BooksOptions> config,
+  IDynamoDBContext context,
+  ILogger<BooksRepository> logger
+) : IBooksRepository
 {
   private readonly IDynamoDBContext _context = context;
   private readonly ILogger<BooksRepository> _logger = logger;
+  private readonly BooksOptions _config = config.Value;
 
   public async Task<ApiResult> Delete(Id<Book> id)
   {
@@ -79,7 +84,8 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     );
     try
     {
-      ScanOperationConfig scan = new() { Limit = 20, PaginationToken = paginationToken };
+      ScanOperationConfig scan =
+        new() { Limit = _config.PageSize, PaginationToken = paginationToken };
 
       AsyncSearch<Book> result = _context.FromScanAsync<Book>(scan);
 

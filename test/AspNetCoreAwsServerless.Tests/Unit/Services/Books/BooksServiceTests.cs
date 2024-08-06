@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
+using AspNetCoreAwsServerless.Tests.TestData.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
 using Moq;
@@ -13,30 +14,7 @@ namespace AspNetCoreAwsServerless.Tests.Unit.Services.Books;
 
 public class BooksServiceTests
 {
-  private readonly List<Book> _testBooks =
-  [
-    new()
-    {
-      Id = "8f56f8a7-493b-4870-9225-e08fb152c19a",
-      Title = "Book 1",
-      Author = "Author 1",
-      Pages = 100
-    },
-    new()
-    {
-      Id = "9d7cb104-ca04-4a0d-bb83-d498aeabfb7c",
-      Title = "Book 2",
-      Author = "Author 2",
-      Pages = 200
-    },
-    new()
-    {
-      Id = "aef601ad-10b3-40f8-8681-94cafe78cf87",
-      Title = "Book 3",
-      Author = "Author 3",
-      Pages = 300
-    }
-  ];
+  private readonly List<Book> _testBooks = [];
 
   private readonly AutoMocker _mocker;
   private readonly BooksService _service;
@@ -45,6 +23,7 @@ public class BooksServiceTests
 
   public BooksServiceTests()
   {
+    _testBooks = BooksTestData.GenerateBooks(50);
     _mocker = new();
     _service = _mocker.CreateInstance<BooksService>();
     _repositoryMock = _mocker.GetMock<IBooksRepository>();
@@ -185,38 +164,24 @@ public class BooksServiceTests
   [Fact]
   public async Task CreateMany_CallsConverterToEntity_AndCallsRepositoryPut()
   {
-    BookCreateManyDto dto =
-      new()
-      {
-        Books =
-        [
-          new()
-          {
-            Title = "Book 1",
-            Author = "Author 1",
-            Pages = 100
-          },
-          new()
-          {
-            Title = "Book 2",
-            Author = "Author 2",
-            Pages = 200
-          },
-          new()
-          {
-            Title = "Book 3",
-            Author = "Author 3",
-            Pages = 300
-          }
-        ]
-      };
+    List<Book> expected = _testBooks[..3];
 
-    List<Book> expected = _testBooks;
+    List<BookCreateDto> dtos = [];
 
-    for (int i = 0; i < dto.Books.Count; i++)
+    for (int i = 0; i < expected.Count; i++)
     {
-      _converterMock.Setup(mock => mock.ToEntity(dto.Books[i])).Returns(expected[i]);
+      BookCreateDto _dto =
+        new()
+        {
+          Title = expected[i].Title,
+          Author = expected[i].Author,
+          Pages = expected[i].Pages
+        };
+      dtos.Add(_dto);
+      _converterMock.Setup(mock => mock.ToEntity(_dto)).Returns(expected[i]);
     }
+
+    BookCreateManyDto dto = new() { Books = dtos };
 
     _repositoryMock
       .Setup(mock => mock.PutMany(It.IsAny<List<Book>>()))

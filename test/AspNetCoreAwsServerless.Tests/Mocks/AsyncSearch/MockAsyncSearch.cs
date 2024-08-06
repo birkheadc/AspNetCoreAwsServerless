@@ -34,4 +34,6 @@ public class MockAsyncSearch<T> : AsyncSearch<T>
   {
     return Task.FromResult(Items);
   }
+
+  public override string PaginationToken => "MockPaginationToken";
 }

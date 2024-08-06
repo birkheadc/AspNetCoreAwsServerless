@@ -1,10 +1,16 @@
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime;
+using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Tests.Mocks.AsyncSearch;
+using AspNetCoreAwsServerless.Tests.TestData.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
@@ -13,30 +19,9 @@ namespace AspNetCoreAwsServerless.Tests.Unit.Repositories.Books;
 
 public class BooksRepositoryTests
 {
-  private readonly List<Book> _testBooks =
-  [
-    new()
-    {
-      Id = "8f56f8a7-493b-4870-9225-e08fb152c19a",
-      Title = "Book 1",
-      Author = "Author 1",
-      Pages = 100
-    },
-    new()
-    {
-      Id = "9d7cb104-ca04-4a0d-bb83-d498aeabfb7c",
-      Title = "Book 2",
-      Author = "Author 2",
-      Pages = 200
-    },
-    new()
-    {
-      Id = "aef601ad-10b3-40f8-8681-94cafe78cf87",
-      Title = "Book 3",
-      Author = "Author 3",
-      Pages = 300
-    }
-  ];
+  private readonly List<Book> _testBooks = [];
+
+  private readonly BooksOptions _options = new() { PageSize = 15 };
 
   private readonly AutoMocker _mocker;
   private readonly BooksRepository _repository;
@@ -44,7 +29,9 @@ public class BooksRepositoryTests
 
   public BooksRepositoryTests()
   {
+    _testBooks = BooksTestData.GenerateBooks(50);
     _mocker = new();
+    _mocker.GetMock<IOptions<BooksOptions>>().SetupGet(mock => mock.Value).Returns(_options);
     _repository = _mocker.CreateInstance<BooksRepository>();
     _dynamoMock = _mocker.GetMock<IDynamoDBContext>();
   }
@@ -239,18 +226,90 @@ public class BooksRepositoryTests
   [Fact]
   public async Task GetPage_ReturnsPaginatedSetWithToken()
   {
-    //
+    List<Book> expected = _testBooks[.._options.PageSize];
+
+    _dynamoMock
+      .Setup(mock =>
+        mock.FromScanAsync<Book>(
+          It.IsAny<ScanOperationConfig>(),
+          It.IsAny<DynamoDBOperationConfig>()
+        )
+      )
+      .Returns(new MockAsyncSearch<Book>(expected));
+
+    ApiResult<Paginated<Book>> result = await _repository.GetPage();
+
+    _dynamoMock.Verify(
+      mock =>
+        mock.FromScanAsync<Book>(
+          It.Is<ScanOperationConfig>(c => c.Limit == _options.PageSize),
+          default
+        ),
+      Times.Once
+    );
+
+    Assert.True(result.IsSuccess);
+    Assert.Equal(expected, result.Value.Values);
   }
 
   [Fact]
-  public async Task GetPage_WhenBadPaginationToken_ReturnsBadRequest()
+  public async Task GetPage_CallsFromScanAsync_WithPaginationToken()
   {
-    //
+    string expected = "ExpectedPaginationToken";
+
+    _dynamoMock
+      .Setup(mock =>
+        mock.FromScanAsync<Book>(
+          It.IsAny<ScanOperationConfig>(),
+          It.IsAny<DynamoDBOperationConfig>()
+        )
+      )
+      .Returns(new MockAsyncSearch<Book>());
+
+    ApiResult<Paginated<Book>> result = await _repository.GetPage(expected);
+
+    _dynamoMock.Verify(
+      mock =>
+        mock.FromScanAsync<Book>(
+          It.Is<ScanOperationConfig>(c =>
+            c.Limit == _options.PageSize && c.PaginationToken == expected
+          ),
+          default
+        ),
+      Times.Once
+    );
+
+    Assert.True(result.IsSuccess);
   }
 
   [Fact]
   public async Task GetPage_WhenUnexpectedError_ReturnsInternalServerError()
   {
-    //
+    string expected = "ExpectedPaginationToken";
+
+    _dynamoMock
+      .Setup(mock =>
+        mock.FromScanAsync<Book>(
+          It.IsAny<ScanOperationConfig>(),
+          It.IsAny<DynamoDBOperationConfig>()
+        )
+      )
+      .Throws<SystemException>();
+
+    ApiResult<Paginated<Book>> result = await _repository.GetPage(expected);
+
+    _dynamoMock.Verify(
+      mock =>
+        mock.FromScanAsync<Book>(
+          It.Is<ScanOperationConfig>(c =>
+            c.Limit == _options.PageSize && c.PaginationToken == expected
+          ),
+          default
+        ),
+      Times.Once
+    );
+
+    Assert.False(result.IsSuccess);
+    Assert.Equal(500, result.Errors.StatusCode);
   }
 }
