@@ -18,14 +18,14 @@ public class RootController(IOptions<RootOptions> config) : ControllerBase
   }
 
   [HttpGet]
-  [Route("/e")]
+  [Route("e")]
   public IActionResult ThrowError()
   {
     throw new Exception();
   }
 
   [HttpGet]
-  [Route("/secure")]
+  [Route("secure")]
   // [Authorize]
   public async Task<ActionResult<string>> GetSecure()
   {

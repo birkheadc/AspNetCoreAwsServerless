@@ -1,7 +1,10 @@
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Repositories.Books;
@@ -64,6 +67,32 @@ public class BooksRepository(IDynamoDBContext context, ILogger<BooksRepository> 
     catch (Exception exception)
     {
       _logger.LogCritical("Failed to get all books. {exception}", exception);
+      return ApiResultErrors.InternalServerError;
+    }
+  }
+
+  public async Task<ApiResult<Paginated<Book>>> GetPage(string? paginationToken = null)
+  {
+    _logger.LogInformation(
+      "Getting a page of books. PaginationToken: {paginationToken}",
+      paginationToken ?? "null"
+    );
+    try
+    {
+      ScanOperationConfig scan = new() { Limit = 20, PaginationToken = paginationToken };
+
+      AsyncSearch<Book> result = _context.FromScanAsync<Book>(scan);
+
+      Paginated<Book> books =
+        new() { Values = await result.GetNextSetAsync(), PaginationToken = result.PaginationToken };
+
+      _logger.LogInformation("Found page of books. Count: {count}", books.Values.Count);
+
+      return books;
+    }
+    catch (Exception exception)
+    {
+      _logger.LogError("Failed to get page of books. {exception}", exception);
       return ApiResultErrors.InternalServerError;
     }
   }

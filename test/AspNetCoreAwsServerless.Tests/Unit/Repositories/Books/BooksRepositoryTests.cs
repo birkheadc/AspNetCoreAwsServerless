@@ -235,4 +235,22 @@ public class BooksRepositoryTests
     Assert.False(result.IsSuccess);
     Assert.Equal(500, result.Errors.StatusCode);
   }
+
+  [Fact]
+  public async Task GetPage_ReturnsPaginatedSetWithToken()
+  {
+    //
+  }
+
+  [Fact]
+  public async Task GetPage_WhenBadPaginationToken_ReturnsBadRequest()
+  {
+    //
+  }
+
+  [Fact]
+  public async Task GetPage_WhenUnexpectedError_ReturnsInternalServerError()
+  {
+    //
+  }
 }
