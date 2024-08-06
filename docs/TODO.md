@@ -14,6 +14,4 @@ The created resource should either have a static url (maybe using area 53) or so
 
 Need to create a 4th environment that can be deployed, reset to 0, then used for integration and/or e2e tests, then taken back down.
 
-## Pagination
-
-Figure out how to paginate data and have the frontend consume it that way.
+## Integration Tests for Books
