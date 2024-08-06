@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Services.Books;
@@ -41,6 +42,11 @@ public class BooksService(IBooksRepository repository, IBooksConverter converter
   public async Task<ApiResult<List<Book>>> GetAll()
   {
     return await _repository.GetAll();
+  }
+
+  public async Task<ApiResult<Paginated<Book>>> GetPage(string? paginationToken)
+  {
+    return await _repository.GetPage(paginationToken);
   }
 
   public async Task<ApiResult<Book>> Patch(Id<Book> id, BookPatchDto dto)

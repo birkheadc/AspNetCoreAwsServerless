@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Services.Books;
+using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,14 +17,23 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   private readonly IBooksConverter _converter = converter;
 
   [HttpGet]
-  public async Task<ActionResult<List<BookDto>>> GetAll()
+  [Route("page")]
+  public async Task<ActionResult<Paginated<BookDto>>> GetFirstPage()
   {
-    ApiResult<List<Book>> result = await _service.GetAll();
+    ApiResult<Paginated<Book>> result = await _service.GetPage();
     return result.GetActionResult(_converter.ToDto);
   }
 
   [HttpGet]
-  [Route("/{id}")]
+  [Route("page/{paginationToken}")]
+  public async Task<ActionResult<Paginated<BookDto>>> GetPage([FromRoute] string paginationToken)
+  {
+    ApiResult<Paginated<Book>> result = await _service.GetPage(paginationToken);
+    return result.GetActionResult(_converter.ToDto);
+  }
+
+  [HttpGet]
+  [Route("{id}")]
   public async Task<ActionResult<BookDto>> Get([FromRoute] Guid id)
   {
     ApiResult<Book> result = await _service.Get(id);
@@ -38,7 +48,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   }
 
   [HttpPost]
-  [Route("/many")]
+  [Route("many")]
   public async Task<ActionResult> CreateMany([FromBody] BookCreateManyDto createManyDto)
   {
     ApiResult result = await _service.CreateMany(createManyDto);
@@ -53,7 +63,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   }
 
   [HttpPatch]
-  [Route("/{id}")]
+  [Route("{id}")]
   public async Task<ActionResult<BookDto>> Patch(
     [FromRoute] Guid id,
     [FromBody] BookPatchDto patchDto
@@ -64,7 +74,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   }
 
   [HttpDelete]
-  [Route("/{id}")]
+  [Route("{id}")]
   public async Task<ActionResult> Delete([FromRoute] Guid id)
   {
     ApiResult result = await _service.Delete(id);
@@ -72,7 +82,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   }
 
   [HttpPost]
-  [Route("/seed/{num}")]
+  [Route("seed/{num}")]
   [IsEnvironment(["Development", "Staging"])]
   public async Task<ActionResult> SeedMany([FromRoute] int num)
   {

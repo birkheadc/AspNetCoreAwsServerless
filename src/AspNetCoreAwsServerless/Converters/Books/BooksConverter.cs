@@ -1,6 +1,7 @@
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Paginated;
 
 namespace AspNetCoreAwsServerless.Converters.Books;
 
@@ -67,5 +68,13 @@ public class BooksConverter : IBooksConverter
       dtos.Add(ToDto(book));
     }
     return dtos;
+  }
+
+  public Paginated<BookDto> ToDto(Paginated<Book> books)
+  {
+    Paginated<BookDto> paginated =
+      new() { Values = ToDto(books.Values), PaginationToken = books.PaginationToken };
+
+    return paginated;
   }
 }
