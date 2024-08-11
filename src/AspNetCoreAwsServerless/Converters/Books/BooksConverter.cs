@@ -73,7 +73,11 @@ public class BooksConverter : IBooksConverter
   public Paginated<BookDto> ToDto(Paginated<Book> books)
   {
     Paginated<BookDto> paginated =
-      new() { Values = ToDto(books.Values), PaginationToken = books.PaginationToken };
+      new()
+      {
+        Values = ToDto(books.Values),
+        PaginationToken = books.PaginationToken == "{}" ? null : books.PaginationToken
+      };
 
     return paginated;
   }
