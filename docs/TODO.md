@@ -8,6 +8,8 @@ The created resource should either have a static url (maybe using area 53) or so
 
 ## Create account type or permission system
 
+After figuring out how to get Cognito working, Cognito infrastructure should be included in API infra. Different user pool per environment
+
 ## Implement
 
 ## Testing environment
@@ -17,16 +19,8 @@ Need to create a 4th environment that can be deployed, reset to 0, then used for
 ## Integration Tests for Books
 
 ## Pagination and Data Sorting    
-  
-Delete current books table and repopulate with less items so I can better test, especially last page. Maybe around 25 books is best (so can have full first page, full center page,    and not-full last page). Can also test what happens when new data is created by a different user when in the middle of searching.
 
 Add keys to table so it can be sorted by title and/or author
-
-Maybe look into pagination: It appears pagination token is just a DynamoDBObject with the ID of the the last object from the last page (exclusive)
-  - Can this be trusted? If I change the API to just expect `/books/page/{id}` and then transform that `id` into a DynamoDBObject manually, will that work? Or will AWS change this up on me at some point ruining everything
-  - Also does this change if sorting on a different key? If sorting by Title does it expect the title, or still use id, or maybe both?
-  - Backwards pagination is not supported by dynamodb, so the frontend will just have to keep track of pagination tokens in a stack and pop them off when going backwards.
-    - What does this mean for sorting by asc/desc? Is it impossible, or maybe it should be treated as an entirely different sort
 
 Also add (created_at) and maybe (modified_at) support
 
