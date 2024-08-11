@@ -45,6 +45,19 @@ public class Startup(IConfiguration configuration)
 
     services.AddControllers();
 
+    services.AddCors(
+      (options) =>
+      {
+        options.AddPolicy(
+          name: "All",
+          builder =>
+          {
+            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+          }
+        );
+      }
+    );
+
     // Register Swagger to easily make manual calls to the API
     services.AddSwaggerGen();
   }
@@ -56,6 +69,8 @@ public class Startup(IConfiguration configuration)
     app.UseSerilogRequestLogging();
 
     // app.UseExceptionHandler("/errors");
+
+    app.UseCors("All");
 
     if (env.IsDevelopment())
     {
