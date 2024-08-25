@@ -4,6 +4,10 @@ using Amazon.DynamoDBv2.Model;
 
 namespace AspNetCoreAwsServerless.Utils.Id;
 
+/// <summary>
+/// Handles converting Id to and from DynamoDBEntry.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class IdPropertyConverter<T> : IPropertyConverter
 {
   public object FromEntry(DynamoDBEntry entry)

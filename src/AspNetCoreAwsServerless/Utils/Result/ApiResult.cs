@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Utils.Result;
@@ -28,6 +29,12 @@ public class ApiResult
     Errors = errors;
   }
 
+  public ApiResult(ValidationResult validationResult)
+  {
+    IsSuccess = validationResult.IsValid;
+    Errors = new(validationResult.Errors);
+  }
+
   public ActionResult GetActionResult()
   {
     return IsSuccess ? new StatusCodeResult(200) : Errors.Problem;
@@ -40,6 +47,8 @@ public class ApiResult
   public static ApiResult Failure(ApiResultErrors errors) => new(errors);
 
   public static implicit operator ApiResult(ApiResultErrors errors) => new(errors);
+
+  public static ApiResult Failure(ValidationResult validationResult) => new(validationResult);
 }
 
 public class ApiResult<T>
@@ -68,6 +77,13 @@ public class ApiResult<T>
     Errors = errors;
   }
 
+  public ApiResult(ValidationResult validationResult)
+  {
+    IsSuccess = validationResult.IsValid;
+    Value = default;
+    Errors = new(validationResult.Errors);
+  }
+
   public ActionResult GetActionResult()
   {
     return IsSuccess ? new ObjectResult(Value) { StatusCode = 200 } : Errors.Problem;
@@ -81,6 +97,8 @@ public class ApiResult<T>
   public static ApiResult<T> Success(T value) => new(value);
 
   public static ApiResult<T> Failure(ApiResultErrors errors) => new(errors);
+
+  public static ApiResult Failure(ValidationResult validationResult) => new(validationResult);
 
   public static implicit operator ApiResult<T>(T value) => new(value);
 

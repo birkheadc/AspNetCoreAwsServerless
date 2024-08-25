@@ -3,9 +3,12 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
+using AspNetCoreAwsServerless.Filters.FluentValidationFilter;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Sums;
+using AspNetCoreAwsServerless.Validators.Example;
+using FluentValidation;
 using Serilog;
 
 namespace AspNetCoreAwsServerless;
@@ -43,7 +46,10 @@ public class Startup(IConfiguration configuration)
     services.AddScoped<IBooksRepository, BooksRepository>();
     services.AddScoped<IBooksConverter, BooksConverter>();
 
-    services.AddControllers();
+    services.AddControllers(o =>
+    {
+      o.Filters.Add<FluentValidationFilter>();
+    });
 
     services.AddCors(
       (options) =>
@@ -60,6 +66,9 @@ public class Startup(IConfiguration configuration)
 
     // Register Swagger to easily make manual calls to the API
     services.AddSwaggerGen();
+
+    // Registers all validators automagically
+    services.AddValidatorsFromAssemblyContaining<ExampleDtoValidator>();
   }
 
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

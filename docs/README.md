@@ -44,6 +44,22 @@ Deployment is done automatically when pushing to certain branches. In order to d
 
 Authentication / Authorization uses AWS Cognito.
 
+## Validation
+
+Validation in this context refers to basic validation of requests, for example:
+  - Is the request body of the correct shape for the request
+  - Are the values valid:
+    - Id must be a valid Guid
+    - String cannot be empty
+    - Password must be at least 8 characters
+    - Number must be greater than 0 but less than 100
+
+This basic validation is done with FluentValidation. FluentValidation no longer supports automatic validation out of the box, so I've created `Filters/FluentValidationFilter` to automatic check all incoming requests for validatable arguments, validate them, and reject the request with the proper errors.
+
+## ApiResult
+
+This application makes extensive use of the Result pattern, rather than throwing exceptions. I created my own simple implementation of it, focused around `Utils/Result/ApiResult`. Instead of functions that expect a certain Type to be returned, and throw when that type cannot be returned, functions expect a `ApiResult<Type>` to be returned, and must check the result for success or failure and handle each situation. `ApiResult` can also include details on why the failure occurred. It also has a method `GetActionResult` for quickly converting a result to an object that can be returned from the controller. `FluentValidationFilter` also makes use of `ApiResult`, helping ensure uniformity in the shape of outgoing error messages.
+
 ## How to create a new project with this template
 
 - Copy or clone the entire repository

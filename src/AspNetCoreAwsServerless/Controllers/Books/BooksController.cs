@@ -11,15 +11,21 @@ namespace AspNetCoreAwsServerless.Controllers.Books;
 
 [ApiController]
 [Route("books")]
-public class BooksController(IBooksService service, IBooksConverter converter) : ControllerBase
+public class BooksController(
+  IBooksService service,
+  IBooksConverter converter,
+  ILogger<BooksController> logger
+) : ControllerBase
 {
   private readonly IBooksService _service = service;
   private readonly IBooksConverter _converter = converter;
+  private readonly ILogger<BooksController> _logger = logger;
 
   [HttpGet]
   [Route("page")]
   public async Task<ActionResult<Paginated<BookDto>>> GetFirstPage()
   {
+    _logger.LogInformation("GetFirstPage");
     ApiResult<Paginated<Book>> result = await _service.GetPage();
     return result.GetActionResult(_converter.ToDto);
   }
@@ -28,6 +34,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [Route("page/{paginationToken}")]
   public async Task<ActionResult<Paginated<BookDto>>> GetPage([FromRoute] string paginationToken)
   {
+    _logger.LogInformation("GetPage");
     ApiResult<Paginated<Book>> result = await _service.GetPage(paginationToken);
     return result.GetActionResult(_converter.ToDto);
   }
@@ -36,6 +43,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [Route("{id}")]
   public async Task<ActionResult<BookDto>> Get([FromRoute] Guid id)
   {
+    _logger.LogInformation("Get");
     ApiResult<Book> result = await _service.Get(id);
     return result.GetActionResult(_converter.ToDto);
   }
@@ -43,6 +51,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [HttpPost]
   public async Task<ActionResult<BookDto>> Create([FromBody] BookCreateDto createDto)
   {
+    _logger.LogInformation("Create");
     ApiResult<Book> result = await _service.Create(createDto);
     return result.GetActionResult(_converter.ToDto);
   }
@@ -51,6 +60,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [Route("many")]
   public async Task<ActionResult> CreateMany([FromBody] BookCreateManyDto createManyDto)
   {
+    _logger.LogInformation("CreateMany");
     ApiResult result = await _service.CreateMany(createManyDto);
     return result.GetActionResult();
   }
@@ -58,6 +68,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [HttpPut]
   public async Task<ActionResult<BookDto>> Put([FromBody] BookPutDto putDto)
   {
+    _logger.LogInformation("Put");
     ApiResult<Book> result = await _service.Put(putDto);
     return result.GetActionResult(_converter.ToDto);
   }
@@ -69,6 +80,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
     [FromBody] BookPatchDto patchDto
   )
   {
+    _logger.LogInformation("Patch");
     ApiResult<Book> result = await _service.Patch(id, patchDto);
     return result.GetActionResult(_converter.ToDto);
   }
@@ -77,6 +89,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [Route("{id}")]
   public async Task<ActionResult> Delete([FromRoute] Guid id)
   {
+    _logger.LogInformation("Delete");
     ApiResult result = await _service.Delete(id);
     return result.GetActionResult();
   }
@@ -86,6 +99,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [IsEnvironment(["Development", "Staging"])]
   public async Task<ActionResult> SeedMany([FromRoute] int num)
   {
+    _logger.LogInformation("SeedMany");
     if (num > 999 || num < 1)
     {
       return ApiResult.Failure(ApiResultErrors.BadRequest).GetActionResult();

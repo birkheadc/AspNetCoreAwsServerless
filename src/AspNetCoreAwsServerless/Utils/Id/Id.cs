@@ -1,5 +1,9 @@
 namespace AspNetCoreAwsServerless.Utils.Id;
 
+/// <summary>
+/// Strongly typed wrapper for Guids. Makes it harder to accidentally mix up, for example, User Ids and Book Ids.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public readonly struct Id<T>
 {
   private readonly Guid _value;
