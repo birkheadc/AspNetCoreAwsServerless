@@ -8,15 +8,16 @@ using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Services.Books;
 
-public class BooksService(IBooksRepository repository, IBooksConverter converter) : IBooksService
+public class BooksService(IBooksRepository booksRepository, IBooksConverter booksConverter)
+  : IBooksService
 {
-  private readonly IBooksRepository _repository = repository;
-  private readonly IBooksConverter _converter = converter;
+  private readonly IBooksRepository _booksRepository = booksRepository;
+  private readonly IBooksConverter _booksConverter = booksConverter;
 
   public async Task<ApiResult<Book>> Create(BookCreateDto dto)
   {
-    Book book = _converter.ToEntity(dto);
-    return await _repository.Put(book);
+    Book book = _booksConverter.ToEntity(dto);
+    return await _booksRepository.Put(book);
   }
 
   public async Task<ApiResult> CreateMany(BookCreateManyDto dto)
@@ -24,45 +25,45 @@ public class BooksService(IBooksRepository repository, IBooksConverter converter
     List<Book> books = [];
     foreach (BookCreateDto book in dto.Books)
     {
-      books.Add(_converter.ToEntity(book));
+      books.Add(_booksConverter.ToEntity(book));
     }
-    return await _repository.PutMany(books);
+    return await _booksRepository.PutMany(books);
   }
 
   public async Task<ApiResult> Delete(Id<Book> id)
   {
-    return await _repository.Delete(id);
+    return await _booksRepository.Delete(id);
   }
 
   public async Task<ApiResult<Book>> Get(Id<Book> id)
   {
-    return await _repository.Get(id);
+    return await _booksRepository.Get(id);
   }
 
   public async Task<ApiResult<List<Book>>> GetAll()
   {
-    return await _repository.GetAll();
+    return await _booksRepository.GetAll();
   }
 
   public async Task<ApiResult<Paginated<Book>>> GetPage(string? paginationToken)
   {
-    return await _repository.GetPage(paginationToken);
+    return await _booksRepository.GetPage(paginationToken);
   }
 
   public async Task<ApiResult<Book>> Patch(Id<Book> id, BookPatchDto dto)
   {
-    ApiResult<Book> result = await _repository.Get(id);
+    ApiResult<Book> result = await _booksRepository.Get(id);
     if (result.IsFailure)
     {
       return result;
     }
-    Book newBook = _converter.ToEntity(dto, result.Value);
-    return await _repository.Put(newBook);
+    Book newBook = _booksConverter.ToEntity(dto, result.Value);
+    return await _booksRepository.Put(newBook);
   }
 
   public async Task<ApiResult<Book>> Put(BookPutDto dto)
   {
-    Book book = _converter.ToEntity(dto);
-    return await _repository.Put(book);
+    Book book = _booksConverter.ToEntity(dto);
+    return await _booksRepository.Put(book);
   }
 }

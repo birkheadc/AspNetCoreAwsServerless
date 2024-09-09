@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Filters.FluentValidationFilter;
@@ -9,6 +10,7 @@ using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Sums;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 
 namespace AspNetCoreAwsServerless;
@@ -23,10 +25,42 @@ public class Startup(IConfiguration configuration)
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
     services.AddSerilog();
 
+    services
+      .AddAuthentication(
+        (o) =>
+        {
+          o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+          o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }
+      )
+      .AddJwtBearer(o =>
+      {
+        Configuration.Bind("JwtBearer", o);
+      });
+
+    // .AddJwtBearer(
+    //   (o) =>
+    //   {
+    //     o.TokenValidationParameters = new()
+    //     {
+    //       ValidIssuer =
+    //         "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_Dpsfkfrj8",
+    //       ValidateIssuerSigningKey = true,
+    //       ValidateIssuer = true,
+    //       ValidateLifetime = true,
+    //       ValidAudience = "5ns45evk0628220vuvr4ahmaer",
+    //       ValidateAudience = false
+    //     };
+
+    //     o.MetadataAddress =
+    //       "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_Dpsfkfrj8/.well-known/openid-configuration";
+    //   }
+    // );
     services.AddAuthorization();
-    services.AddAuthentication();
 
     // Create and register custom configuration that can be injected via IOptions<RootOptions>
+    services.Configure<BooksOptions>(Configuration.GetSection("Books"));
     services.Configure<RootOptions>(Configuration.GetSection("Root"));
 
     // Configure AWS services
@@ -94,6 +128,7 @@ public class Startup(IConfiguration configuration)
 
     app.UseRouting();
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.UseEndpoints(endpoints =>

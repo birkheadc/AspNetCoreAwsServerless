@@ -92,7 +92,11 @@ public class BooksRepository(
       Paginated<Book> books =
         new() { Values = await result.GetNextSetAsync(), PaginationToken = result.PaginationToken };
 
-      _logger.LogInformation("Found page of books. Count: {count}", books.Values.Count);
+      _logger.LogInformation(
+        "Found page of books. Count: {count}, PaginationToken: {paginationToken}",
+        books.Values.Count,
+        books.PaginationToken != "{}" ? books.PaginationToken : null
+      );
 
       return books;
     }

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using AspNetCoreAwsServerless.Attributes.IsValidGuid;
 
 namespace AspNetCoreAwsServerless.Dtos.Books;
 
