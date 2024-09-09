@@ -11,55 +11,66 @@ namespace AspNetCoreAwsServerless.Controllers.Books;
 
 [ApiController]
 [Route("books")]
-public class BooksController(IBooksService service, IBooksConverter converter) : ControllerBase
+public class BooksController(
+  IBooksService booksService,
+  IBooksConverter booksConverter,
+  ILogger<BooksController> logger
+) : ControllerBase
 {
-  private readonly IBooksService _service = service;
-  private readonly IBooksConverter _converter = converter;
+  private readonly IBooksService _booksService = booksService;
+  private readonly IBooksConverter _booksConverter = booksConverter;
+  private readonly ILogger<BooksController> _logger = logger;
 
   [HttpGet]
   [Route("page")]
   public async Task<ActionResult<Paginated<BookDto>>> GetFirstPage()
   {
-    ApiResult<Paginated<Book>> result = await _service.GetPage();
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("GetFirstPage");
+    ApiResult<Paginated<Book>> result = await _booksService.GetPage();
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpGet]
   [Route("page/{paginationToken}")]
   public async Task<ActionResult<Paginated<BookDto>>> GetPage([FromRoute] string paginationToken)
   {
-    ApiResult<Paginated<Book>> result = await _service.GetPage(paginationToken);
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("GetPage");
+    ApiResult<Paginated<Book>> result = await _booksService.GetPage(paginationToken);
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpGet]
   [Route("{id}")]
   public async Task<ActionResult<BookDto>> Get([FromRoute] Guid id)
   {
-    ApiResult<Book> result = await _service.Get(id);
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("Get");
+    ApiResult<Book> result = await _booksService.Get(id);
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpPost]
   public async Task<ActionResult<BookDto>> Create([FromBody] BookCreateDto createDto)
   {
-    ApiResult<Book> result = await _service.Create(createDto);
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("Create");
+    ApiResult<Book> result = await _booksService.Create(createDto);
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpPost]
   [Route("many")]
   public async Task<ActionResult> CreateMany([FromBody] BookCreateManyDto createManyDto)
   {
-    ApiResult result = await _service.CreateMany(createManyDto);
+    _logger.LogInformation("CreateMany");
+    ApiResult result = await _booksService.CreateMany(createManyDto);
     return result.GetActionResult();
   }
 
   [HttpPut]
   public async Task<ActionResult<BookDto>> Put([FromBody] BookPutDto putDto)
   {
-    ApiResult<Book> result = await _service.Put(putDto);
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("Put");
+    ApiResult<Book> result = await _booksService.Put(putDto);
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpPatch]
@@ -69,15 +80,17 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
     [FromBody] BookPatchDto patchDto
   )
   {
-    ApiResult<Book> result = await _service.Patch(id, patchDto);
-    return result.GetActionResult(_converter.ToDto);
+    _logger.LogInformation("Patch");
+    ApiResult<Book> result = await _booksService.Patch(id, patchDto);
+    return result.GetActionResult(_booksConverter.ToDto);
   }
 
   [HttpDelete]
   [Route("{id}")]
   public async Task<ActionResult> Delete([FromRoute] Guid id)
   {
-    ApiResult result = await _service.Delete(id);
+    _logger.LogInformation("Delete");
+    ApiResult result = await _booksService.Delete(id);
     return result.GetActionResult();
   }
 
@@ -86,6 +99,7 @@ public class BooksController(IBooksService service, IBooksConverter converter) :
   [IsEnvironment(["Development", "Staging"])]
   public async Task<ActionResult> SeedMany([FromRoute] int num)
   {
+    _logger.LogInformation("SeedMany");
     if (num > 999 || num < 1)
     {
       return ApiResult.Failure(ApiResultErrors.BadRequest).GetActionResult();

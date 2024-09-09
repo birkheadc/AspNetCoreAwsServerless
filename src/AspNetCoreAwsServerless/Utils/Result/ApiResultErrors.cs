@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Utils.Result;
@@ -9,12 +10,18 @@ namespace AspNetCoreAwsServerless.Utils.Result;
 public class ApiResultErrors
 {
   public int StatusCode { get; }
-  public List<ApiResultError> Errors { get; } = [];
+
+  public string? ErrorCode { get; }
+  public List<ValidationFailure>? Errors { get; } = [];
   public ObjectResult Problem =>
     new(
       Results.Problem(
         statusCode: StatusCode,
-        extensions: new Dictionary<string, object?> { { "errors", Errors } }
+        extensions: new Dictionary<string, object?>
+        {
+          { "errorCode", ErrorCode },
+          { "errors", Errors }
+        }
       )
     )
     {
@@ -26,21 +33,15 @@ public class ApiResultErrors
     StatusCode = statusCode;
   }
 
-  public ApiResultErrors(int statusCode, ApiResultError error)
+  public ApiResultErrors(int statusCode, string errorCode)
   {
     StatusCode = statusCode;
-    Errors.Add(error);
+    ErrorCode = errorCode;
   }
 
-  public ApiResultErrors(int statusCode, IEnumerable<ApiResultError> errors)
+  public ApiResultErrors(List<ValidationFailure> errors)
   {
-    StatusCode = statusCode;
-    Errors = errors.ToList();
-  }
-
-  public ApiResultErrors(int statusCode, List<ApiResultError> errors)
-  {
-    StatusCode = statusCode;
+    StatusCode = 400;
     Errors = errors;
   }
 
