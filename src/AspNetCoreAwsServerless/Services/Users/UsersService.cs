@@ -9,7 +9,12 @@ using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Services.Users;
 
-public class UsersService(IUsersRepository usersRepository, ILogger<UsersService> logger, ICognitoService cognitoService, IUsersConverter usersConverter) : IUsersService
+public class UsersService(
+  IUsersRepository usersRepository,
+  ILogger<UsersService> logger,
+  ICognitoService cognitoService,
+  IUsersConverter usersConverter
+) : IUsersService
 {
   private readonly IUsersRepository _usersRepository = usersRepository;
   private readonly ILogger<UsersService> _logger = logger;
@@ -23,7 +28,11 @@ public class UsersService(IUsersRepository usersRepository, ILogger<UsersService
 
   public async Task<ApiResult<User>> GetOrCreateNew(string? id, string? accessToken)
   {
-    _logger.LogInformation("GetOrCreateNew Id: {id} | AccessToken?: {accessToken?}", id, accessToken is not null);
+    _logger.LogInformation(
+      "GetOrCreateNew Id: {id} | AccessToken?: {accessToken}",
+      id,
+      accessToken is not null
+    );
 
     if (id is null)
     {

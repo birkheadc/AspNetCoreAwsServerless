@@ -48,6 +48,13 @@ module "iam_policies" {
   stage_name = var.env_name
 }
 
+module "iam_policies" {
+  source     = "./modules/iam_policies"
+  table_name = aws_dynamodb_table.users_table.name
+  app_name   = var.app_name
+  stage_name = var.env_name
+}
+
 module "api_lambda_function" {
   source        = "./modules/lambda_function"
   bucket_id     = aws_s3_bucket.lambda_bucket.id
