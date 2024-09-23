@@ -1,4 +1,8 @@
-variable "table_name" {
+variable "books_table_name" {
+  type = string
+}
+
+variable "users_table_name" {
   type = string
 }
 
