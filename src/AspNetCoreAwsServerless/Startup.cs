@@ -1,13 +1,21 @@
-﻿using Amazon.DynamoDBv2;
+﻿using Amazon;
+using Amazon.CognitoIdentityProvider;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using AspNetCoreAwsServerless.Attributes.ResolveUser;
 using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
+using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Filters.FluentValidationFilter;
+using AspNetCoreAwsServerless.Filters.ResolveUserFilter;
 using AspNetCoreAwsServerless.Repositories.Books;
+using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Books;
+using AspNetCoreAwsServerless.Services.Cognito;
 using AspNetCoreAwsServerless.Services.Sums;
+using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,24 +47,6 @@ public class Startup(IConfiguration configuration)
         Configuration.Bind("JwtBearer", o);
       });
 
-    // .AddJwtBearer(
-    //   (o) =>
-    //   {
-    //     o.TokenValidationParameters = new()
-    //     {
-    //       ValidIssuer =
-    //         "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_Dpsfkfrj8",
-    //       ValidateIssuerSigningKey = true,
-    //       ValidateIssuer = true,
-    //       ValidateLifetime = true,
-    //       ValidAudience = "5ns45evk0628220vuvr4ahmaer",
-    //       ValidateAudience = false
-    //     };
-
-    //     o.MetadataAddress =
-    //       "https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_Dpsfkfrj8/.well-known/openid-configuration";
-    //   }
-    // );
     services.AddAuthorization();
 
     // Create and register custom configuration that can be injected via IOptions<RootOptions>
@@ -66,6 +56,7 @@ public class Startup(IConfiguration configuration)
     // Configure AWS services
     AWSOptions awsOptions = Configuration.GetAWSOptions();
     services.AddAWSService<IAmazonDynamoDB>(awsOptions);
+    services.AddAWSService<IAmazonCognitoIdentityProvider>(awsOptions);
 
     DynamoDBContextConfig? dynamoDBContextConfig =
       Configuration.GetSection("DynamoDBContext").Get<DynamoDBContextConfig>() ?? new();
@@ -73,12 +64,21 @@ public class Startup(IConfiguration configuration)
 
     services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
+    // AmazonCognitoIdentityProviderConfig cognitoConfig = Configuration.GetSection("Cognito").Get<AmazonCognitoIdentityProviderConfig>() ?? new();
+    // services.AddScoped<IAmazonCognitoIdentityProvider, AmazonCognitoIdentityProviderClient>(sp => new AmazonCognitoIdentityProviderClient(RegionEndpoint.APSoutheast2));
+
     // Register application services
     services.AddScoped<ISumsService, SumsService>();
 
     services.AddScoped<IBooksService, BooksService>();
     services.AddScoped<IBooksRepository, BooksRepository>();
     services.AddScoped<IBooksConverter, BooksConverter>();
+
+    services.AddScoped<IUsersService, UsersService>();
+    services.AddScoped<IUsersRepository, UsersRepository>();
+    services.AddScoped<IUsersConverter, UsersConverter>();
+
+    services.AddScoped<ICognitoService, CognitoService>();
 
     services.AddControllers(o =>
     {
@@ -108,10 +108,10 @@ public class Startup(IConfiguration configuration)
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
   {
-    // Use Serilog to log requests rather than AspNetCore's default logging
+    // Use Serilog to log requests rather than AspNetCore's default logging 
     app.UseSerilogRequestLogging();
 
-    // app.UseExceptionHandler("/errors");
+    // app.UseExceptionHandler("/errors");  
 
     app.UseCors("All");
 

@@ -1,10 +1,12 @@
 using AspNetCoreAwsServerless.Dtos.Sums;
 using AspNetCoreAwsServerless.Services.Sums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Sums;
 
 [ApiController]
+[AllowAnonymous]
 [Route("sums")]
 public class SumsController(ISumsService sumsService) : ControllerBase
 {

@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Dtos.CognitoUser;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
+using AspNetCoreAwsServerless.Utils.Result;
 
-namespace AspNetCoreAwsServerless.Converters.Users;
+namespace AspNetCoreAwsServerless.Services.Cognito;
 
-public interface IUsersConverter
+public interface ICognitoService
 {
-  public UserDto ToDto(User user);
-
-  public User FromCognitoUser(CognitoUser cognitoUser);
+  public Task<ApiResult<CognitoUser>> GetUser(string accessToken);
 }

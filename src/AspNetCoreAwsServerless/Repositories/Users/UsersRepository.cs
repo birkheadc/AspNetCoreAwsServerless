@@ -9,18 +9,19 @@ using AspNetCoreAwsServerless.Utils.Result;
 
 namespace AspNetCoreAwsServerless.Repositories.Users;
 
-public class UsersRepository(IDynamoDBContext context, ILogger<UsersRepository> logger) : IUsersRepository
+public class UsersRepository(IDynamoDBContext context, ILogger<UsersRepository> logger)
+  : IUsersRepository
 {
   private readonly IDynamoDBContext _context = context;
   private readonly ILogger<UsersRepository> _logger = logger;
 
   public async Task<ApiResult> Delete(Id<User> id)
   {
-    _logger.LogInformation("Delete User Id: ${id} (User may or may not have been present!)", id);
+    _logger.LogInformation("Delete User Id: {id} (User may or may not have been present!)", id);
     try
     {
       await _context.DeleteAsync<User>(id);
-      _logger.LogInformation("Deleted user Id: ${id} (User may or may not have been present!)", id);
+      _logger.LogInformation("Deleted user Id: {id} (User may or may not have been present!)", id);
       return ApiResult.Success();
     }
     catch (Exception exception)
@@ -33,7 +34,7 @@ public class UsersRepository(IDynamoDBContext context, ILogger<UsersRepository> 
 
   public async Task<ApiResult<User>> Get(Id<User> id)
   {
-    _logger.LogInformation("Get User Id: ${id}", id);
+    _logger.LogInformation("Get User Id: {id} ", id);
     try
     {
       User? user = await _context.LoadAsync<User>(id);
@@ -73,11 +74,11 @@ public class UsersRepository(IDynamoDBContext context, ILogger<UsersRepository> 
 
   public async Task<ApiResult<User>> Put(User user)
   {
-    _logger.LogInformation("Putting user ${id}...", user.Id);
+    _logger.LogInformation("Putting user {id}...", user.Id);
     try
     {
       await _context.SaveAsync(user);
-      _logger.LogInformation("Successfully put user ${id}", user.Id);
+      _logger.LogInformation("Successfully put user {id}", user.Id);
       return ApiResult.Success(user);
     }
     catch (Exception exception)

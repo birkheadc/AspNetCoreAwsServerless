@@ -22,11 +22,11 @@ public class BooksRepository(
 
   public async Task<ApiResult> Delete(Id<Book> id)
   {
-    _logger.LogInformation("Delete Book Id: ${id}", id);
+    _logger.LogInformation("Delete Book Id: {id}", id);
     try
     {
       await _context.DeleteAsync<Book>(id);
-      _logger.LogInformation("Deleted book Id: ${id} (Book may or may not have been present!)", id);
+      _logger.LogInformation("Deleted book Id: {id} (Book may or may not have been present!)", id);
       return ApiResult.Success();
     }
     catch (Exception exception)
@@ -38,7 +38,7 @@ public class BooksRepository(
 
   public async Task<ApiResult<Book>> Get(Id<Book> id)
   {
-    _logger.LogInformation("Get book Id: ${id}", id);
+    _logger.LogInformation("Get book Id: {id}", id);
     try
     {
       Book? book = await _context.LoadAsync<Book>(id);
@@ -109,11 +109,11 @@ public class BooksRepository(
 
   public async Task<ApiResult<Book>> Put(Book book)
   {
-    _logger.LogInformation("Putting book ${id}...", book.Id);
+    _logger.LogInformation("Putting book {id}...", book.Id);
     try
     {
       await _context.SaveAsync(book);
-      _logger.LogInformation("Successfully put book ${id}", book.Id);
+      _logger.LogInformation("Successfully put book {id}", book.Id);
       return ApiResult.Success(book);
     }
     catch (Exception exception)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreAwsServerless.Attributes.ResolveUser;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
@@ -21,15 +22,20 @@ public class MeController(IUsersService usersService, IUsersConverter usersConve
   private readonly ILogger<MeController> _logger = logger;
   private readonly IUsersConverter _usersConverter = usersConverter;
   [HttpGet]
-  public async Task<ActionResult<UserDto>> Get()
+  [ResolveUser]
+  public ActionResult<UserDto> Get()
   {
     _logger.LogInformation("Get");
-    string? id = User.Claims.Where(c => c.Type == "username").FirstOrDefault()?.Value;
-    if (id is null)
+    User? user = (User?)HttpContext.Items["user"];
+
+    if (user is null)
     {
-      return Problem();
+      _logger.LogWarning("User not found in HttpContext.Items");
+      return Unauthorized();
     }
-    ApiResult<User> result = await _usersService.Get(id);
-    return result.GetActionResult(_usersConverter.ToDto);
+
+    _logger.LogInformation("User found in HttpContext.Items: {username} | {emailAddress}", user.Id, user.EmailAddress);
+
+    return Ok(_usersConverter.ToDto(user));
   }
 }
