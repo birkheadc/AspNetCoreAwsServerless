@@ -25,16 +25,28 @@ resource "aws_dynamodb_table" "books_table" {
   }
 }
 
+resource "aws_dynamodb_table" "users_table" {
+  name         = "${var.app_name}_${var.env_name}_Users"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "Id"
+
+  attribute {
+    name = "Id"
+    type = "S"
+  }
+}
+
 resource "aws_s3_bucket" "lambda_bucket" {
   bucket        = "${lower(var.app_name)}-${lower(var.env_name)}-lambda-bucket"
   force_destroy = true
 }
 
 module "iam_policies" {
-  source     = "./modules/iam_policies"
-  table_name = aws_dynamodb_table.books_table.name
-  app_name   = var.app_name
-  stage_name = var.env_name
+  source           = "./modules/iam_policies"
+  books_table_name = aws_dynamodb_table.books_table.name
+  users_table_name = aws_dynamodb_table.users_table.name
+  app_name         = var.app_name
+  stage_name       = var.env_name
 }
 
 module "api_lambda_function" {

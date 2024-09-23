@@ -35,3 +35,6 @@ Finish Users resource
  ## Cognito
 
  Once Auth is working, delete the resource from aws and rebuild IaC via Terraform
+   - Update staging infra to reflect recent changes to development infra
+   - Add Cognito stuff to development and staging infra
+   - This workflow sucks... What did I even change in development?
