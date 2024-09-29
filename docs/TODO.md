@@ -24,25 +24,6 @@ Also add (created_at) and maybe (modified_at) support
 
 At the end of this, I want to have a table on the front end that can be sorted by created_at (and maybe modified_at), title, and author, backwards or forwards. Data should be paginated and browsable.
 
-## MeController
+## Performance
 
-Finish Users resource
- - Create Converter
- - Create Repository
- - Hook Controller, Converter, Service, and Repo up
- - Create DynamoDBTable (Terraform)
-
- ## Cognito
-
- Once Auth is working, delete the resource from aws and rebuild IaC via Terraform
-   - Update staging infra to reflect recent changes to development infra
-   - Add Cognito stuff to development and staging infra
-   - This workflow sucks... What did I even change in development?
-
-## Infra
-
-Make sure that cognito module actual adds localhost callback to list of allowed urls when deploying (that flatten function)
-
-## Signup
-
-For some reason the first time a user logs in (when the app adds the user to the database) something breaks. The user gets added, but doesn't get returned. So the frontend has to login again.
+Some stuff is like really slow. First login is taking like 10 seconds. Can I improve it? Eitehr way login needs an overlay.
