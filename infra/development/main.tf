@@ -11,8 +11,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "ap-southeast-2"
-  profile = "personal-cicd"
+  region = "ap-southeast-2"
 }
 
 module "app" {
