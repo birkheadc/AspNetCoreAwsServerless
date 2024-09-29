@@ -1,3 +1,11 @@
+module "cognito" {
+  source         = "../modules/cognito"
+  user_pool_name = "${var.app_name}-${var.env_name}"
+  email_arn      = var.email_arn
+  frontend_url   = var.frontend_url
+  is_development = var.env_name == "Development"
+}
+
 resource "aws_dynamodb_table" "books_table" {
   name         = "${var.app_name}_${var.env_name}_Books"
   billing_mode = "PAY_PER_REQUEST"
@@ -36,13 +44,15 @@ module "iam_policies" {
 module "api_lambda_function" {
   source        = "../modules/lambda_function"
   bucket_id     = aws_s3_bucket.lambda_bucket.id
-  publish_dir   = "${path.module}/../../../src/${var.app_name}/bin/Release/net8.0/linux-x64/publish"
+  publish_dir   = "${path.module}/../../../src/${var.publish_directory_path}"
   zip_file      = "build.zip"
   function_name = "${var.app_name}_${var.env_name}"
-  handler       = "${var.app_name}::${var.app_name}.LambdaEntryPoint::FunctionHandlerAsync"
+  handler       = var.lambda_handler
 
   environment_variables = {
-    ASPNETCORE_ENVIRONMENT = var.env_name
+    ASPNETCORE_ENVIRONMENT          = var.env_name
+    ASPNETCORE_COGNITO_USER_POOL_ID = module.cognito.user_pool_id
+    ASPNETCORE_COGNITO_CLIENT_ID    = module.cognito.client_id
   }
 }
 
@@ -69,3 +79,5 @@ module "api_gateway_lambda_integration" {
   function_arn  = module.api_lambda_function.function_arn
   function_name = module.api_lambda_function.function_name
 }
+
+

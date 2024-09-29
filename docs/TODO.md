@@ -38,3 +38,7 @@ Finish Users resource
    - Update staging infra to reflect recent changes to development infra
    - Add Cognito stuff to development and staging infra
    - This workflow sucks... What did I even change in development?
+
+## Infra
+
+Make sure that cognito module actual adds localhost callback to list of allowed urls when deploying (that flatten function)

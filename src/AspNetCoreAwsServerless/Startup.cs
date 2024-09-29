@@ -3,13 +3,11 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
-using AspNetCoreAwsServerless.Attributes.ResolveUser;
 using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Filters.FluentValidationFilter;
-using AspNetCoreAwsServerless.Filters.ResolveUserFilter;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Books;
@@ -45,6 +43,13 @@ public class Startup(IConfiguration configuration)
       .AddJwtBearer(o =>
       {
         Configuration.Bind("JwtBearer", o);
+        string userPoolId =
+          Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_USER_POOL_ID")
+          ?? throw new Exception("ASPNETCORE_COGNITO_USER_POOL_ID not set");
+
+        o.Authority = $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}";
+        o.MetadataAddress =
+          $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
       });
 
     services.AddAuthorization();
@@ -63,9 +68,6 @@ public class Startup(IConfiguration configuration)
     services.AddSingleton(dynamoDBContextConfig);
 
     services.AddScoped<IDynamoDBContext, DynamoDBContext>();
-
-    // AmazonCognitoIdentityProviderConfig cognitoConfig = Configuration.GetSection("Cognito").Get<AmazonCognitoIdentityProviderConfig>() ?? new();
-    // services.AddScoped<IAmazonCognitoIdentityProvider, AmazonCognitoIdentityProviderClient>(sp => new AmazonCognitoIdentityProviderClient(RegionEndpoint.APSoutheast2));
 
     // Register application services
     services.AddScoped<ISumsService, SumsService>();
@@ -108,10 +110,10 @@ public class Startup(IConfiguration configuration)
   // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
   {
-    // Use Serilog to log requests rather than AspNetCore's default logging 
+    // Use Serilog to log requests rather than AspNetCore's default logging
     app.UseSerilogRequestLogging();
 
-    // app.UseExceptionHandler("/errors");  
+    // app.UseExceptionHandler("/errors");
 
     app.UseCors("All");
 

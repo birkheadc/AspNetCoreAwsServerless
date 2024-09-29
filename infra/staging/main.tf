@@ -15,7 +15,13 @@ provider "aws" {
 }
 
 module "app" {
-  source   = "../common/app"
-  app_name = "AspNetCoreAwsServerless"
-  env_name = "Staging"
+  source                 = "../common/app"
+  app_name               = "AspNetCoreServerless"
+  env_name               = "Staging"
+  email_arn              = "arn:aws:ses:ap-southeast-2:290153383648:identity/birkheadc.me"
+  publish_directory_path = "AspNetCoreAwsServerless/bin/Release/net8.0/linux-x64/publish"
+  frontend_url           = "https://vite-template-staging.birkheadc.me"
+  lambda_handler         = "AspNetCoreAwsServerless::AspNetCoreAwsServerless.LambdaEntryPoint::FunctionHandlerAsync"
+
+
 }
