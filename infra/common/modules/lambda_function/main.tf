@@ -20,6 +20,7 @@ resource "aws_lambda_function" "function" {
   source_code_hash = data.archive_file.archive.output_base64sha256
   role             = aws_iam_role.function_role.arn
   timeout          = 30
+  memory_size      = 256
   dynamic "environment" {
     for_each = length(var.environment_variables) > 0 ? [1] : []
     content {
