@@ -52,7 +52,6 @@ module "api_lambda_function" {
   environment_variables = {
     ASPNETCORE_ENVIRONMENT          = var.env_name
     ASPNETCORE_COGNITO_USER_POOL_ID = module.cognito.user_pool_id
-    ASPNETCORE_COGNITO_CLIENT_ID    = module.cognito.client_id
   }
 }
 

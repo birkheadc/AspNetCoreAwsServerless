@@ -45,7 +45,7 @@ public class Startup(IConfiguration configuration)
         Configuration.Bind("JwtBearer", o);
         string userPoolId =
           Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_USER_POOL_ID")
-          ?? throw new Exception("ASPNETCORE_COGNITO_USER_POOL_ID not set");
+          ?? "ASPNETCORE_COGNITO_USER_POOL_ID not set";
 
         o.Authority = $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}";
         o.MetadataAddress =
