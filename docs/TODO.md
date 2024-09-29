@@ -42,3 +42,7 @@ Finish Users resource
 ## Infra
 
 Make sure that cognito module actual adds localhost callback to list of allowed urls when deploying (that flatten function)
+
+## Signup
+
+For some reason the first time a user logs in (when the app adds the user to the database) something breaks. The user gets added, but doesn't get returned. So the frontend has to login again.
