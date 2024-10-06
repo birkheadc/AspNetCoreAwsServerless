@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AspNetCoreAwsServerless.Dtos.CognitoUser;
+namespace AspNetCoreAwsServerless.Dtos.Cognito;
 
 public class CognitoUser
 {

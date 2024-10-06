@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
 using AspNetCoreAwsServerless.Config.Books;
+using AspNetCoreAwsServerless.Config.Cognito;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Converters.Users;
@@ -12,11 +13,13 @@ using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Cognito;
+using AspNetCoreAwsServerless.Services.Session;
 using AspNetCoreAwsServerless.Services.Sums;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Serilog;
 
 namespace AspNetCoreAwsServerless;
@@ -35,28 +38,36 @@ public class Startup(IConfiguration configuration)
       .AddAuthentication(
         (o) =>
         {
-          o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-          o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-          o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+          o.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+          o.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+          o.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         }
       )
-      .AddJwtBearer(o =>
+      .AddCookie()
+      .AddOpenIdConnect(o =>
       {
-        Configuration.Bind("JwtBearer", o);
-        string userPoolId =
-          Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_USER_POOL_ID")
-          ?? "ASPNETCORE_COGNITO_USER_POOL_ID not set";
-
-        o.Authority = $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}";
-        o.MetadataAddress =
-          $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+        Configuration.Bind("Cookie", o);
       });
+    // .AddJwtBearer(o =>
+    // {
+    //   Configuration.Bind("JwtBearer", o);
+    //   string userPoolId =
+    //     Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_USER_POOL_ID")
+    //     ?? "ASPNETCORE_COGNITO_USER_POOL_ID not set";
+
+    //   o.Authority = $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}";
+    //   o.MetadataAddress =
+    //     $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+    // });
 
     services.AddAuthorization();
+
+    services.AddHttpClient();
 
     // Create and register custom configuration that can be injected via IOptions<RootOptions>
     services.Configure<BooksOptions>(Configuration.GetSection("Books"));
     services.Configure<RootOptions>(Configuration.GetSection("Root"));
+    services.Configure<CognitoOptions>(Configuration.GetSection("Cognito"));
 
     // Configure AWS services
     AWSOptions awsOptions = Configuration.GetAWSOptions();
@@ -81,6 +92,8 @@ public class Startup(IConfiguration configuration)
     services.AddScoped<IUsersConverter, UsersConverter>();
 
     services.AddScoped<ICognitoService, CognitoService>();
+
+    services.AddScoped<ISessionService, SessionService>();
 
     services.AddControllers(o =>
     {

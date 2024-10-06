@@ -1,5 +1,5 @@
 using AspNetCoreAwsServerless.Converters.Users;
-using AspNetCoreAwsServerless.Dtos.CognitoUser;
+using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
