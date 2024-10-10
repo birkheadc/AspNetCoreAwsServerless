@@ -22,6 +22,7 @@ public class SessionService(ICognitoService cognitoService) : ISessionService
     {
       AccessToken = response.Value.AccessToken,
       RefreshToken = response.Value.RefreshToken,
+      IdToken = response.Value.IdToken,
       ExpiresInSeconds = response.Value.ExpiresIn
     });
   }

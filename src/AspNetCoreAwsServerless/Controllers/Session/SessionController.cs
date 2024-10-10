@@ -8,11 +8,12 @@ namespace AspNetCoreAwsServerless.Controllers.Session;
 [ApiController]
 [AllowAnonymous]
 [Route("session")]
-public class SessionController(ISessionService sessionService) : ControllerBase
+public class SessionController(ISessionService sessionService, ILogger<SessionController> logger) : ControllerBase
 {
   private readonly ISessionService _sessionService = sessionService;
+  private readonly ILogger<SessionController> _logger = logger;
   [HttpPost]
-  public async Task<IActionResult> Login([FromBody] LoginDto dto)
+  public async Task<ActionResult<IdToken>> Login([FromBody] LoginDto dto)
   {
     var result = await _sessionService.Login(dto);
 
@@ -37,6 +38,6 @@ public class SessionController(ISessionService sessionService) : ControllerBase
       Expires = result.Value.ExpiresInSeconds.HasValue ? DateTime.UtcNow.AddSeconds((double)result.Value.ExpiresInSeconds) : null,
     });
 
-    return Ok();
+    return Ok(new IdToken { Value = result.Value.IdToken });
   }
 }

@@ -27,3 +27,7 @@ At the end of this, I want to have a table on the front end that can be sorted b
 ## Performance
 
 Some stuff is like really slow. First login is taking like 10 seconds. Can I improve it? Eitehr way login needs an overlay.
+
+## Session
+
+Need to develop a relogin workflow when cookies are present.
