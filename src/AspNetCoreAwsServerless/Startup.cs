@@ -47,6 +47,9 @@ public class Startup(IConfiguration configuration)
       .AddOpenIdConnect(o =>
       {
         Configuration.Bind("Cookie", o);
+
+        Console.WriteLine("Open Id");
+        Console.WriteLine($"Metadata: {o.MetadataAddress} | ClientId: {o.ClientId} | Authority: {o.Authority}");
       });
     // .AddJwtBearer(o =>
     // {
@@ -107,7 +110,7 @@ public class Startup(IConfiguration configuration)
           name: "All",
           builder =>
           {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            builder.AllowAnyHeader().AllowAnyMethod().WithOrigins(["http://localhost:5173"]).AllowCredentials();
           }
         );
       }

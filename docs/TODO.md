@@ -31,3 +31,4 @@ Some stuff is like really slow. First login is taking like 10 seconds. Can I imp
 ## Session
 
 Need to develop a relogin workflow when cookies are present.
+Add allowed origins to appesettings or something...
