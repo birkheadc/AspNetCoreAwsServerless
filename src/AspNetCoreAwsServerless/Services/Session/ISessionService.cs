@@ -5,5 +5,5 @@ namespace AspNetCoreAwsServerless.Services.Session;
 
 public interface ISessionService
 {
-  Task<ApiResult<SessionTokens>> Login(LoginDto code);
+  Task<ApiResult<SessionContext>> Login(LoginDto code);
 }

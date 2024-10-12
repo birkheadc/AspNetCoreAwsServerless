@@ -13,6 +13,7 @@ using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Services.Cognito;
+using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Services.Session;
 using AspNetCoreAwsServerless.Services.Sums;
 using AspNetCoreAwsServerless.Services.Users;
@@ -43,14 +44,7 @@ public class Startup(IConfiguration configuration)
           o.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         }
       )
-      .AddCookie()
-      .AddOpenIdConnect(o =>
-      {
-        Configuration.Bind("Cookie", o);
-
-        Console.WriteLine("Open Id");
-        Console.WriteLine($"Metadata: {o.MetadataAddress} | ClientId: {o.ClientId} | Authority: {o.Authority}");
-      });
+      .AddCookie();
     // .AddJwtBearer(o =>
     // {
     //   Configuration.Bind("JwtBearer", o);
@@ -97,6 +91,8 @@ public class Startup(IConfiguration configuration)
     services.AddScoped<ICognitoService, CognitoService>();
 
     services.AddScoped<ISessionService, SessionService>();
+
+    services.AddScoped<IJwtService, JwtService>();
 
     services.AddControllers(o =>
     {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreAwsServerless.Caches.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
@@ -18,23 +19,49 @@ public class ResolveUserAttribute : Attribute, IAsyncResourceFilter
 {
   public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
   {
+    string? accessToken = context.HttpContext.Request.Cookies["accessToken"];
+
+    if (accessToken is null)
+    {
+      context.Result = new UnauthorizedResult();
+      return;
+    }
+
+    ISessionCache sessionCache = context.HttpContext.RequestServices.GetRequiredService<ISessionCache>();
+    ApiResult<Id<User>> userIdResult = await sessionCache.GetUserId(accessToken);
+    if (userIdResult.IsFailure)
+    {
+      context.Result = new UnauthorizedResult();
+      return;
+    }
+
     IUsersService usersService = context.HttpContext.RequestServices.GetRequiredService<IUsersService>();
-
-    string? id = context.HttpContext.User.Claims.Where(c => c.Type == "username").FirstOrDefault()?.Value;
-    string? accessToken = context.HttpContext.Request.Headers.Authorization.FirstOrDefault()?["Bearer ".Length..];
-
-    ApiResult<User> userResult = await usersService.GetOrCreateNew(id, accessToken);
-
+    ApiResult<User> userResult = await usersService.Get(userIdResult.Value);
     if (userResult.IsFailure)
     {
       context.Result = new UnauthorizedResult();
       return;
     }
 
-    Console.WriteLine($"Add this user to context or whatever: {userResult.Value.Id}");
-    // Add this user to context or whatever
     context.HttpContext.Items["user"] = userResult.Value;
     await next();
+
+    // string? id = context.HttpContext.User.Claims.Where(c => c.Type == "username").FirstOrDefault()?.Value;
+    // string? accessToken = context.HttpContext.Request.Headers.Authorization.FirstOrDefault()?["Bearer ".Length..];
+
+    // ApiResult<User> userResult = await usersService.GetOrCreateNew(id, accessToken);
+
+    // if (userResult.IsFailure)
+    // {
+    //   context.Result = new UnauthorizedResult();
+    //   return;
+    // }
+
+    // Console.WriteLine($"Add this user to context or whatever: {userResult.Value.Id}");
+    // // Add this user to context or whatever
+    // context.HttpContext.Items["user"] = userResult.Value;
+    // await next();
+
     // _logger.LogDebug("ResolveUserAttribute OnResourceExecutionAsync");
     // IUsersService usersService = context.HttpContext.RequestServices.GetRequiredService<IUsersService>();
     // string? id = context.HttpContext.User.Claims.Where(c => c.Type == "username").FirstOrDefault()?.Value;
