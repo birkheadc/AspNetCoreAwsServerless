@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using AspNetCoreAwsServerless.Attributes.ResolveUser;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Id;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.ResolvedUser;
 
-[ResolveUser]
 public abstract class ResolvedUserControllerBase<T>(ILogger<T> logger, IUsersService usersService) : ControllerBase
 {
   protected readonly ILogger<T> _logger = logger;
@@ -16,12 +14,8 @@ public abstract class ResolvedUserControllerBase<T>(ILogger<T> logger, IUsersSer
   protected async Task<User> GetCurrentUser()
   {
     _logger.LogInformation("GetCurrentUser");
-    foreach (Claim claim in HttpContext.User.Claims)
-    {
-      _logger.LogInformation("Claim: {Type} = {Value}", claim.Type, claim.Value);
-    }
 
-    string? userId = HttpContext.User.FindFirstValue("sub");
+    string? userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (userId is null)
     {
       _logger.LogError("No user ID found in claims");

@@ -1,5 +1,4 @@
-﻿using Amazon;
-using Amazon.CognitoIdentityProvider;
+﻿using Amazon.CognitoIdentityProvider;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
@@ -22,7 +21,6 @@ using AspNetCoreAwsServerless.Utils.Result;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Serilog;
 
 namespace AspNetCoreAwsServerless;
@@ -55,17 +53,6 @@ public class Startup(IConfiguration configuration)
           return Task.FromResult(ApiResultErrors.Unauthorized);
         };
       });
-    // .AddJwtBearer(o =>
-    // {
-    //   Configuration.Bind("JwtBearer", o);
-    //   string userPoolId =
-    //     Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_USER_POOL_ID")
-    //     ?? "ASPNETCORE_COGNITO_USER_POOL_ID not set";
-
-    //   o.Authority = $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}";
-    //   o.MetadataAddress =
-    //     $"https://cognito-idp.ap-southeast-2.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
-    // });
 
     services.AddAuthorization();
 
