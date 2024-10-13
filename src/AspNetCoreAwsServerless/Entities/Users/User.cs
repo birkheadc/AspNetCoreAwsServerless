@@ -8,7 +8,7 @@ public class User
 {
   [DynamoDBHashKey]
   [DynamoDBProperty(typeof(IdPropertyConverter<User>))]
-  public required Id<User> Id { get; init; }
-  public required string EmailAddress { get; init; }
-  public string? DisplayName { get; init; }
+  public required Id<User> Id { get; set; }
+  public required string EmailAddress { get; set; }
+  public string? DisplayName { get; set; }
 }

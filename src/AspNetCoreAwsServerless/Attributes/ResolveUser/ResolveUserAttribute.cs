@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Caches.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
@@ -8,21 +9,24 @@ using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AspNetCoreAwsServerless.Attributes.ResolveUser;
 
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public class ResolveUserAttribute : Attribute, IAsyncResourceFilter
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
+public class ResolveUserAttribute : Attribute, IAsyncAuthorizationFilter
 {
-  public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
+  public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
   {
-    string? accessToken = context.HttpContext.Request.Cookies["accessToken"];
+    ILogger<ResolveUserAttribute> logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<ResolveUserAttribute>>();
+    string? accessToken = context.HttpContext.Request.Cookies["access_token"];
 
     if (accessToken is null)
     {
+      logger.LogWarning("No access token found in cookies");
       context.Result = new UnauthorizedResult();
       return;
     }
@@ -31,20 +35,17 @@ public class ResolveUserAttribute : Attribute, IAsyncResourceFilter
     ApiResult<Id<User>> userIdResult = await sessionCache.GetUserId(accessToken);
     if (userIdResult.IsFailure)
     {
+      logger.LogWarning("No user ID found for access token");
       context.Result = new UnauthorizedResult();
       return;
     }
 
-    IUsersService usersService = context.HttpContext.RequestServices.GetRequiredService<IUsersService>();
-    ApiResult<User> userResult = await usersService.Get(userIdResult.Value);
-    if (userResult.IsFailure)
-    {
-      context.Result = new UnauthorizedResult();
-      return;
-    }
+    logger.LogInformation("Signing in user {UserId}", userIdResult.Value);
+    ClaimsPrincipal claimsPrincipal = new();
+    claimsPrincipal.AddIdentity(new ClaimsIdentity([new Claim("sub", userIdResult.Value.ToString())], CookieAuthenticationDefaults.AuthenticationScheme));
 
-    context.HttpContext.Items["user"] = userResult.Value;
-    await next();
+    await context.HttpContext.SignInAsync(claimsPrincipal);
+
 
     // string? id = context.HttpContext.User.Claims.Where(c => c.Type == "username").FirstOrDefault()?.Value;
     // string? accessToken = context.HttpContext.Request.Headers.Authorization.FirstOrDefault()?["Bearer ".Length..];

@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Cognito;
+using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Cognito;
+using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
@@ -19,12 +22,14 @@ public class UsersServiceTests
   private readonly Mock<IUsersRepository> _usersRepositoryMock;
   private readonly Mock<ICognitoService> _cognitoServiceMock;
   private readonly Mock<IUsersConverter> _usersConverterMock;
+  private readonly Mock<IJwtService> _jwtServiceMock;
   public UsersServiceTests()
   {
     _service = _mocker.CreateInstance<UsersService>();
     _usersRepositoryMock = _mocker.GetMock<IUsersRepository>();
     _cognitoServiceMock = _mocker.GetMock<ICognitoService>();
     _usersConverterMock = _mocker.GetMock<IUsersConverter>();
+    _jwtServiceMock = _mocker.GetMock<IJwtService>();
   }
 
   [Fact]
@@ -40,52 +45,55 @@ public class UsersServiceTests
   }
 
   [Fact]
-  public async Task GetOrCreateNew_Fails_WhenIdIsNull()
+  public async Task GetOrCreateNew_ReturnsInternalServerError_WhenUserIdIsMissing()
   {
-    ApiResult<User> actual = await _service.GetOrCreateNew(null, null);
+    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([]);
+    ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
     Assert.True(actual.IsFailure);
+    Assert.Equal(ApiResultErrors.InternalServerError, actual.Errors);
   }
 
   [Fact]
-  public async Task GetOrCreateNew_Fails_WhenUserNotFound_AndAccessTokenIsNull()
+  public async Task GetOrCreateNew_ReturnsInternalServerError_WhenEmailIsMissing()
   {
-    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(ApiResult<User>.Failure(ApiResultErrors.NotFound));
-
-    ApiResult<User> actual = await _service.GetOrCreateNew(Guid.NewGuid().ToString(), null);
+    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", "123")]);
+    ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
     Assert.True(actual.IsFailure);
+    Assert.Equal(ApiResultErrors.InternalServerError, actual.Errors);
   }
 
   [Fact]
   public async Task GetOrCreateNew_ReturnsUser_WhenUserExists()
   {
-    User expected = new() { Id = new Id<User>(Guid.NewGuid()), EmailAddress = "test@test.com" };
+    User expected = _mocker.CreateInstance<User>();
+    expected.Id = new Id<User>(Guid.NewGuid());
+    expected.EmailAddress = "test@test.com";
     _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(expected);
 
-    ApiResult<User> actual = await _service.GetOrCreateNew(Guid.NewGuid().ToString(), null);
+    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", expected.Id.ToString()), new Claim("email", expected.EmailAddress)]);
 
-    Assert.NotNull(actual);
+    ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
+
+    Assert.True(actual.IsSuccess);
     Assert.Equal(expected, actual.Value);
   }
 
   [Fact]
-  public async Task GetOrCreateNew_CreatesAndReturnsUser_WhenUserDoesNotExist_AndCognitoServiceReturnsUser()
+  public async Task GetOrCreateNew_CreatesAndReturnsNewUser_WhenUserDoesNotExist()
   {
-    Id<User> id = new(Guid.NewGuid());
-    User expected = new() { Id = id, EmailAddress = "test@test.com" };
-    CognitoUser cognitoUser = new() { Username = expected.Id.ToString(), EmailAddress = expected.EmailAddress };
+    User expected = _mocker.CreateInstance<User>();
+    expected.Id = new Id<User>(Guid.NewGuid());
+    expected.EmailAddress = "test@test.com";
 
-    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(ApiResult<User>.Failure(ApiResultErrors.NotFound));
-    _cognitoServiceMock.Setup(mock => mock.GetUser(It.IsAny<string>())).ReturnsAsync(cognitoUser);
-    _usersRepositoryMock.Setup(mock => mock.Put(It.IsAny<User>())).ReturnsAsync(ApiResult<User>.Success(expected));
+    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(expected);
 
-    _usersConverterMock.Setup(mock => mock.FromCognitoUser(It.IsAny<CognitoUser>())).Returns(expected);
+    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", expected.Id.ToString()), new Claim("email", expected.EmailAddress)]);
 
-    ApiResult<User> actual = await _service.GetOrCreateNew(id.ToString(), "accessToken");
+    ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
-    Assert.NotNull(actual);
-    _usersRepositoryMock.Verify(mock => mock.Put(It.IsAny<User>()), Times.Once);
+    Assert.True(actual.IsSuccess);
     Assert.Equal(expected, actual.Value);
   }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Dtos.Books;
-using AspNetCoreAwsServerless.Extensions.IRuleBuilder;
 using FluentValidation;
 
 namespace AspNetCoreAwsServerless.Validators.Books;

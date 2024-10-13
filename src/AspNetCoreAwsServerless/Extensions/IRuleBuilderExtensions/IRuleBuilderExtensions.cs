@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Utils.Id;
 using FluentValidation;
 
-namespace AspNetCoreAwsServerless.Extensions.IRuleBuilder;
+namespace AspNetCoreAwsServerless.Extensions.IRuleBuilderExtensions;
 
 public static class IRuleBuilderExtensions
 {

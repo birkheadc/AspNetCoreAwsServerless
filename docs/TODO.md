@@ -32,3 +32,7 @@ Some stuff is like really slow. First login is taking like 10 seconds. Can I imp
 
 Need to develop a relogin workflow when cookies are present.
 Add allowed origins to appesettings or something...
+
+## Testing
+
+Need a framework for partial mocking, i.e. when creating an ExpectedUser, I don't want to do `new User { Id = ..., EmailAddress = ... }` because at some point I will add on to the required fields, then a million tests will break. I want something like `mockUser(string id, string email)` that I can call, and mock user with that, and just update the function...

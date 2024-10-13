@@ -3,6 +3,7 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using AspNetCoreAwsServerless.Caches.Session;
 using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Config.Cognito;
 using AspNetCoreAwsServerless.Config.Root;
@@ -17,6 +18,7 @@ using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Services.Session;
 using AspNetCoreAwsServerless.Services.Sums;
 using AspNetCoreAwsServerless.Services.Users;
+using AspNetCoreAwsServerless.Utils.Result;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -44,7 +46,15 @@ public class Startup(IConfiguration configuration)
           o.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         }
       )
-      .AddCookie();
+      .AddCookie(options =>
+      {
+        options.Events.OnRedirectToAccessDenied =
+        options.Events.OnRedirectToLogin = c =>
+        {
+          c.Response.StatusCode = StatusCodes.Status401Unauthorized;
+          return Task.FromResult(ApiResultErrors.Unauthorized);
+        };
+      });
     // .AddJwtBearer(o =>
     // {
     //   Configuration.Bind("JwtBearer", o);
@@ -91,6 +101,7 @@ public class Startup(IConfiguration configuration)
     services.AddScoped<ICognitoService, CognitoService>();
 
     services.AddScoped<ISessionService, SessionService>();
+    services.AddSingleton<ISessionCache, SessionCache>();
 
     services.AddScoped<IJwtService, JwtService>();
 
