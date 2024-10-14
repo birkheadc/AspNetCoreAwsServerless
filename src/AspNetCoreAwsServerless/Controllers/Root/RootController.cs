@@ -7,13 +7,15 @@ namespace AspNetCoreAwsServerless.Controllers.Root;
 
 [ApiController]
 [Route("")]
-public class RootController(IOptions<RootOptions> config) : ControllerBase
+public class RootController(IOptions<RootOptions> config, ILogger<RootController> logger) : ControllerBase
 {
   private readonly RootOptions _config = config.Value;
+  private readonly ILogger<RootController> _logger = logger;
 
   [HttpGet]
   public async Task<ActionResult<string>> Get()
   {
+    _logger.LogInformation("RootController.Get");
     return await Task.Run(() => Ok(_config.Greeting));
   }
 

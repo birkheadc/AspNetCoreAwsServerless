@@ -18,7 +18,6 @@ public class MockAsyncSearch<T> : AsyncSearch<T>
   public MockAsyncSearch(List<T> items)
   {
     Items = items;
-    Console.WriteLine($"Count: {Items.Count}");
   }
 
   public override Task<List<T>> GetNextSetAsync(

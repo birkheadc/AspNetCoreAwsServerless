@@ -21,7 +21,7 @@ public class BooksRepositoryTests
 {
   private readonly List<Book> _testBooks = [];
 
-  private readonly BooksOptions _options = new() { PageSize = 15 };
+  private readonly BooksOptions _options;
 
   private readonly AutoMocker _mocker;
   private readonly BooksRepository _repository;
@@ -31,6 +31,7 @@ public class BooksRepositoryTests
   {
     _testBooks = BooksTestData.GenerateBooks(50);
     _mocker = new();
+    _options = new() { PageSize = 15 };
     _mocker.GetMock<IOptions<BooksOptions>>().SetupGet(mock => mock.Value).Returns(_options);
     _repository = _mocker.CreateInstance<BooksRepository>();
     _dynamoMock = _mocker.GetMock<IDynamoDBContext>();

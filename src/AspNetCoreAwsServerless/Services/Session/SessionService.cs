@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using AspNetCoreAwsServerless.Caches.Session;
+using AspNetCoreAwsServerless.Converters.Session;
+using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Cognito;
@@ -10,23 +12,27 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace AspNetCoreAwsServerless.Services.Session;
 
-public class SessionService(ICognitoService cognitoService, IUsersService usersService, ISessionCache sessionCache, ILogger<SessionService> logger) : ISessionService
+public class SessionService(ICognitoService cognitoService, IUsersService usersService, ISessionCache sessionCache, ISessionConverter sessionConverter, ILogger<SessionService> logger) : ISessionService
 {
   private readonly ICognitoService _cognitoService = cognitoService;
   private readonly IUsersService _usersService = usersService;
   private readonly ILogger<SessionService> _logger = logger;
   private readonly ISessionCache _sessionCache = sessionCache;
+  private readonly ISessionConverter _sessionConverter = sessionConverter;
 
   public async Task<ApiResult<SessionContext>> Login(LoginDto code)
   {
-    var response = await _cognitoService.GetTokens(code);
+    _logger.LogInformation("Logging in with code: {code}", code.Code);
+    ApiResult<CognitoTokens> cognitoTokensResult = await _cognitoService.GetTokens(code);
 
-    if (response.IsFailure)
+    if (cognitoTokensResult.IsFailure)
     {
-      return response.Errors;
+      return cognitoTokensResult.Errors;
     }
 
-    ApiResult<User> userResult = await _usersService.GetOrCreateNew(new IdToken { Value = response.Value.IdToken });
+    CognitoTokens cognitoTokens = cognitoTokensResult.Value;
+
+    ApiResult<User> userResult = await _usersService.GetOrCreateNew(new IdToken { Value = cognitoTokens.IdToken });
 
     if (userResult.IsFailure)
     {
@@ -34,18 +40,12 @@ public class SessionService(ICognitoService cognitoService, IUsersService usersS
     }
 
     User user = userResult.Value;
-    await _sessionCache.SetAccessToken(user.Id, response.Value.AccessToken);
+    await _sessionCache.SetAccessToken(user.Id, cognitoTokens.AccessToken);
 
     return ApiResult<SessionContext>.Success(new SessionContext
     {
       User = user,
-      Tokens = new SessionTokens
-      {
-        AccessToken = response.Value.AccessToken,
-        RefreshToken = response.Value.RefreshToken,
-        IdToken = response.Value.IdToken,
-        ExpiresInSeconds = response.Value.ExpiresIn
-      }
+      Tokens = _sessionConverter.ToSessionTokens(cognitoTokens)
     });
   }
 }

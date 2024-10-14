@@ -7,6 +7,7 @@ using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Config.Cognito;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Converters.Books;
+using AspNetCoreAwsServerless.Converters.Session;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Filters.FluentValidationFilter;
 using AspNetCoreAwsServerless.Repositories.Books;
@@ -88,6 +89,7 @@ public class Startup(IConfiguration configuration)
     services.AddScoped<ICognitoService, CognitoService>();
 
     services.AddScoped<ISessionService, SessionService>();
+    services.AddScoped<ISessionConverter, SessionConverter>();
     services.AddSingleton<ISessionCache, SessionCache>();
 
     services.AddScoped<IJwtService, JwtService>();
@@ -97,6 +99,8 @@ public class Startup(IConfiguration configuration)
       o.Filters.Add<FluentValidationFilter>();
     });
 
+    string[] allowedOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
+
     services.AddCors(
       (options) =>
       {
@@ -104,7 +108,7 @@ public class Startup(IConfiguration configuration)
           name: "All",
           builder =>
           {
-            builder.AllowAnyHeader().AllowAnyMethod().WithOrigins(["http://localhost:5173"]).AllowCredentials();
+            builder.AllowAnyHeader().AllowAnyMethod().WithOrigins(allowedOrigins).AllowCredentials();
           }
         );
       }

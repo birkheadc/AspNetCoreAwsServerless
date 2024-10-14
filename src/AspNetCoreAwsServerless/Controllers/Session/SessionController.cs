@@ -23,6 +23,8 @@ public class SessionController(ISessionService sessionService, ILogger<SessionCo
   [HttpPost]
   public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto dto)
   {
+    Console.WriteLine("SessionController.Login");
+    _logger.LogInformation("SessionController.Login");
     ApiResult<SessionContext> result = await _sessionService.Login(dto);
 
     if (result.IsFailure)

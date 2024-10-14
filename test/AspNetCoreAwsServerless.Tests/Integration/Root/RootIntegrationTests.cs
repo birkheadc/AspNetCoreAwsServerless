@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AspNetCoreAwsServerless.Tests.Integration.Root;
 
 public class RootIntegrationTests(WebApplicationFactory<Program> factory)
-  : IClassFixture<WebApplicationFactory<Program>>
+    : IClassFixture<WebApplicationFactory<Program>>
 {
   private readonly IntegrationTestsClientFactory _factory = new(factory);
 
@@ -20,8 +21,19 @@ public class RootIntegrationTests(WebApplicationFactory<Program> factory)
 
     HttpResponseMessage response = await client.GetAsync(uri);
 
-    int actual = (int)response.StatusCode;
-    int expected = StatusCodes.Status401Unauthorized;
-    Assert.Equal(expected, actual);
+    Assert.False(response.IsSuccessStatusCode);
+    Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
+  }
+
+  [Fact]
+  public async Task Get_Secure_ReturnsGreeting_WhenLoggedIn()
+  {
+    HttpClient client = _factory.CreateClient();
+    string uri = "/secure";
+
+    HttpResponseMessage response = await client.GetAsync(uri);
+
+    Assert.True(response.IsSuccessStatusCode);
+    Assert.Equal("Hello, World!", await response.Content.ReadAsStringAsync());
   }
 }

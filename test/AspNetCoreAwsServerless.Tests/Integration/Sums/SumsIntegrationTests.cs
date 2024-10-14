@@ -2,6 +2,7 @@ using AspNetCoreAwsServerless.Dtos.Sums;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AspNetCoreAwsServerless.Tests.Integration.Sums;
 
