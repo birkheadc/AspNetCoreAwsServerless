@@ -29,18 +29,4 @@ public class SessionCache(ILogger<SessionCache> logger) : ISessionCache
     _userAccessTokens[userId.ToString()] = accessToken;
     return Task.FromResult(ApiResult.Success());
   }
-
-  public Task<ApiResult<Id<User>>> GetUserId(string accessToken)
-  {
-    _logger.LogInformation("Getting user ID from cache via access token.");
-    string? userId = _userAccessTokens.FirstOrDefault(u => u.Value == accessToken).Key;
-    if (userId is null)
-    {
-      _logger.LogWarning("User ID not found for access token.");
-      return Task.FromResult(ApiResult<Id<User>>.Failure(ApiResultErrors.NotFound));
-    }
-
-    _logger.LogInformation("User ID found for access token. User ID: {UserId}", userId);
-    return Task.FromResult(ApiResult<Id<User>>.Success(new Id<User>(userId)));
-  }
 }

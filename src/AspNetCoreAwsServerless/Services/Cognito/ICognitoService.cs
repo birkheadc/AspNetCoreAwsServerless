@@ -12,7 +12,5 @@ namespace AspNetCoreAwsServerless.Services.Cognito;
 
 public interface ICognitoService
 {
-  public Task<ApiResult<CognitoUser>> GetUser(string accessToken);
-
   public Task<ApiResult<CognitoTokens>> GetTokens(LoginDto loginDto);
 }

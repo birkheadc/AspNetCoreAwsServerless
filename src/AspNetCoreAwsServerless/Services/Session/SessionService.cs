@@ -34,7 +34,7 @@ public class SessionService(ICognitoService cognitoService, IUsersService usersS
     }
 
     User user = userResult.Value;
-    // await _sessionCache.SetAccessToken(user.Id, response.Value.AccessToken);
+    await _sessionCache.SetAccessToken(user.Id, response.Value.AccessToken);
 
     return ApiResult<SessionContext>.Success(new SessionContext
     {

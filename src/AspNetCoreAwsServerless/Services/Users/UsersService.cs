@@ -32,41 +32,6 @@ public class UsersService(
     return await _usersRepository.Get(id);
   }
 
-  // public async Task<ApiResult<User>> GetOrCreateNew(string? id, string? accessToken)
-  // {
-  //   _logger.LogInformation(
-  //     "GetOrCreateNew Id: {id} | AccessToken?: {accessToken}",
-  //     id,
-  //     accessToken is not null
-  //   );
-
-  //   if (id is null)
-  //   {
-  //     return ApiResult<User>.Failure(ApiResultErrors.Unauthorized);
-  //   }
-
-  //   ApiResult<User> userResult = await Get(new Id<User>(id));
-  //   if (userResult.IsSuccess)
-  //   {
-  //     return userResult;
-  //   }
-
-  //   if (accessToken is null)
-  //   {
-  //     return ApiResult<User>.Failure(ApiResultErrors.Unauthorized);
-  //   }
-
-  //   ApiResult<CognitoUser> cognitoUserResult = await _cognitoService.GetUser(accessToken);
-  //   if (cognitoUserResult.IsFailure)
-  //   {
-  //     return ApiResult<User>.Failure(ApiResultErrors.Unauthorized);
-  //   }
-
-  //   User user = _usersConverter.FromCognitoUser(cognitoUserResult.Value);
-
-  //   return await _usersRepository.Put(user);
-  // }
-
   public async Task<ApiResult<User>> GetOrCreateNew(IdToken token)
   {
     IEnumerable<Claim> claims = _jwtService.Decode(token.Value);
