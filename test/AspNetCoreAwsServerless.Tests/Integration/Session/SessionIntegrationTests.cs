@@ -8,6 +8,7 @@ using Moq;
 using Moq.AutoMock;
 using Xunit;
 using Xunit.Abstractions;
+using System.Net.Http.Headers;
 
 namespace AspNetCoreAwsServerless.Tests.Integration.Session;
 
@@ -36,9 +37,13 @@ public class SessionIntegrationTests
       RedirectUri = "redirect-uri"
     };
 
-    HttpResponseMessage response = await client.PostAsync(uri, new StringContent(JsonSerializer.Serialize(body)));
+    HttpContent content = new StringContent(JsonSerializer.Serialize(body));
+    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+    HttpResponseMessage response = await client.PostAsync(uri, content);
 
     Assert.False(response.IsSuccessStatusCode);
+    Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
   }
 
   [Fact]
@@ -53,8 +58,10 @@ public class SessionIntegrationTests
       RedirectUri = "redirect-uri"
     };
 
-    HttpResponseMessage response = await client.PostAsync(uri, new StringContent(JsonSerializer.Serialize(body)));
+    HttpContent content = new StringContent(JsonSerializer.Serialize(body));
+    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
+    HttpResponseMessage response = await client.PostAsync(uri, content);
     Assert.True(response.IsSuccessStatusCode);
   }
 }
