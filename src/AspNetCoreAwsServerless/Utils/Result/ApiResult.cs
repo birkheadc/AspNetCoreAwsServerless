@@ -87,7 +87,7 @@ public class ApiResult<T>
 
   public ActionResult GetActionResult(Func<T, object> converter)
   {
-    return IsSuccess ? new ObjectResult(converter(Value)) { StatusCode = 200 } : Errors.Problem;
+    return IsSuccess ? new OkObjectResult(converter(Value)) : Errors.Problem;
   }
 
   public static ApiResult<T> Success(T value) => new(value);
