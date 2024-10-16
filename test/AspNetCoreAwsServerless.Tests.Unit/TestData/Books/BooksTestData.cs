@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 
-namespace AspNetCoreAwsServerless.Tests.TestData.Books;
+namespace AspNetCoreAwsServerless.Tests.Unit.TestData.Books;
 
 public static class BooksTestData
 {

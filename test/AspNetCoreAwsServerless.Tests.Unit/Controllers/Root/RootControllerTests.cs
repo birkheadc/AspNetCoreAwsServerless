@@ -4,7 +4,6 @@ using AspNetCoreAwsServerless.Controllers.Root;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Controllers.Root;
 

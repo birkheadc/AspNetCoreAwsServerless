@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Caches.Session;
 using AspNetCoreAwsServerless.Converters.Session;
 using AspNetCoreAwsServerless.Dtos.Cognito;
@@ -13,7 +9,6 @@ using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Result;
 using Moq;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Services.Session;
 

@@ -3,7 +3,7 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
 using AspNetCoreAwsServerless.Services.Books;
-using AspNetCoreAwsServerless.Tests.TestData.Books;
+using AspNetCoreAwsServerless.Tests.Unit.TestData.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
 using Moq;

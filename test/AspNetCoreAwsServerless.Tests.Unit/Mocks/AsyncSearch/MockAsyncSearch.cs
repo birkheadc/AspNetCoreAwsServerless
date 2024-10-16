@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace AspNetCoreAwsServerless.Tests.Mocks.AsyncSearch;
+namespace AspNetCoreAwsServerless.Tests.Unit.Mocks.AsyncSearch;
 
 public class MockAsyncSearch<T> : AsyncSearch<T>
 {

@@ -1,19 +1,17 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using Amazon.Runtime;
 using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Repositories.Books;
-using AspNetCoreAwsServerless.Tests.Mocks.AsyncSearch;
-using AspNetCoreAwsServerless.Tests.TestData.Books;
+using AspNetCoreAwsServerless.Tests.Unit.Mocks.AsyncSearch;
+using AspNetCoreAwsServerless.Tests.Unit.TestData.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Repositories.Books;
 
