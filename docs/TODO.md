@@ -12,9 +12,7 @@ After figuring out how to get Cognito working, Cognito infrastructure should be 
 
 ## Testing environment
 
-Need to create a 4th environment that can be deployed, reset to 0, then used for integration and/or e2e tests, then taken back down.
-
-## Integration Tests for Books
+Probably going to use nothing for unit tests, staging environment for integration tests
 
 ## Pagination and Data Sorting    
 
@@ -24,10 +22,6 @@ Also add (created_at) and maybe (modified_at) support
 
 At the end of this, I want to have a table on the front end that can be sorted by created_at (and maybe modified_at), title, and author, backwards or forwards. Data should be paginated and browsable.
 
-## Performance
-
-Some stuff is like really slow. First login is taking like 10 seconds. Can I improve it? Eitehr way login needs an overlay.
-
 ## Session
 
 Need to develop a relogin workflow when cookies are present.
@@ -35,7 +29,3 @@ Need to develop a relogin workflow when cookies are present.
 Need to create logout function (front end currently just logs out memory)
   - Invalidate cookies
   - Remove cookies from browsers
-
-## Testing
-
-Need a framework for partial mocking, i.e. when creating an ExpectedUser, I don't want to do `new User { Id = ..., EmailAddress = ... }` because at some point I will add on to the required fields, then a million tests will break. I want something like `mockUser(string id, string email)` that I can call, and mock user with that, and just update the function...
