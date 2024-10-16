@@ -1,15 +1,12 @@
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Services.Cognito;
-using AspNetCoreAwsServerless.Tests.Utils.Logger;
 using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Moq;
-using Serilog;
-using Xunit.Abstractions;
 
 namespace AspNetCoreAwsServerless.Tests.Integration;
 

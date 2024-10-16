@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;

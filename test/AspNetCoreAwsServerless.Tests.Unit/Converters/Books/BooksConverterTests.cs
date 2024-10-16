@@ -3,7 +3,6 @@ using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using Moq;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Converters.Books;
 

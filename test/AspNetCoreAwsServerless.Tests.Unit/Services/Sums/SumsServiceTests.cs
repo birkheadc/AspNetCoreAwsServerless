@@ -1,7 +1,6 @@
 using AspNetCoreAwsServerless.Dtos.Sums;
 using AspNetCoreAwsServerless.Services.Sums;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Services.Sums;
 

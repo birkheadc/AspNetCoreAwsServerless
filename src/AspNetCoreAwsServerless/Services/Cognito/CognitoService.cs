@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Amazon.CognitoIdentityProvider;
-using Amazon.CognitoIdentityProvider.Model;
 using AspNetCoreAwsServerless.Config.Cognito;
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;

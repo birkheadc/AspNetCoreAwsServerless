@@ -1,7 +1,4 @@
 using AspNetCoreAwsServerless.Dtos.Example;
-using AspNetCoreAwsServerless.Utils.Result;
-using FluentValidation;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Example;

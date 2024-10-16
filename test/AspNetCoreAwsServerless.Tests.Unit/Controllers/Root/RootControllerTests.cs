@@ -1,4 +1,3 @@
-using Amazon.DynamoDBv2.Model;
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Controllers.Root;
 using Microsoft.AspNetCore.Mvc;

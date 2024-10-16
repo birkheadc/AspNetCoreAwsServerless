@@ -1,14 +1,11 @@
-using System.Security.Claims;
 using AspNetCoreAwsServerless.Caches.Session;
 using AspNetCoreAwsServerless.Converters.Session;
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Cognito;
-using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Result;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace AspNetCoreAwsServerless.Services.Session;
 

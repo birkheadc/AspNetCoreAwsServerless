@@ -1,6 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.Runtime;
 using AspNetCoreAwsServerless.Config.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;

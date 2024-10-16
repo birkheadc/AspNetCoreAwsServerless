@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using AspNetCoreAwsServerless.Converters.Users;
-using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;

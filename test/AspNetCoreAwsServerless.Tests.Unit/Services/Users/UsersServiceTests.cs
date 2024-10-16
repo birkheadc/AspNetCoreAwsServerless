@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using AspNetCoreAwsServerless.Converters.Users;
-using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
@@ -11,7 +10,6 @@ using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
 using Moq;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Services.Users;
 

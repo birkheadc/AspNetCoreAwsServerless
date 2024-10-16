@@ -1,5 +1,3 @@
-using AspNetCoreAwsServerless.Dtos.Cognito;
-
 namespace AspNetCoreAwsServerless.Dtos.Session;
 
 public class SessionTokens

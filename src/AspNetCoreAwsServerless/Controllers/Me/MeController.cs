@@ -3,7 +3,6 @@ using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
-using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

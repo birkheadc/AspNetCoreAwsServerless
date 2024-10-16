@@ -8,7 +8,6 @@ using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
 using Moq;
 using Moq.AutoMock;
-using Xunit;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Services.Books;
 
