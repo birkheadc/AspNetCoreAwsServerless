@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Services.Cognito;
@@ -10,38 +12,26 @@ using Moq;
 
 namespace AspNetCoreAwsServerless.Tests.Integration;
 
-public class IntegrationTestsClientFactory
+public class IntegrationTestsClientFactory(WebApplicationFactory<Program> factory)
 {
-  private readonly WebApplicationFactory<Program> _factory;
-
-  public IntegrationTestsClientFactory(WebApplicationFactory<Program> factory)
+  private readonly WebApplicationFactory<Program> _factory = factory.WithWebHostBuilder(builder =>
   {
-    _factory = factory.WithWebHostBuilder(builder =>
+    Mock<ICognitoService> _cognitoService = new();
+
+    _cognitoService.Setup(service => service.GetTokens(It.IsAny<LoginDto>()))
+      .ReturnsAsync((LoginDto dto) => dto.Code == "good"
+        ? ApiResult<CognitoTokens>.Success(GenerateTestAccountToken())
+        : ApiResultErrors.Unauthorized);
+
+    builder.ConfigureTestServices(services =>
     {
-      Mock<ICognitoService> _cognitoService = new();
+      //Populate with mock services
 
-      // sub: 80a8b2e8-de5e-4cd8-87fb-4d80a6d2f787, name: John Doe, email: email@email.email, iat: 1516239022
-      string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MGE4YjJlOC1kZTVlLTRjZDgtODdmYi00ZDgwYTZkMmY3ODciLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiZW1haWxAZW1haWwuZW1haWwifQ.IgCqcGr2wjMjzdjoEyVApV0touvL5uyUZ2wRFitIEoo";
-      _cognitoService.Setup(service => service.GetTokens(It.Is<LoginDto>(dto => dto.Code == "good"))).ReturnsAsync(ApiResult<CognitoTokens>.Success(new CognitoTokens()
-      {
-        AccessToken = "accessToken",
-        RefreshToken = "refreshToken",
-        IdToken = idToken,
-        ExpiresIn = 300
-      }));
-
-      _cognitoService.Setup(service => service.GetTokens(It.Is<LoginDto>(dto => dto.Code != "good"))).ReturnsAsync(ApiResultErrors.Unauthorized);
-
-      builder.ConfigureTestServices(services =>
-      {
-        //Populate with mock services, like database
-
-        // Mock Cognito Service
-        services.RemoveAll<ICognitoService>();
-        services.AddScoped(_ => _cognitoService.Object);
-      });
+      // Mock Cognito Service because it relies on an auth code from the frontend
+      services.RemoveAll<ICognitoService>();
+      services.AddScoped(_ => _cognitoService.Object);
     });
-  }
+  });
 
   public HttpClient CreateClient()
   {
@@ -52,5 +42,27 @@ public class IntegrationTestsClientFactory
   public HttpClient CreateClient(WebApplicationFactoryClientOptions options)
   {
     return _factory.CreateClient(options);
+  }
+
+  private static CognitoTokens GenerateTestAccountToken()
+  {
+    JwtSecurityTokenHandler handler = new();
+    List<Claim> claims =
+    [
+      new Claim(JwtRegisteredClaimNames.Sub, "3a69e6f1-6cf4-4b30-9724-27b937916849"),
+      new Claim(JwtRegisteredClaimNames.Name, "Colby Test Account"),
+      new Claim(JwtRegisteredClaimNames.Email, "birkheadc@gmail.com"),
+      new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+    ];
+
+    var token = new JwtSecurityToken(claims: claims);
+
+    return new CognitoTokens()
+    {
+      IdToken = handler.WriteToken(token),
+      AccessToken = "accessToken",
+      RefreshToken = "refreshToken",
+      ExpiresIn = 300
+    };
   }
 }
