@@ -23,8 +23,8 @@ public class IntegrationTestsClientFactory
     {
       Mock<ICognitoService> _cognitoService = new();
 
-      // sub: 1234567890, name: John Doe, email: email@email.email, iat: 1516239022
-      string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJlbWFpbCI6ImVtYWlsQGVtYWlsLmVtYWlsIn0.KQ1MdffxjoHJnUaea1CKolmtLcYhAY-6gC3aOIhcPvE";
+      // sub: 80a8b2e8-de5e-4cd8-87fb-4d80a6d2f787, name: John Doe, email: email@email.email, iat: 1516239022
+      string idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MGE4YjJlOC1kZTVlLTRjZDgtODdmYi00ZDgwYTZkMmY3ODciLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiZW1haWxAZW1haWwuZW1haWwifQ.IgCqcGr2wjMjzdjoEyVApV0touvL5uyUZ2wRFitIEoo";
       _cognitoService.Setup(service => service.GetTokens(It.Is<LoginDto>(dto => dto.Code == "good"))).ReturnsAsync(ApiResult<CognitoTokens>.Success(new CognitoTokens()
       {
         AccessToken = "accessToken",
@@ -38,6 +38,8 @@ public class IntegrationTestsClientFactory
       builder.ConfigureTestServices(services =>
       {
         //Populate with mock services, like database
+
+        // Mock Cognito Service
         services.RemoveAll<ICognitoService>();
         services.AddScoped(_ => _cognitoService.Object);
       });

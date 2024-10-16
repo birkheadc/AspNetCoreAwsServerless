@@ -15,8 +15,7 @@ public readonly struct Id<T>
 
   public Id(string value)
   {
-    Guid val = Guid.Parse(value);
-    CheckValue(val);
+    Guid val = ParseValue(value);
     _value = val;
   }
 
@@ -24,6 +23,15 @@ public readonly struct Id<T>
   {
     CheckValue(value);
     _value = value;
+  }
+
+  private static Guid ParseValue(string value)
+  {
+    bool wasParsed = Guid.TryParse(value, out Guid guid);
+    if (!wasParsed)
+      throw new ArgumentException("Invalid Guid value", value);
+    CheckValue(guid);
+    return guid;
   }
 
   private static void CheckValue(Guid value)

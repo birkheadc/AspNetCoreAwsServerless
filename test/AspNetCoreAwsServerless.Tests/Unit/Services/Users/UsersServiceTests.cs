@@ -57,7 +57,7 @@ public class UsersServiceTests
   [Fact]
   public async Task GetOrCreateNew_ReturnsInternalServerError_WhenEmailIsMissing()
   {
-    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", "123")]);
+    _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", Guid.NewGuid().ToString())]);
     ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
     Assert.True(actual.IsFailure);

@@ -35,14 +35,16 @@ public class UsersService(
   public async Task<ApiResult<User>> GetOrCreateNew(IdToken token)
   {
     IEnumerable<Claim> claims = _jwtService.Decode(token.Value);
-    string? userId = claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-    string? email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
-
-    if (userId is null)
+    string? userIdString = claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+    if (userIdString is null)
     {
       _logger.LogError("User id [Claim.sub] is missing from the IdToken.");
       return ApiResultErrors.InternalServerError;
     }
+
+    Id<User> userId = new(userIdString);
+
+    string? email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
     if (email is null)
     {
@@ -59,7 +61,7 @@ public class UsersService(
 
     User user = new()
     {
-      Id = new Id<User>(userId),
+      Id = userId,
       EmailAddress = email
     };
 

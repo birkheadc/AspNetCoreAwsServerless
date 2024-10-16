@@ -1,3 +1,3 @@
 #!/bin/bash
 clear
-dotnet test
+ASPNETCORE_ENVIRONMENT=Testing dotnet test

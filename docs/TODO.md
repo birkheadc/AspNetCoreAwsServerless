@@ -31,7 +31,10 @@ Some stuff is like really slow. First login is taking like 10 seconds. Can I imp
 ## Session
 
 Need to develop a relogin workflow when cookies are present.
-Add allowed origins to appesettings or something...
+
+Need to create logout function (front end currently just logs out memory)
+  - Invalidate cookies
+  - Remove cookies from browsers
 
 ## Testing
 
