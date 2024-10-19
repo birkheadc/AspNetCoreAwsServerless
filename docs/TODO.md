@@ -29,3 +29,5 @@ Need to develop a relogin workflow when cookies are present.
 Need to create logout function (front end currently just logs out memory)
   - Invalidate cookies
   - Remove cookies from browsers
+
+## Failed integration tests are hanging the test runner... but only the test runner in vscode, CLI is fine

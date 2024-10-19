@@ -33,7 +33,7 @@ public class ApiResult
 
   public ActionResult GetActionResult()
   {
-    return IsSuccess ? new StatusCodeResult(200) : Errors.Problem;
+    return IsSuccess ? new OkResult() : Errors.Problem;
   }
 
   public static ApiResult Success() => new();
@@ -45,6 +45,10 @@ public class ApiResult
   public static implicit operator ApiResult(ApiResultErrors errors) => new(errors);
 
   public static ApiResult Failure(ValidationResult validationResult) => new(validationResult);
+  public static ApiResult NotFound => new(ApiResultErrors.NotFound);
+  public static ApiResult BadRequest => new(ApiResultErrors.BadRequest);
+  public static ApiResult Unauthorized => new(ApiResultErrors.Unauthorized);
+  public static ApiResult InternalServerError => new(ApiResultErrors.InternalServerError);
 }
 
 public class ApiResult<T>
@@ -82,7 +86,7 @@ public class ApiResult<T>
 
   public ActionResult GetActionResult()
   {
-    return IsSuccess ? new ObjectResult(Value) { StatusCode = 200 } : Errors.Problem;
+    return IsSuccess ? new OkResult() : Errors.Problem;
   }
 
   public ActionResult GetActionResult(Func<T, object> converter)
@@ -99,4 +103,9 @@ public class ApiResult<T>
   public static implicit operator ApiResult<T>(T value) => new(value);
 
   public static implicit operator ApiResult<T>(ApiResultErrors errors) => new(errors);
+
+  public static ApiResult<T> NotFound => new(ApiResultErrors.NotFound);
+  public static ApiResult<T> BadRequest => new(ApiResultErrors.BadRequest);
+  public static ApiResult<T> Unauthorized => new(ApiResultErrors.Unauthorized);
+  public static ApiResult<T> InternalServerError => new(ApiResultErrors.InternalServerError);
 }

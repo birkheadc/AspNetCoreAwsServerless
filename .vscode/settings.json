@@ -2,6 +2,4 @@
   "editor.detectIndentation": true,
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "dotnet-test-explorer.testProjectPath": "test/AspNetCoreAwsServerless.Tests",
-  "dotnet-test-explorer.autoWatch": false
 }

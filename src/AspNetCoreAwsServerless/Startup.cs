@@ -127,6 +127,8 @@ public class Startup(IConfiguration configuration)
     // Use Serilog to log requests rather than AspNetCore's default logging
     app.UseSerilogRequestLogging();
 
+    // Enable custom error handling to be handled by ErrorsController
+    // Currently not implemented
     // app.UseExceptionHandler("/errors");
 
     app.UseCors("All");

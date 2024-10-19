@@ -6,6 +6,7 @@ using Moq;
 using Moq.AutoMock;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Tests.Integration.Session;
 
@@ -59,6 +60,7 @@ public class SessionIntegrationTests
     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
     HttpResponseMessage response = await client.PostAsync(uri, content);
+
     Assert.True(response.IsSuccessStatusCode);
   }
 }

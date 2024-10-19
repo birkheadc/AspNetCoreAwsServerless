@@ -15,17 +15,23 @@ public abstract class ResolvedUserControllerBase<T>(ILogger<T> logger, IUsersSer
   {
     _logger.LogInformation("GetCurrentUser");
 
-    string? userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (userId is null)
+    string? stringId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (stringId is null)
     {
       _logger.LogError("No user ID found in claims");
       throw new UnauthorizedAccessException();
     }
 
-    ApiResult<User> userResult = await _usersService.Get(new Id<User>(userId));
+    if (!Id<User>.TryParse(stringId, out Id<User> id))
+    {
+      _logger.LogError("Invalid user ID {UserId}", stringId);
+      throw new UnauthorizedAccessException();
+    }
+
+    ApiResult<User> userResult = await _usersService.Get(id);
     if (userResult.IsFailure)
     {
-      _logger.LogError("User not found for ID {UserId}", userId);
+      _logger.LogError("User not found for ID {UserId}", stringId);
       throw new UnauthorizedAccessException();
     }
 

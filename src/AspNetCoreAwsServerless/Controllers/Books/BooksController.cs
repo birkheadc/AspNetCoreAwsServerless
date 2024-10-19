@@ -3,6 +3,7 @@ using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Services.Books;
+using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ public class BooksController(
 
   [HttpGet]
   [Route("{id}")]
-  public async Task<ActionResult<BookDto>> Get([FromRoute] Guid id)
+  public async Task<ActionResult<BookDto>> Get([FromRoute] Id<Book> id)
   {
     _logger.LogInformation("Get");
     ApiResult<Book> result = await _booksService.Get(id);
@@ -76,7 +77,7 @@ public class BooksController(
   [HttpPatch]
   [Route("{id}")]
   public async Task<ActionResult<BookDto>> Patch(
-    [FromRoute] Guid id,
+    [FromRoute] Id<Book> id,
     [FromBody] BookPatchDto patchDto
   )
   {
@@ -87,7 +88,7 @@ public class BooksController(
 
   [HttpDelete]
   [Route("{id}")]
-  public async Task<ActionResult> Delete([FromRoute] Guid id)
+  public async Task<ActionResult> Delete([FromRoute] Id<Book> id)
   {
     _logger.LogInformation("Delete");
     ApiResult result = await _booksService.Delete(id);

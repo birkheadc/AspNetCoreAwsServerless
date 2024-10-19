@@ -25,6 +25,17 @@ public readonly struct Id<T>
     _value = value;
   }
 
+  public static bool TryParse(string value, out Id<T> id)
+  {
+    if (Guid.TryParse(value, out Guid guid))
+    {
+      id = new Id<T>(guid);
+      return true;
+    }
+    id = default;
+    return false;
+  }
+
   private static Guid ParseValue(string value)
   {
     bool wasParsed = Guid.TryParse(value, out Guid guid);

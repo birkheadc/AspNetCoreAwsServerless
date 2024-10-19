@@ -21,8 +21,6 @@ public class UsersService(
 {
   private readonly IUsersRepository _usersRepository = usersRepository;
   private readonly ILogger<UsersService> _logger = logger;
-  private readonly ICognitoService _cognitoService = cognitoService;
-  private readonly IUsersConverter _usersConverter = usersConverter;
 
   private readonly IJwtService _jwtService = jwtService;
 

@@ -10,9 +10,9 @@ public class ExampleController(ILogger<ExampleController> logger) : ControllerBa
   private readonly ILogger<ExampleController> _logger = logger;
 
   [HttpPost]
-  public async Task<ActionResult> PostExample([FromBody] ExampleDto dto)
+  public Task<ActionResult> PostExample([FromBody] ExampleDto dto)
   {
     _logger.LogInformation("PostExample {dto}", dto);
-    return Ok();
+    return Task.FromResult<ActionResult>(Ok());
   }
 }

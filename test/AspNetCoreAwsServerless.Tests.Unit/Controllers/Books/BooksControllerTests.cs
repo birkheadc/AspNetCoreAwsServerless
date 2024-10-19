@@ -3,8 +3,10 @@ using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Services.Books;
+using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.AutoMock;
@@ -29,13 +31,159 @@ public class BooksControllerTests
   [Fact]
   public async Task GetFirstPage_CallsServiceGetPage_AndReturnsResult()
   {
-    Paginated<BookDto> expected = new() { Values = [], PaginationToken = "wtf" };
-    _booksService.Setup(service => service.GetPage(null)).ReturnsAsync(ApiResult<Paginated<Book>>.Success(new Paginated<Book> { Values = [], PaginationToken = "wtf" }));
+    Paginated<BookDto> expected = new() { Values = [], PaginationToken = "token" };
+    _booksService.Setup(service => service.GetPage(null)).ReturnsAsync(ApiResult<Paginated<Book>>.Success(new Paginated<Book> { Values = [], PaginationToken = "token" }));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Paginated<Book>>())).Returns(expected);
 
     ActionResult<Paginated<BookDto>> result = await _controller.GetFirstPage();
 
+    _booksService.Verify(service => service.GetPage(null), Times.Once);
     Assert.IsType<OkObjectResult>(result.Result);
     Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task GetPage_CallsServiceGetPage_WithPaginationToken_AndReturnsResult()
+  {
+    Paginated<BookDto> expected = new() { Values = [], PaginationToken = "token" };
+    _booksService.Setup(service => service.GetPage(It.IsAny<string>())).ReturnsAsync(ApiResult<Paginated<Book>>.Success(new Paginated<Book> { Values = [], PaginationToken = "token" }));
+    _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Paginated<Book>>())).Returns(expected);
+
+    ActionResult<Paginated<BookDto>> result = await _controller.GetPage("token");
+
+    _booksService.Verify(service => service.GetPage("token"), Times.Once);
+    Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task Get_CallsServiceGet_WithId_AndReturnsResult()
+  {
+    Id<Book> id = new(Guid.NewGuid());
+    BookDto expected = new() { Id = id.ToString(), Title = "title", Author = "author", Pages = 100 };
+
+    _booksService.Setup(service => service.Get(It.IsAny<Id<Book>>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = Guid.NewGuid(), Title = "title", Author = "author", Pages = 100 }));
+    _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
+
+    ActionResult<BookDto> result = await _controller.Get(id);
+
+    _booksService.Verify(service => service.Get(It.IsAny<Id<Book>>()), Times.Once);
+    Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task Create_CallsServiceCreate_WithCreateDto_AndReturnsResult()
+  {
+    BookCreateDto createDto = new() { Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = Guid.NewGuid().ToString(), Title = "title", Author = "author", Pages = 100 };
+
+    _booksService.Setup(service => service.Create(It.IsAny<BookCreateDto>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = Guid.NewGuid(), Title = "title", Author = "author", Pages = 100 }));
+    _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
+
+    ActionResult<BookDto> result = await _controller.Create(createDto);
+
+    _booksService.Verify(service => service.Create(createDto), Times.Once);
+    Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task CreateMany_CallsServiceCreateMany_WithCreateManyDto_AndReturnsResult()
+  {
+    BookCreateManyDto createManyDto = new() { Books = [new BookCreateDto { Title = "title", Author = "author", Pages = 100 }] };
+    BookDto expected = new() { Id = Guid.NewGuid().ToString(), Title = "title", Author = "author", Pages = 100 };
+
+    _booksService.Setup(service => service.CreateMany(It.IsAny<BookCreateManyDto>())).ReturnsAsync(ApiResult.Success);
+
+    ActionResult result = await _controller.CreateMany(createManyDto);
+
+    _booksService.Verify(service => service.CreateMany(createManyDto), Times.Once);
+
+    Assert.IsType<OkResult>(result);
+  }
+
+  [Fact]
+  public async Task Put_CallsServicePut_WithPutDto_AndReturnsResult()
+  {
+    BookPutDto putDto = new() { Id = new(Guid.NewGuid().ToString()), Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = putDto.Id.ToString(), Title = "title", Author = "author", Pages = 100 };
+
+    _booksService.Setup(service => service.Put(It.IsAny<BookPutDto>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = putDto.Id, Title = "title", Author = "author", Pages = 100 }));
+    _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
+
+    ActionResult<BookDto> result = await _controller.Put(putDto);
+
+    _booksService.Verify(service => service.Put(putDto), Times.Once);
+
+    Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task Patch_CallsServicePatch_WithIdAndPatchDto_AndReturnsResult()
+  {
+    Id<Book> id = new(Guid.NewGuid());
+    BookPatchDto patchDto = new() { Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = id.ToString(), Title = "title", Author = "author", Pages = 100 };
+
+    _booksService.Setup(service => service.Patch(id, patchDto)).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = id, Title = "title", Author = "author", Pages = 100 }));
+    _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
+
+    ActionResult<BookDto> result = await _controller.Patch(id, patchDto);
+
+    _booksService.Verify(service => service.Patch(id, patchDto), Times.Once);
+    Assert.IsType<OkObjectResult>(result.Result);
+    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+  }
+
+  [Fact]
+  public async Task Delete_CallsServiceDelete_WithId_AndReturnsResult()
+  {
+    Id<Book> id = new(Guid.NewGuid());
+
+    _booksService.Setup(service => service.Delete(id)).ReturnsAsync(ApiResult.Success);
+
+    ActionResult result = await _controller.Delete(id);
+
+    _booksService.Verify(service => service.Delete(id), Times.Once);
+    Assert.IsType<OkResult>(result);
+  }
+
+  [Fact]
+  public async Task SeedMany_CallsServiceCreateMany_WithNum_AndReturnsResult()
+  {
+    int num = 10;
+
+    _booksService.Setup(service => service.CreateMany(It.IsAny<BookCreateManyDto>())).ReturnsAsync(ApiResult.Success);
+
+    ActionResult result = await _controller.SeedMany(num);
+
+    _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Once);
+    Assert.IsType<OkResult>(result);
+  }
+
+  [Fact]
+  public async Task SeedMany_WithNumGreaterThan999_ReturnsBadRequest()
+  {
+    int num = 1000;
+    ActionResult result = await _controller.SeedMany(num);
+
+    _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Never);
+
+    Assert.IsType<ObjectResult>(result);
+    Assert.IsType<ProblemHttpResult>(((ObjectResult)result).Value);
+  }
+
+  [Fact]
+  public async Task SeedMany_WithNumLessThan1_ReturnsBadRequest()
+  {
+    int num = 0;
+    ActionResult result = await _controller.SeedMany(num);
+
+    _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Never);
+
+    Assert.IsType<ObjectResult>(result);
+    Assert.IsType<ProblemHttpResult>(((ObjectResult)result).Value);
   }
 }

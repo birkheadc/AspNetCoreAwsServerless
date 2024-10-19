@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Amazon.DynamoDBv2.DataModel;
 using AspNetCoreAwsServerless.Dtos.Cognito;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Services.Cognito;
@@ -30,6 +31,9 @@ public class IntegrationTestsClientFactory(WebApplicationFactory<Program> factor
       // Mock Cognito Service because it relies on an auth code from the frontend
       services.RemoveAll<ICognitoService>();
       services.AddScoped(_ => _cognitoService.Object);
+
+      services.RemoveAll<DynamoDBContextConfig>();
+      services.AddSingleton(new DynamoDBContextConfig() { TableNamePrefix = "AspNetCoreServerless_Testing_" });
     });
   });
 
