@@ -12,14 +12,14 @@ namespace AspNetCoreAwsServerless.Tests.Unit.Controllers.Me;
 
 public class MeControllerTests : ResolvedUserControllerBaseTests
 {
-  private readonly AutoMocker _mocker = new();
   private readonly MeController _controller;
   private readonly Mock<IUsersConverter> _usersConverter;
 
-  public MeControllerTests()
+  public MeControllerTests() : base()
   {
     _controller = _mocker.CreateInstance<MeController>();
     _usersConverter = _mocker.GetMock<IUsersConverter>();
+    _controller.ControllerContext.HttpContext = _httpContext.Object;
   }
 
   [Fact]

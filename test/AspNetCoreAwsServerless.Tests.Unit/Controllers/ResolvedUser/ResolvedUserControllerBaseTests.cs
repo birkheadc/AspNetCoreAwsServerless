@@ -13,10 +13,10 @@ namespace AspNetCoreAwsServerless.Tests.Unit.Controllers.ResolvedUser;
 
 public class ResolvedUserControllerBaseTests
 {
-  private readonly AutoMocker _mocker = new();
+  protected readonly AutoMocker _mocker = new();
   private readonly DummyResolvedUserController _controller;
-  private readonly Mock<HttpContext> _httpContext;
-  private readonly Mock<IUsersService> _usersService;
+  protected readonly Mock<HttpContext> _httpContext;
+  protected readonly Mock<IUsersService> _usersService;
   public ResolvedUserControllerBaseTests()
   {
     _controller = _mocker.CreateInstance<DummyResolvedUserController>();

@@ -32,7 +32,7 @@ public class BooksControllerTests
   public async Task GetFirstPage_CallsServiceGetPage_AndReturnsResult()
   {
     Paginated<BookDto> expected = new() { Values = [], PaginationToken = "token" };
-    _booksService.Setup(service => service.GetPage(null)).ReturnsAsync(ApiResult<Paginated<Book>>.Success(new Paginated<Book> { Values = [], PaginationToken = "token" }));
+    _booksService.Setup(service => service.GetPage(null)).ReturnsAsync(ApiResult<Paginated<Book>>.Success(_mocker.CreateInstance<Paginated<Book>>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Paginated<Book>>())).Returns(expected);
 
     ActionResult<Paginated<BookDto>> result = await _controller.GetFirstPage();
@@ -46,7 +46,7 @@ public class BooksControllerTests
   public async Task GetPage_CallsServiceGetPage_WithPaginationToken_AndReturnsResult()
   {
     Paginated<BookDto> expected = new() { Values = [], PaginationToken = "token" };
-    _booksService.Setup(service => service.GetPage(It.IsAny<string>())).ReturnsAsync(ApiResult<Paginated<Book>>.Success(new Paginated<Book> { Values = [], PaginationToken = "token" }));
+    _booksService.Setup(service => service.GetPage(It.IsAny<string>())).ReturnsAsync(ApiResult<Paginated<Book>>.Success(_mocker.CreateInstance<Paginated<Book>>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Paginated<Book>>())).Returns(expected);
 
     ActionResult<Paginated<BookDto>> result = await _controller.GetPage("token");
@@ -62,7 +62,7 @@ public class BooksControllerTests
     Id<Book> id = new(Guid.NewGuid());
     BookDto expected = new() { Id = id.ToString(), Title = "title", Author = "author", Pages = 100 };
 
-    _booksService.Setup(service => service.Get(It.IsAny<Id<Book>>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = Guid.NewGuid(), Title = "title", Author = "author", Pages = 100 }));
+    _booksService.Setup(service => service.Get(It.IsAny<Id<Book>>())).ReturnsAsync(ApiResult<Book>.Success(_mocker.CreateInstance<Book>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
 
     ActionResult<BookDto> result = await _controller.Get(id);
@@ -78,7 +78,7 @@ public class BooksControllerTests
     BookCreateDto createDto = new() { Title = "title", Author = "author", Pages = 100 };
     BookDto expected = new() { Id = Guid.NewGuid().ToString(), Title = "title", Author = "author", Pages = 100 };
 
-    _booksService.Setup(service => service.Create(It.IsAny<BookCreateDto>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = Guid.NewGuid(), Title = "title", Author = "author", Pages = 100 }));
+    _booksService.Setup(service => service.Create(It.IsAny<BookCreateDto>())).ReturnsAsync(ApiResult<Book>.Success(_mocker.CreateInstance<Book>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
 
     ActionResult<BookDto> result = await _controller.Create(createDto);
@@ -92,7 +92,7 @@ public class BooksControllerTests
   public async Task CreateMany_CallsServiceCreateMany_WithCreateManyDto_AndReturnsResult()
   {
     BookCreateManyDto createManyDto = new() { Books = [new BookCreateDto { Title = "title", Author = "author", Pages = 100 }] };
-    BookDto expected = new() { Id = Guid.NewGuid().ToString(), Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = Guid.NewGuid().ToString(), Title = createManyDto.Books[0].Title, Author = createManyDto.Books[0].Author, Pages = createManyDto.Books[0].Pages };
 
     _booksService.Setup(service => service.CreateMany(It.IsAny<BookCreateManyDto>())).ReturnsAsync(ApiResult.Success);
 
@@ -107,9 +107,9 @@ public class BooksControllerTests
   public async Task Put_CallsServicePut_WithPutDto_AndReturnsResult()
   {
     BookPutDto putDto = new() { Id = new(Guid.NewGuid().ToString()), Title = "title", Author = "author", Pages = 100 };
-    BookDto expected = new() { Id = putDto.Id.ToString(), Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = putDto.Id.ToString(), Title = putDto.Title, Author = putDto.Author, Pages = putDto.Pages };
 
-    _booksService.Setup(service => service.Put(It.IsAny<BookPutDto>())).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = putDto.Id, Title = "title", Author = "author", Pages = 100 }));
+    _booksService.Setup(service => service.Put(It.IsAny<BookPutDto>())).ReturnsAsync(ApiResult<Book>.Success(_mocker.CreateInstance<Book>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
 
     ActionResult<BookDto> result = await _controller.Put(putDto);
@@ -125,9 +125,9 @@ public class BooksControllerTests
   {
     Id<Book> id = new(Guid.NewGuid());
     BookPatchDto patchDto = new() { Title = "title", Author = "author", Pages = 100 };
-    BookDto expected = new() { Id = id.ToString(), Title = "title", Author = "author", Pages = 100 };
+    BookDto expected = new() { Id = id.ToString(), Title = patchDto.Title ?? "", Author = patchDto.Author ?? "", Pages = patchDto.Pages ?? 0 };
 
-    _booksService.Setup(service => service.Patch(id, patchDto)).ReturnsAsync(ApiResult<Book>.Success(new Book { Id = id, Title = "title", Author = "author", Pages = 100 }));
+    _booksService.Setup(service => service.Patch(id, patchDto)).ReturnsAsync(ApiResult<Book>.Success(_mocker.CreateInstance<Book>()));
     _booksConverter.Setup(converter => converter.ToDto(It.IsAny<Book>())).Returns(expected);
 
     ActionResult<BookDto> result = await _controller.Patch(id, patchDto);

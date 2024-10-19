@@ -31,18 +31,31 @@ public class SessionController(ISessionService sessionService, ILogger<SessionCo
       return result.GetActionResult();
     }
 
-    List<Claim> claims = [new(ClaimTypes.NameIdentifier, result.Value.User.Id.ToString())];
-    ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+    await SigninUser(result.Value);
 
-    HttpContext.Response.Cookies.Append("refresh_token", result.Value.Tokens.RefreshToken, new CookieOptions
+    return Ok(_userConverter.ToDto(result.Value.User));
+  }
+
+  private async Task SigninUser(SessionContext context)
+  {
+    Claim nameIdentifierClaim = new(ClaimTypes.NameIdentifier, context.User.Id.ToString());
+    List<Claim> claims = [nameIdentifierClaim];
+
+    ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+    ClaimsPrincipal principal = new(identity);
+
+    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+    SetRefreshTokenCookie(context.Tokens.RefreshToken, context.Tokens.ExpiresInSeconds);
+  }
+
+  private void SetRefreshTokenCookie(string refreshToken, int? expiresInSeconds)
+  {
+    HttpContext.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
     {
       HttpOnly = true,
       Secure = true,
       SameSite = SameSiteMode.Strict,
-      Expires = result.Value.Tokens.ExpiresInSeconds.HasValue ? DateTime.UtcNow.AddSeconds((double)result.Value.Tokens.ExpiresInSeconds) : null,
+      Expires = expiresInSeconds.HasValue ? DateTime.UtcNow.AddSeconds((double)expiresInSeconds) : null,
     });
-
-    return Ok(_userConverter.ToDto(result.Value.User));
   }
 }
