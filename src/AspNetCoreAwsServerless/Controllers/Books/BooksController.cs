@@ -114,7 +114,7 @@ public class BooksController(
         {
           Title = $"Test Book {i.ToString().PadLeft(3, '0')}",
           Author = $"Test Author {i.ToString().PadLeft(3, '0')}",
-          Pages = i * 10
+          Pages = i * 10,
         }
       );
     }
