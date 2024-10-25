@@ -6,6 +6,7 @@ using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Session;
 using AspNetCoreAwsServerless.Utils.Result;
+using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -46,8 +47,7 @@ public class SessionControllerTests
 
     ActionResult<UserDto> result = await _controller.Login(loginDto);
 
-    Assert.IsType<ObjectResult>(result.Result);
-    Assert.IsType<ProblemHttpResult>(((ObjectResult)result.Result).Value);
+    result.Should().HaveFailed();
   }
 
   [Fact]
@@ -83,7 +83,6 @@ public class SessionControllerTests
     _authenticationService.Verify(x => x.SignInAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties>()), Times.Once);
     _httpContext.Verify(x => x.Response.Cookies.Append(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CookieOptions>()), Times.Once);
 
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+    result.Should().HaveValue(expected);
   }
 }

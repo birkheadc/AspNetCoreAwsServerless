@@ -4,6 +4,7 @@ using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Tests.Unit.Controllers.ResolvedUser;
 using AspNetCoreAwsServerless.Utils.Id;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.AutoMock;
@@ -42,8 +43,6 @@ public class MeControllerTests : ResolvedUserControllerBaseTests
     SetupGetCurrentUser(user);
 
     ActionResult<UserDto> result = await _controller.Get();
-
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+    result.Should().HaveValue(expected);
   }
 }

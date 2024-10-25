@@ -9,6 +9,7 @@ using AspNetCoreAwsServerless.Tests.Unit.TestData.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.AutoMock;
@@ -47,9 +48,7 @@ public class BooksRepositoryTests
     ApiResult<Book> result = await _repository.Get(_testBooks[0].Id);
 
     _dynamoMock.Verify(mock => mock.LoadAsync<Book>(expected.Id, default), Times.Once);
-
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -61,8 +60,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.LoadAsync<Book>(expected.Id, default), Times.Once);
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(404);
   }
 
   [Fact]
@@ -78,8 +76,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.LoadAsync<Book>(expected.Id, default), Times.Once);
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 
   [Fact]
@@ -100,8 +97,7 @@ public class BooksRepositoryTests
       Times.Once
     );
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -122,8 +118,7 @@ public class BooksRepositoryTests
       Times.Once
     );
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 
   [Fact]
@@ -135,8 +130,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.SaveAsync(expected, default), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -152,8 +146,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.SaveAsync(expected, default), Times.Once);
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 
   [Fact]
@@ -165,7 +158,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.DeleteAsync<Book>(id, default), Times.Once);
 
-    Assert.True(result.IsSuccess);
+    result.Should().HaveSucceeded();
   }
 
   [Fact]
@@ -181,8 +174,7 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.DeleteAsync<Book>(id, default), Times.Once);
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 
   // Todo: This test fails because BatchWrite<T> is not mockable.
@@ -218,14 +210,17 @@ public class BooksRepositoryTests
 
     _dynamoMock.Verify(mock => mock.CreateBatchWrite<Book>(default), Times.Once);
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 
   [Fact]
   public async Task GetPage_ReturnsPaginatedSetWithToken()
   {
-    List<Book> expected = _testBooks[.._options.PageSize];
+    Paginated<Book> expected = new()
+    {
+      Values = _testBooks[.._options.PageSize],
+      PaginationToken = null,
+    };
 
     _dynamoMock
       .Setup(mock =>
@@ -234,7 +229,7 @@ public class BooksRepositoryTests
           It.IsAny<DynamoDBOperationConfig>()
         )
       )
-      .Returns(new MockAsyncSearch<Book>(expected));
+      .Returns(new MockAsyncSearch<Book>(expected.Values));
 
     ApiResult<Paginated<Book>> result = await _repository.GetPage();
 
@@ -247,8 +242,7 @@ public class BooksRepositoryTests
       Times.Once
     );
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value.Values);
+    result.Should().HaveSucceeded().And.HaveValue(expected, o => o.Excluding(x => x.PaginationToken));
   }
 
   [Fact]
@@ -278,7 +272,7 @@ public class BooksRepositoryTests
       Times.Once
     );
 
-    Assert.True(result.IsSuccess);
+    result.Should().HaveSucceeded();
   }
 
   [Fact]
@@ -308,7 +302,6 @@ public class BooksRepositoryTests
       Times.Once
     );
 
-    Assert.False(result.IsSuccess);
-    Assert.Equal(500, result.Errors.StatusCode);
+    result.Should().HaveFailed().And.HaveStatusCode(500);
   }
 }

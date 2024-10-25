@@ -6,6 +6,7 @@ using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
 using AspNetCoreAwsServerless.Utils.Result;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -38,8 +39,8 @@ public class BooksControllerTests
     ActionResult<Paginated<BookDto>> result = await _controller.GetFirstPage();
 
     _booksService.Verify(service => service.GetPage(null), Times.Once);
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -52,8 +53,8 @@ public class BooksControllerTests
     ActionResult<Paginated<BookDto>> result = await _controller.GetPage("token");
 
     _booksService.Verify(service => service.GetPage("token"), Times.Once);
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -68,8 +69,8 @@ public class BooksControllerTests
     ActionResult<BookDto> result = await _controller.Get(id);
 
     _booksService.Verify(service => service.Get(It.IsAny<Id<Book>>()), Times.Once);
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -84,8 +85,8 @@ public class BooksControllerTests
     ActionResult<BookDto> result = await _controller.Create(createDto);
 
     _booksService.Verify(service => service.Create(createDto), Times.Once);
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -100,7 +101,7 @@ public class BooksControllerTests
 
     _booksService.Verify(service => service.CreateMany(createManyDto), Times.Once);
 
-    Assert.IsType<OkResult>(result);
+    result.Should().HaveSucceeded();
   }
 
   [Fact]
@@ -116,8 +117,7 @@ public class BooksControllerTests
 
     _booksService.Verify(service => service.Put(putDto), Times.Once);
 
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -133,8 +133,7 @@ public class BooksControllerTests
     ActionResult<BookDto> result = await _controller.Patch(id, patchDto);
 
     _booksService.Verify(service => service.Patch(id, patchDto), Times.Once);
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, ((OkObjectResult)result.Result).Value);
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
@@ -147,7 +146,7 @@ public class BooksControllerTests
     ActionResult result = await _controller.Delete(id);
 
     _booksService.Verify(service => service.Delete(id), Times.Once);
-    Assert.IsType<OkResult>(result);
+    result.Should().HaveSucceeded();
   }
 
   [Fact]
@@ -160,7 +159,7 @@ public class BooksControllerTests
     ActionResult result = await _controller.SeedMany(num);
 
     _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Once);
-    Assert.IsType<OkResult>(result);
+    result.Should().HaveSucceeded();
   }
 
   [Fact]
@@ -171,8 +170,7 @@ public class BooksControllerTests
 
     _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Never);
 
-    Assert.IsType<ObjectResult>(result);
-    Assert.IsType<ProblemHttpResult>(((ObjectResult)result).Value);
+    result.Should().HaveFailed();
   }
 
   [Fact]
@@ -183,7 +181,6 @@ public class BooksControllerTests
 
     _booksService.Verify(service => service.CreateMany(It.IsAny<BookCreateManyDto>()), Times.Never);
 
-    Assert.IsType<ObjectResult>(result);
-    Assert.IsType<ProblemHttpResult>(((ObjectResult)result).Value);
+    result.Should().HaveFailed();
   }
 }

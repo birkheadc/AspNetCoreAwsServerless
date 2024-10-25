@@ -1,5 +1,6 @@
 using AspNetCoreAwsServerless.Dtos.Sums;
 using AspNetCoreAwsServerless.Services.Sums;
+using FluentAssertions;
 using Moq.AutoMock;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Services.Sums;
@@ -20,7 +21,7 @@ public class SumsServiceTests
   {
     int actual = await _service.Sum(dto);
 
-    Assert.Equal(expected, actual);
+    actual.Should().Be(expected);
   }
 
   public static IEnumerable<object[]> Sum_ReturnsSumOfAllValues_Data()

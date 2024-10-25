@@ -17,14 +17,14 @@ public class MockAsyncSearch<T> : AsyncSearch<T>
   }
 
   public override Task<List<T>> GetNextSetAsync(
-    CancellationToken cancellationToken = default(CancellationToken)
+    CancellationToken cancellationToken = default
   )
   {
     return Task.FromResult(Items);
   }
 
   public override Task<List<T>> GetRemainingAsync(
-    CancellationToken cancellationToken = default(CancellationToken)
+    CancellationToken cancellationToken = default
   )
   {
     return Task.FromResult(Items);

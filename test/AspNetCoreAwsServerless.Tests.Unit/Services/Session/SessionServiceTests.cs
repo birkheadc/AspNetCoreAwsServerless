@@ -35,8 +35,7 @@ public class SessionServiceTests
 
     ApiResult<SessionContext> result = await _service.Login(_mocker.CreateInstance<LoginDto>());
 
-    Assert.True(result.IsFailure);
-    Assert.Equal(ApiResultErrors.BadRequest, result.Errors);
+    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.BadRequest);
   }
 
   [Fact]
@@ -47,16 +46,23 @@ public class SessionServiceTests
 
     ApiResult<SessionContext> result = await _service.Login(_mocker.CreateInstance<LoginDto>());
 
-    Assert.True(result.IsFailure);
-    Assert.Equal(ApiResultErrors.BadRequest, result.Errors);
+    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.BadRequest);
   }
 
   [Fact]
   public async Task Login_ReturnsUserAndTokens_WhenSuccessful()
   {
-    User user = _mocker.CreateInstance<User>();
+
+    SessionContext expected = new()
+    {
+      User = _mocker.CreateInstance<User>(),
+      Tokens = _mocker.CreateInstance<SessionTokens>()
+    };
+
+    User user = expected.User;
+    SessionTokens sessionTokens = expected.Tokens;
+
     CognitoTokens cognitoTokens = _mocker.CreateInstance<CognitoTokens>();
-    SessionTokens sessionTokens = _mocker.CreateInstance<SessionTokens>();
 
     _cognitoServiceMock.Setup(c => c.GetTokens(It.IsAny<LoginDto>())).ReturnsAsync(ApiResult<CognitoTokens>.Success(cognitoTokens));
     _usersServiceMock.Setup(u => u.GetOrCreateNew(It.IsAny<IdToken>())).ReturnsAsync(ApiResult<User>.Success(user));
@@ -66,8 +72,6 @@ public class SessionServiceTests
 
     _sessionCacheMock.Verify(s => s.SetAccessToken(user.Id, cognitoTokens.AccessToken), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(user, result.Value.User);
-    Assert.Equal(sessionTokens, result.Value.Tokens);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 }

@@ -1,6 +1,6 @@
 using AspNetCoreAwsServerless.Controllers.Example;
 using AspNetCoreAwsServerless.Dtos.Example;
-using Microsoft.AspNetCore.Mvc;
+using FluentAssertions;
 using Moq.AutoMock;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Controllers.Example;
@@ -21,7 +21,7 @@ public class ExampleControllerTests
     var dto = new ExampleDto { DisplayName = "Test", Password = "Password123", SecretCode = "1234" };
     var result = await _controller.PostExample(dto);
 
-    Assert.IsType<OkResult>(result);
+    result.Should().HaveSucceeded();
   }
 
 

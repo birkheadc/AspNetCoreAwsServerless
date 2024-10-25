@@ -3,7 +3,6 @@ using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
-using AspNetCoreAwsServerless.Services.Cognito;
 using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Id;
@@ -18,15 +17,11 @@ public class UsersServiceTests
   private readonly AutoMocker _mocker = new();
   private readonly UsersService _service;
   private readonly Mock<IUsersRepository> _usersRepositoryMock;
-  private readonly Mock<ICognitoService> _cognitoServiceMock;
-  private readonly Mock<IUsersConverter> _usersConverterMock;
   private readonly Mock<IJwtService> _jwtServiceMock;
   public UsersServiceTests()
   {
     _service = _mocker.CreateInstance<UsersService>();
     _usersRepositoryMock = _mocker.GetMock<IUsersRepository>();
-    _cognitoServiceMock = _mocker.GetMock<ICognitoService>();
-    _usersConverterMock = _mocker.GetMock<IUsersConverter>();
     _jwtServiceMock = _mocker.GetMock<IJwtService>();
   }
 
@@ -38,8 +33,7 @@ public class UsersServiceTests
     _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(expected);
     ApiResult<User> actual = await _service.Get(new Id<User>(Guid.NewGuid()));
 
-    Assert.NotNull(actual);
-    Assert.Equal(expected, actual.Value);
+    actual.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -48,8 +42,7 @@ public class UsersServiceTests
     _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([]);
     ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
-    Assert.True(actual.IsFailure);
-    Assert.Equal(ApiResultErrors.InternalServerError, actual.Errors);
+    actual.Should().HaveFailed().And.HaveErrors(ApiResultErrors.InternalServerError);
   }
 
   [Fact]
@@ -58,8 +51,7 @@ public class UsersServiceTests
     _jwtServiceMock.Setup(mock => mock.Decode(It.IsAny<string>())).Returns([new Claim("sub", Guid.NewGuid().ToString())]);
     ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
-    Assert.True(actual.IsFailure);
-    Assert.Equal(ApiResultErrors.InternalServerError, actual.Errors);
+    actual.Should().HaveFailed().And.HaveErrors(ApiResultErrors.InternalServerError);
   }
 
   [Fact]
@@ -74,8 +66,7 @@ public class UsersServiceTests
 
     ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
-    Assert.True(actual.IsSuccess);
-    Assert.Equal(expected, actual.Value);
+    actual.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -91,7 +82,6 @@ public class UsersServiceTests
 
     ApiResult<User> actual = await _service.GetOrCreateNew(_mocker.CreateInstance<IdToken>());
 
-    Assert.True(actual.IsSuccess);
-    Assert.Equal(expected, actual.Value);
+    actual.Should().HaveSucceeded().And.HaveValue(expected);
   }
 }

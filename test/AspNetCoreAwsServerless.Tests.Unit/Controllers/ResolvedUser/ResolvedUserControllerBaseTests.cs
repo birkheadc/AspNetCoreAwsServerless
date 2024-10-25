@@ -5,6 +5,7 @@ using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Tests.Unit.Mocks.ResolvedUser;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Moq.AutoMock;
@@ -35,7 +36,8 @@ public class ResolvedUserControllerBaseTests
   public async Task GetCurrentUser_ThrowsUnauthorizedAccessException_ClaimNotFound()
   {
     _httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity()));
-    await Assert.ThrowsAsync<UnauthorizedAccessException>(_controller.GetCurrentUser);
+    Func<Task> action = _controller.GetCurrentUser;
+    await action.Should().ThrowAsync<UnauthorizedAccessException>();
   }
 
   [Fact]
@@ -43,14 +45,16 @@ public class ResolvedUserControllerBaseTests
   {
     _httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString())])));
     _usersService.Setup(x => x.Get(It.IsAny<Id<User>>())).ReturnsAsync(ApiResult<User>.NotFound);
-    await Assert.ThrowsAsync<UnauthorizedAccessException>(_controller.GetCurrentUser);
+    Func<Task> action = _controller.GetCurrentUser;
+    await action.Should().ThrowAsync<UnauthorizedAccessException>();
   }
 
   [Fact]
   public async Task GetCurrentUser_ThrowsUnauthorizedAccessException_InvalidUserId()
   {
     _httpContext.Setup(x => x.User).Returns(new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "123")])));
-    await Assert.ThrowsAsync<UnauthorizedAccessException>(_controller.GetCurrentUser);
+    Func<Task> action = _controller.GetCurrentUser;
+    await action.Should().ThrowAsync<UnauthorizedAccessException>();
   }
 
   [Fact]
@@ -65,6 +69,6 @@ public class ResolvedUserControllerBaseTests
     SetupGetCurrentUser(expected);
 
     User actual = await _controller.GetCurrentUser();
-    Assert.Equal(expected, actual);
+    actual.Should().BeEquivalentTo(expected);
   }
 }

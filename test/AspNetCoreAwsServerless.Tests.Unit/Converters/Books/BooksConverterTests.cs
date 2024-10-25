@@ -2,6 +2,7 @@ using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
 using AspNetCoreAwsServerless.Utils.Id;
+using FluentAssertions;
 using Moq;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Converters.Books;
@@ -37,9 +38,7 @@ public class BooksConverterTests
 
     Book actual = _converter.ToEntity(dto);
 
-    Assert.Equal(expected.Title, actual.Title);
-    Assert.Equal(expected.Author, expected.Author);
-    Assert.Equal(expected.Pages, actual.Pages);
+    actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id));
   }
 
   [Fact]
@@ -66,10 +65,7 @@ public class BooksConverterTests
 
     Book actual = _converter.ToEntity(dto);
 
-    Assert.Equal(expected.Id, actual.Id);
-    Assert.Equal(expected.Title, actual.Title);
-    Assert.Equal(expected.Author, expected.Author);
-    Assert.Equal(expected.Pages, actual.Pages);
+    actual.Should().BeEquivalentTo(expected);
   }
 
   [Fact]
@@ -98,6 +94,6 @@ public class BooksConverterTests
 
     Book actual = _converter.ToEntity(dto, oldBook);
 
-    Assert.Equivalent(expected, actual);
+    actual.Should().BeEquivalentTo(expected);
   }
 }

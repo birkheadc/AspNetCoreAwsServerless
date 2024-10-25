@@ -40,8 +40,7 @@ public class BooksServiceTests
 
     _repositoryMock.Verify(mock => mock.Get(expected.Id), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -55,8 +54,7 @@ public class BooksServiceTests
 
     _repositoryMock.Verify(mock => mock.GetAll(), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -86,8 +84,7 @@ public class BooksServiceTests
 
     _repositoryMock.Verify(mock => mock.Put(expected), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -118,8 +115,7 @@ public class BooksServiceTests
 
     _repositoryMock.Verify(mock => mock.Put(expected), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -146,8 +142,7 @@ public class BooksServiceTests
 
     _repositoryMock.Verify(mock => mock.Put(expected), Times.Once);
 
-    Assert.True(result.IsSuccess);
-    Assert.Equal(expected, result.Value);
+    result.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
@@ -189,6 +184,6 @@ public class BooksServiceTests
     ApiResult result = await _service.CreateMany(dto);
 
     _repositoryMock.Verify(mock => mock.PutMany(expected), Times.Once);
-    Assert.True(result.IsSuccess);
+    result.Should().HaveSucceeded();
   }
 }

@@ -1,5 +1,6 @@
 using AspNetCoreAwsServerless.Config.Root;
 using AspNetCoreAwsServerless.Controllers.Root;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq.AutoMock;
@@ -26,15 +27,14 @@ public class RootControllerTests
     string expected = options.Greeting;
 
     ActionResult<string> result = await _controller.Get();
-
-    OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, okObjectResult.Value);
+    result.Should().HaveValue(expected);
   }
 
   [Fact]
   public void ThrowError_ThrowsError()
   {
-    Assert.Throws<Exception>(_controller.ThrowError);
+    Func<IActionResult> action = _controller.ThrowError;
+    action.Should().Throw<Exception>();
   }
 
   [Fact]
@@ -44,7 +44,6 @@ public class RootControllerTests
 
     ActionResult<string> result = await _controller.GetSecure();
 
-    OkObjectResult okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(expected, okObjectResult.Value);
+    result.Should().HaveValue(expected);
   }
 }

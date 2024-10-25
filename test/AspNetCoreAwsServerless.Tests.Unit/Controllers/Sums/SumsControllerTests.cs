@@ -1,6 +1,7 @@
 using AspNetCoreAwsServerless.Controllers.Sums;
 using AspNetCoreAwsServerless.Dtos.Sums;
 using AspNetCoreAwsServerless.Services.Sums;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Moq.AutoMock;
@@ -27,7 +28,6 @@ public class SumsControllerTests
 
     ActionResult<int> result = await _controller.Sum(_mocker.GetMock<SumCreateDto>().Object);
 
-    Assert.IsType<OkObjectResult>(result.Result);
-    Assert.Equal(1, ((OkObjectResult)result.Result).Value);
+    result.Should().HaveValue(1);
   }
 }
