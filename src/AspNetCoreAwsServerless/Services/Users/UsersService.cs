@@ -1,10 +1,8 @@
 using System.Security.Claims;
-using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
-using AspNetCoreAwsServerless.Services.Cognito;
 using AspNetCoreAwsServerless.Services.Jwt;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Result;
@@ -14,8 +12,6 @@ namespace AspNetCoreAwsServerless.Services.Users;
 public class UsersService(
   IUsersRepository usersRepository,
   ILogger<UsersService> logger,
-  ICognitoService cognitoService,
-  IUsersConverter usersConverter,
   IJwtService jwtService
 ) : IUsersService
 {

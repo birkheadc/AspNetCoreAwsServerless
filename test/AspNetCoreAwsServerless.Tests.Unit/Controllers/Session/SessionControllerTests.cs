@@ -70,7 +70,7 @@ public class SessionControllerTests
 
     // HttpContext.SignInAsync cannot be mocked directly, instead mock IAuthenticationService.SignInAsync
     // Then setup the service provider to return the mocked IAuthenticationService
-    _authenticationService.Setup(x => x.SignInAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties>())).Returns(Task.FromResult((object)null));
+    _authenticationService.Setup(x => x.SignInAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<ClaimsPrincipal>(), It.IsAny<AuthenticationProperties>())).Returns(Task.CompletedTask);
     _serviceProvider.Setup(x => x.GetService(typeof(IAuthenticationService))).Returns(_authenticationService.Object);
 
     _httpContext.Setup(x => x.Response.Cookies.Append(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CookieOptions>()));
