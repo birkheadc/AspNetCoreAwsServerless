@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Books;
 
+/// <summary>
+/// Provides endpoints for managing books.
+/// </summary>
 [ApiController]
 [Route("books")]
 public class BooksController(

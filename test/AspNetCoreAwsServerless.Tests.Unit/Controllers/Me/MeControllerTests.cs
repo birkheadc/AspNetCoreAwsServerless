@@ -26,17 +26,10 @@ public class MeControllerTests : ResolvedUserControllerBaseTests
   [Fact]
   public async Task Get_ReturnsCurrentUserDto()
   {
-    UserDto expected = new()
-    {
-      Id = Guid.NewGuid().ToString(),
-      EmailAddress = "test@test.com",
-    };
+    UserDto expected = _mocker.GetMock<UserDto>().Object;
 
-    User user = new()
-    {
-      Id = new Id<User>(Guid.Parse(expected.Id)),
-      EmailAddress = expected.EmailAddress,
-    };
+    User user = _mocker.GetMock<User>().Object;
+    user.Id = Guid.NewGuid().ToString();
 
     _usersConverter.Setup(x => x.ToDto(user)).Returns(expected);
 

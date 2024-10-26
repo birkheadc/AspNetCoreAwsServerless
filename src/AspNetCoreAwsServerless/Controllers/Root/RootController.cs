@@ -5,6 +5,9 @@ using Microsoft.Extensions.Options;
 
 namespace AspNetCoreAwsServerless.Controllers.Root;
 
+/// <summary>
+/// Provides the root endpoint greeting. Error and secure endpoints should be moved to a debugging controller.
+/// </summary>
 [ApiController]
 [Route("")]
 public class RootController(IOptions<RootOptions> config, ILogger<RootController> logger) : ControllerBase

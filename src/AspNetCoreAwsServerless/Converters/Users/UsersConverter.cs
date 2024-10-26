@@ -12,6 +12,7 @@ public class UsersConverter : IUsersConverter
       Id = user.Id.ToString(),
       EmailAddress = user.EmailAddress,
       DisplayName = user.DisplayName,
+      Roles = user.Roles.Select(role => role.ToString()).ToArray()
     };
   }
 }

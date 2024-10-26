@@ -1,5 +1,6 @@
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Users;
+using AspNetCoreAwsServerless.Entities.Roles;
 using AspNetCoreAwsServerless.Entities.Users;
 using FluentAssertions;
 using Moq.AutoMock;
@@ -25,14 +26,16 @@ public class UsersConverterTests
     {
       Id = id,
       EmailAddress = "email@address.com",
-      DisplayName = "Display Name"
+      DisplayName = "Display Name",
+      Roles = [UserRole.Admin]
     };
 
     UserDto expectedDto = new()
     {
       Id = id.ToString(),
       EmailAddress = "email@address.com",
-      DisplayName = "Display Name"
+      DisplayName = "Display Name",
+      Roles = ["Admin"]
     };
 
     UserDto actualDto = _converter.ToDto(user);

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Sums;
 
+/// <summary>
+/// An simple example controller that provides a single endpoint for summing two numbers. Can probably be removed soon.
+/// </summary>
 [ApiController]
 [AllowAnonymous]
 [Route("sums")]

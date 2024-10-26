@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
+using AspNetCoreAwsServerless.Entities.Roles;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Jwt;
@@ -55,7 +56,7 @@ public class UsersService(
     User user = new()
     {
       Id = userId,
-      EmailAddress = email
+      EmailAddress = email,
     };
 
     return await _usersRepository.Put(user);

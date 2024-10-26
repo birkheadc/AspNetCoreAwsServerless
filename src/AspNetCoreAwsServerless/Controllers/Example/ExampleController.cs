@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Example;
 
+/// <summary>
+/// Used by the frontend to demo the form framework.
+/// </summary>
 [ApiController]
 [Route("example")]
 public class ExampleController(ILogger<ExampleController> logger) : ControllerBase

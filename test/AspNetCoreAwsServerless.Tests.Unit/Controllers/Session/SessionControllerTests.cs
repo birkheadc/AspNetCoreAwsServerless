@@ -54,13 +54,13 @@ public class SessionControllerTests
   public async Task Login_SignsInUser_AndReturnsSuccessResult_WhenLoginSucceeds()
   {
     LoginDto loginDto = _mocker.CreateInstance<LoginDto>();
+    User user = _mocker.GetMock<User>().Object;
+    user.Id = Guid.NewGuid().ToString();
+    user.EmailAddress = "test@test.com";
+
     SessionContext sessionContext = new()
     {
-      User = new User()
-      {
-        Id = Guid.NewGuid().ToString(),
-        EmailAddress = "test@test.com",
-      },
+      User = user,
       Tokens = _mocker.CreateInstance<SessionTokens>()
     };
 

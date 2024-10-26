@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Session;
 
+/// <summary>
+/// Provides endpoints for signing in and out.
+/// </summary>
 [ApiController]
 [AllowAnonymous]
 [Route("session")]
@@ -38,8 +41,10 @@ public class SessionController(ISessionService sessionService, ILogger<SessionCo
 
   private async Task SigninUser(SessionContext context)
   {
+    Claim[] roleClaims = context.User.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())).ToArray();
     Claim nameIdentifierClaim = new(ClaimTypes.NameIdentifier, context.User.Id.ToString());
-    List<Claim> claims = [nameIdentifierClaim];
+
+    Claim[] claims = [.. roleClaims, nameIdentifierClaim];
 
     ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
     ClaimsPrincipal principal = new(identity);

@@ -60,11 +60,8 @@ public class ResolvedUserControllerBaseTests
   [Fact]
   public async Task GetCurrentUser_ReturnsUser()
   {
-    User expected = new()
-    {
-      Id = new Id<User>(Guid.NewGuid()),
-      EmailAddress = "test@test.com",
-    };
+    User expected = _mocker.GetMock<User>().Object;
+    expected.Id = Guid.NewGuid().ToString();
 
     SetupGetCurrentUser(expected);
 

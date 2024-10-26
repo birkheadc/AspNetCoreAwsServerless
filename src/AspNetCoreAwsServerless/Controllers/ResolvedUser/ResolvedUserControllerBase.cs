@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.ResolvedUser;
 
+/// <summary>
+/// Base class for controllers that require the current user to be resolved.
+/// </summary>
 public abstract class ResolvedUserControllerBase<T>(ILogger<T> logger, IUsersService usersService) : ControllerBase
 {
   protected readonly ILogger<T> _logger = logger;

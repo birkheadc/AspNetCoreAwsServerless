@@ -28,7 +28,7 @@ public class UsersServiceTests
   [Fact]
   public async Task Get_ReturnsUser()
   {
-    User expected = new() { Id = new Id<User>(Guid.NewGuid()), EmailAddress = "test@test.com" };
+    User expected = _mocker.GetMock<User>().Object;
 
     _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(expected);
     ApiResult<User> actual = await _service.Get(new Id<User>(Guid.NewGuid()));

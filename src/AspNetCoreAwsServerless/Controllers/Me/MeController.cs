@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCoreAwsServerless.Controllers.Me;
 
+/// <summary>
+/// Provides endpoints for the current user to manage their own data.
+/// </summary>
 [ApiController]
 [Route("me")]
 [Authorize]

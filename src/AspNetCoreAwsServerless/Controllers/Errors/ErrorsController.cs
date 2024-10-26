@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AspNetCoreAwsServerless.Controllers.Errors;
 
 /// <summary>
-/// Currently not implemented.
+/// Can be used to handle errors. Currently not implemented.
 /// </summary>
 [ApiController]
 [Route("errors")]
