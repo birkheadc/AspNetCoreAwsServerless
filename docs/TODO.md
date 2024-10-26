@@ -39,3 +39,4 @@ This seems to be only a problem on my laptop ¯\_(ツ)_/¯
 Test that a user with no roles in the database fetches properly and has an empty array for roles.
 
 First need to create a framework for granting a user roles and make sure it updates in the DB, then implement authorization based on permissions which are attached to roles.
+  - Use UsersController.UpdateUser to test adding / removing user roles.
