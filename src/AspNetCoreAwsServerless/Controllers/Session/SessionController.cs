@@ -17,12 +17,17 @@ namespace AspNetCoreAwsServerless.Controllers.Session;
 [ApiController]
 [AllowAnonymous]
 [Route("session")]
-public class SessionController(ISessionService sessionService, ILogger<SessionController> logger, IUsersConverter userConverter) : ControllerBase
+public class SessionController(
+  ISessionService sessionService,
+  ILogger<SessionController> logger,
+  IUsersConverter userConverter
+) : ControllerBase
 {
   private readonly ISessionService _sessionService = sessionService;
   private readonly ILogger<SessionController> _logger = logger;
 
   private readonly IUsersConverter _userConverter = userConverter;
+
   [HttpPost]
   public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto dto)
   {
@@ -41,7 +46,9 @@ public class SessionController(ISessionService sessionService, ILogger<SessionCo
 
   private async Task SigninUser(SessionContext context)
   {
-    Claim[] roleClaims = context.User.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())).ToArray();
+    Claim[] roleClaims = context
+      .User.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString()))
+      .ToArray();
     Claim nameIdentifierClaim = new(ClaimTypes.NameIdentifier, context.User.Id.ToString());
 
     Claim[] claims = [.. roleClaims, nameIdentifierClaim];
@@ -55,12 +62,18 @@ public class SessionController(ISessionService sessionService, ILogger<SessionCo
 
   private void SetRefreshTokenCookie(string refreshToken, int? expiresInSeconds)
   {
-    HttpContext.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
-    {
-      HttpOnly = true,
-      Secure = true,
-      SameSite = SameSiteMode.Strict,
-      Expires = expiresInSeconds.HasValue ? DateTime.UtcNow.AddSeconds((double)expiresInSeconds) : null,
-    });
+    HttpContext.Response.Cookies.Append(
+      "refresh_token",
+      refreshToken,
+      new CookieOptions
+      {
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict,
+        Expires = expiresInSeconds.HasValue
+          ? DateTime.UtcNow.AddSeconds((double)expiresInSeconds)
+          : null,
+      }
+    );
   }
 }

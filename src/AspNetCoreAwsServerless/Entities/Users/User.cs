@@ -5,7 +5,7 @@ using AspNetCoreAwsServerless.Utils.Id;
 namespace AspNetCoreAwsServerless.Entities.Users;
 
 [DynamoDBTable("Users")]
-public class User
+public record User
 {
   [DynamoDBHashKey]
   [DynamoDBProperty(typeof(IdPropertyConverter<User>))]

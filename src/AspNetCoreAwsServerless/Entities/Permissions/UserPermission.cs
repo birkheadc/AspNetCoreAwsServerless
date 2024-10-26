@@ -9,5 +9,5 @@ public enum UserPermission
 {
   CanModifyBooks,
   CanModifyUsers,
-  CanPromoteUsersToAdmin,
+  CanModifyUserRoles,
 }

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Roles;
@@ -12,11 +13,13 @@ namespace AspNetCoreAwsServerless.Services.Users;
 
 public class UsersService(
   IUsersRepository usersRepository,
+  IUsersConverter usersConverter,
   ILogger<UsersService> logger,
   IJwtService jwtService
 ) : IUsersService
 {
   private readonly IUsersRepository _usersRepository = usersRepository;
+  private readonly IUsersConverter _usersConverter = usersConverter;
   private readonly ILogger<UsersService> _logger = logger;
 
   private readonly IJwtService _jwtService = jwtService;
@@ -28,6 +31,7 @@ public class UsersService(
 
   public async Task<ApiResult<User>> GetOrCreateNew(IdToken token)
   {
+    _logger.LogInformation("Getting or creating new user from IdToken");
     IEnumerable<Claim> claims = _jwtService.Decode(token.Value);
     string? userIdString = claims.FirstOrDefault(c => c.Type == "sub")?.Value;
     if (userIdString is null)
@@ -53,18 +57,54 @@ public class UsersService(
       return userResult;
     }
 
-    User user = new()
-    {
-      Id = userId,
-      EmailAddress = email,
-    };
+    User user = new() { Id = userId, EmailAddress = email, };
 
     return await _usersRepository.Put(user);
   }
 
-  public Task<ApiResult<User>> Patch(Id<User> id, UserPatchDto dto)
+  public async Task<ApiResult<User>> Patch(Id<User> id, UserPatchDto dto)
   {
-    throw new NotImplementedException();
+    _logger.LogInformation("Patching user {Id}", id);
+    ApiResult<User> userResult = await Get(id);
+    if (userResult.IsFailure)
+    {
+      return userResult;
+    }
+
+    ApiResult<User> updatedUserResult = _usersConverter.FromEntityAndPatchDto(
+      userResult.Value,
+      dto
+    );
+    if (updatedUserResult.IsFailure)
+    {
+      _logger.LogError("Failed to patch user {Id}", id);
+      return updatedUserResult;
+    }
+
+    return await _usersRepository.Put(updatedUserResult.Value);
+  }
+
+  public async Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesPatchDto dto)
+  {
+    _logger.LogInformation("Updating roles for user {Id} to roles {roles}", id, dto.Roles);
+    ApiResult<User> userResult = await Get(id);
+    if (userResult.IsFailure)
+    {
+      return userResult;
+    }
+
+    if (userResult.Value.Roles.Contains(UserRole.SuperAdmin))
+    {
+      _logger.LogError(
+        "User {Id} is a Super Admin and cannot have their roles modified through the API.",
+        id
+      );
+      return ApiResultErrors.BadRequest;
+    }
+
+    User newUser = userResult.Value with { Roles = dto.Roles };
+
+    return await _usersRepository.Put(newUser);
   }
 
   public Task<ApiResult<User>> Put(UserPutDto dto)

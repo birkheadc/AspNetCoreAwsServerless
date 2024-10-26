@@ -8,11 +8,12 @@ namespace AspNetCoreAwsServerless.Entities.Roles;
 /// </summary>
 public static class RolePermissions
 {
-  private static readonly Dictionary<UserRole, UserPermission[]> _permissions = new()
-  {
-    { UserRole.SuperAdmin, Enum.GetValues<UserPermission>().ToArray() },
-    { UserRole.Admin, new[] { UserPermission.CanModifyBooks, UserPermission.CanModifyUsers } },
-  };
+  private static readonly Dictionary<UserRole, UserPermission[]> _permissions =
+    new()
+    {
+      { UserRole.SuperAdmin, Enum.GetValues<UserPermission>().ToArray() },
+      { UserRole.Admin, new[] { UserPermission.CanModifyBooks, UserPermission.CanModifyUsers } },
+    };
 
   public static UserPermission[] GetPermissionsForRoles(UserRole[] roles)
   {

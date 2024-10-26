@@ -13,4 +13,5 @@ public interface IUsersService
   public Task<ApiResult<User>> Get(Id<User> id);
   public Task<ApiResult<User>> Put(UserPutDto dto);
   public Task<ApiResult<User>> Patch(Id<User> id, UserPatchDto dto);
+  public Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesPatchDto dto);
 }

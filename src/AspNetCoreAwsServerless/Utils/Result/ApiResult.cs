@@ -45,6 +45,7 @@ public class ApiResult
   public static implicit operator ApiResult(ApiResultErrors errors) => new(errors);
 
   public static ApiResult Failure(ValidationResult validationResult) => new(validationResult);
+
   public static ApiResult NotFound => new(ApiResultErrors.NotFound);
   public static ApiResult BadRequest => new(ApiResultErrors.BadRequest);
   public static ApiResult Unauthorized => new(ApiResultErrors.Unauthorized);

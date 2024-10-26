@@ -1,5 +1,7 @@
+using AspNetCoreAwsServerless.Authorization;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Users;
+using AspNetCoreAwsServerless.Entities.Permissions;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
 using AspNetCoreAwsServerless.Utils.Result;
@@ -20,12 +22,24 @@ public class UsersController(
   private readonly IUsersConverter _usersConverter = usersConverter;
 
   [HttpPatch("{id}")]
+  [RequiresPermission([UserPermission.CanModifyUsers])]
   public async Task<ActionResult<UserDto>> UpdateUser(
     [FromRoute] string id,
     [FromBody] UserPatchDto dto
   )
   {
     ApiResult<User> result = await _usersService.Patch(id, dto);
+    return result.GetActionResult(_usersConverter.ToDto);
+  }
+
+  [HttpPatch("{id}/roles")]
+  [RequiresPermission([UserPermission.CanModifyUserRoles])]
+  public async Task<ActionResult<UserDto>> UpdateUserRoles(
+    [FromRoute] string id,
+    [FromBody] UserRolesPatchDto dto
+  )
+  {
+    ApiResult<User> result = await _usersService.UpdateRoles(id, dto);
     return result.GetActionResult(_usersConverter.ToDto);
   }
 }
