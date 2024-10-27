@@ -47,9 +47,19 @@ public class Startup(IConfiguration configuration)
       )
       .AddCookie(options =>
       {
+        // Hacky nonsense, please fix
+        // Problem is that the framework attempts to redirect in two cases:
+        // 1. When the user is not authenticated and attempts to access a protected route
+        // 2. When the controller returns a 403 Forbidden
+        // In the first case, we want to return a 401 Unauthorized, but the StatusCode is 200 for some ASP.NET Core related reason
+        // In the second case, we want to return the original StatusCode
         options.Events.OnRedirectToAccessDenied = options.Events.OnRedirectToLogin = c =>
         {
-          c.Response.StatusCode = c.Response.StatusCode;
+          Console.WriteLine($"OnRedirectToLogin {c.Response.StatusCode}");
+          c.Response.StatusCode =
+            c.Response.StatusCode == StatusCodes.Status200OK
+              ? StatusCodes.Status401Unauthorized
+              : c.Response.StatusCode;
           return Task.FromResult(new ApiResultErrors(c.Response.StatusCode));
         };
       });
