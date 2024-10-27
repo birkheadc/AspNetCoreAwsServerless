@@ -3,6 +3,8 @@ using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Users;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Services.Users;
+using AspNetCoreAwsServerless.Utils.Id;
+using AspNetCoreAwsServerless.Utils.Result;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +27,16 @@ public class MeController(
   [HttpGet]
   public async Task<ActionResult<UserDto>> Get()
   {
-    User user = await GetCurrentUser();
-    return Ok(_usersConverter.ToDto(user));
+    Id<User> id = GetCurrentUserId();
+    ApiResult<User> userResult = await _usersService.Get(id);
+    return userResult.GetActionResult(_usersConverter.ToDto);
+  }
+
+  [HttpPatch("profile")]
+  public async Task<ActionResult<UserDto>> UpdateProfile([FromBody] UserProfileDto dto)
+  {
+    Id<User> id = GetCurrentUserId();
+    ApiResult<User> userResult = await _usersService.UpdateProfile(id, dto);
+    return userResult.GetActionResult(_usersConverter.ToDto);
   }
 }
