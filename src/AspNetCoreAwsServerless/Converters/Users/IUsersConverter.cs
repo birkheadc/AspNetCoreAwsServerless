@@ -9,4 +9,5 @@ public interface IUsersConverter
   public UserProfileDto ToDto(UserProfile profile);
   public UserRolesDto ToDto(UserRoles roles);
   public UserRoles ToEntity(UserRolesDto dto);
+  public UserProfile ToEntity(UserProfileDto dto);
 }

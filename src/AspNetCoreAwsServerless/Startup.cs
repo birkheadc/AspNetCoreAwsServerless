@@ -55,7 +55,6 @@ public class Startup(IConfiguration configuration)
         // In the second case, we want to return the original StatusCode
         options.Events.OnRedirectToAccessDenied = options.Events.OnRedirectToLogin = c =>
         {
-          Console.WriteLine($"OnRedirectToLogin {c.Response.StatusCode}");
           c.Response.StatusCode =
             c.Response.StatusCode == StatusCodes.Status200OK
               ? StatusCodes.Status401Unauthorized

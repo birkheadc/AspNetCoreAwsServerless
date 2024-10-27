@@ -94,7 +94,14 @@ public class UsersService(
 
   public async Task<ApiResult<User>> UpdateProfile(Id<User> id, UserProfileDto dto)
   {
-    // TODO
-    throw new NotImplementedException();
+    ApiResult<User> userResult = await Get(id);
+    if (userResult.IsFailure)
+    {
+      return userResult;
+    }
+
+    User newUser = userResult.Value with { Profile = _usersConverter.ToEntity(dto) };
+
+    return await _usersRepository.Put(newUser);
   }
 }

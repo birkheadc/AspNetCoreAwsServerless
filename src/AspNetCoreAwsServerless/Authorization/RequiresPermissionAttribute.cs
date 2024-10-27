@@ -15,7 +15,6 @@ public class RequiresPermissionAttribute(UserPermission[] requiredPermissions)
   public Task OnAuthorizationAsync(AuthorizationFilterContext context)
   {
     Claim[] roleClaims = context.HttpContext.User.FindAll(ClaimTypes.Role).ToArray();
-
     UserRole[] userRoles = roleClaims.Select(claim => Enum.Parse<UserRole>(claim.Value)).ToArray();
     UserPermission[] userPermissions = RolePermissions.GetPermissionsForRoles(userRoles);
 

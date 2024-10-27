@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace AspNetCoreAwsServerless.Validators.Users;
 
-public class UserRolesPatchDtoValidator : AbstractValidator<UserRolesDto>
+public class UserRolesDtoValidator : AbstractValidator<UserRolesDto>
 {
-  public UserRolesPatchDtoValidator()
+  public UserRolesDtoValidator()
   {
     RuleForEach(v => v.Roles)
       .IsInEnum()

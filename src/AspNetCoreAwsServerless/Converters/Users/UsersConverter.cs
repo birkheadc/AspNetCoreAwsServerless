@@ -30,4 +30,9 @@ public class UsersConverter : IUsersConverter
   {
     return new() { Roles = dto.Roles };
   }
+
+  public UserProfile ToEntity(UserProfileDto dto)
+  {
+    return new() { DisplayName = dto.DisplayName };
+  }
 }
