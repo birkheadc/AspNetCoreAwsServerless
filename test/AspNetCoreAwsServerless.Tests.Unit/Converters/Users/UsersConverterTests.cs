@@ -28,8 +28,8 @@ public class UsersConverterTests
       {
         Id = id,
         EmailAddress = "email@address.com",
-        DisplayName = "Display Name",
-        Roles = [UserRole.Admin]
+        Profile = new() { DisplayName = "Display Name" },
+        Roles = [UserRole.Admin],
       };
 
     UserDto expectedDto =
@@ -37,39 +37,11 @@ public class UsersConverterTests
       {
         Id = id.ToString(),
         EmailAddress = "email@address.com",
-        DisplayName = "Display Name",
-        Roles = [UserRole.Admin]
+        Profile = new() { DisplayName = "Display Name" },
+        Roles = [UserRole.Admin],
       };
 
     UserDto actualDto = _converter.ToDto(user);
     actualDto.Should().BeEquivalentTo(expectedDto);
-  }
-
-  [Fact]
-  public void FromEntityAndPatchDto_ReturnsUser_WithUpdatedData()
-  {
-    User oldUser =
-      new()
-      {
-        Id = Guid.NewGuid(),
-        EmailAddress = "email@address.com",
-        DisplayName = "Display Name",
-        Roles = [UserRole.Admin]
-      };
-
-    UserPatchDto dto =
-      new() { EmailAddress = "new.email@address.com", DisplayName = "New Display Name", };
-
-    User expected =
-      new()
-      {
-        Id = oldUser.Id,
-        EmailAddress = dto.EmailAddress,
-        DisplayName = dto.DisplayName,
-        Roles = oldUser.Roles
-      };
-
-    ApiResult<User> result = _converter.FromEntityAndPatchDto(oldUser, dto);
-    result.Should().HaveValue(expected);
   }
 }

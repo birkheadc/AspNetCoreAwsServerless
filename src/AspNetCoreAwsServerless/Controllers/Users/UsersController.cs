@@ -21,17 +21,6 @@ public class UsersController(
   private readonly ILogger<UsersController> _logger = logger;
   private readonly IUsersConverter _usersConverter = usersConverter;
 
-  [HttpPatch("{id}")]
-  [RequiresPermission([UserPermission.CanModifyUsers])]
-  public async Task<ActionResult<UserDto>> UpdateUser(
-    [FromRoute] string id,
-    [FromBody] UserPatchDto dto
-  )
-  {
-    ApiResult<User> result = await _usersService.Patch(id, dto);
-    return result.GetActionResult(_usersConverter.ToDto);
-  }
-
   [HttpPatch("{id}/roles")]
   [RequiresPermission([UserPermission.CanModifyUserRoles])]
   public async Task<ActionResult<UserDto>> UpdateUserRoles(

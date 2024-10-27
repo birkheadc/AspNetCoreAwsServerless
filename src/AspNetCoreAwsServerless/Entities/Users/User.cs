@@ -11,6 +11,6 @@ public record User
   [DynamoDBProperty(typeof(IdPropertyConverter<User>))]
   public required Id<User> Id { get; set; }
   public required string EmailAddress { get; set; }
-  public string? DisplayName { get; set; }
+  public required UserProfile Profile { get; set; }
   public UserRole[] Roles { get; set; } = [];
 }

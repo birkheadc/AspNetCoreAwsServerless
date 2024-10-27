@@ -13,13 +13,11 @@ namespace AspNetCoreAwsServerless.Services.Users;
 
 public class UsersService(
   IUsersRepository usersRepository,
-  IUsersConverter usersConverter,
   ILogger<UsersService> logger,
   IJwtService jwtService
 ) : IUsersService
 {
   private readonly IUsersRepository _usersRepository = usersRepository;
-  private readonly IUsersConverter _usersConverter = usersConverter;
   private readonly ILogger<UsersService> _logger = logger;
 
   private readonly IJwtService _jwtService = jwtService;
@@ -57,31 +55,15 @@ public class UsersService(
       return userResult;
     }
 
-    User user = new() { Id = userId, EmailAddress = email, };
+    User user =
+      new()
+      {
+        Id = userId,
+        EmailAddress = email,
+        Profile = new(),
+      };
 
     return await _usersRepository.Put(user);
-  }
-
-  public async Task<ApiResult<User>> Patch(Id<User> id, UserPatchDto dto)
-  {
-    _logger.LogInformation("Patching user {Id}", id);
-    ApiResult<User> userResult = await Get(id);
-    if (userResult.IsFailure)
-    {
-      return userResult;
-    }
-
-    ApiResult<User> updatedUserResult = _usersConverter.FromEntityAndPatchDto(
-      userResult.Value,
-      dto
-    );
-    if (updatedUserResult.IsFailure)
-    {
-      _logger.LogError("Failed to patch user {Id}", id);
-      return updatedUserResult;
-    }
-
-    return await _usersRepository.Put(updatedUserResult.Value);
   }
 
   public async Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesPatchDto dto)

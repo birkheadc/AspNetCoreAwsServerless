@@ -102,49 +102,6 @@ public class UsersServiceTests
   }
 
   [Fact]
-  public async Task Patch_Fails_WhenTargetUserIsNotFound()
-  {
-    User oldUser = _mocker.CreateInstance<User>();
-    oldUser.Id = new Id<User>(Guid.NewGuid());
-    oldUser.DisplayName = "Old Display Name";
-
-    UserPatchDto dto = new() { DisplayName = "New Display Name" };
-
-    _usersRepositoryMock
-      .Setup(mock => mock.Get(It.IsAny<Id<User>>()))
-      .ReturnsAsync(ApiResult<User>.NotFound);
-
-    ApiResult<User> result = await _service.Patch(oldUser.Id, dto);
-
-    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.NotFound);
-  }
-
-  [Fact]
-  public async Task Patch_UpdatesUser_WithNewData()
-  {
-    User oldUser = _mocker.CreateInstance<User>();
-    oldUser.Id = new Id<User>(Guid.NewGuid());
-    oldUser.DisplayName = "Old Display Name";
-
-    UserPatchDto dto = new() { DisplayName = "New Display Name" };
-
-    User expected = _mocker.CreateInstance<User>();
-    expected.Id = oldUser.Id;
-    expected.DisplayName = dto.DisplayName;
-
-    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(oldUser);
-    _usersRepositoryMock.Setup(mock => mock.Put(It.IsAny<User>())).ReturnsAsync(expected);
-    _usersConverterMock
-      .Setup(mock => mock.FromEntityAndPatchDto(It.IsAny<User>(), It.IsAny<UserPatchDto>()))
-      .Returns(expected);
-
-    ApiResult<User> actual = await _service.Patch(oldUser.Id, dto);
-
-    _usersRepositoryMock.Verify(mock => mock.Put(expected), Times.Once);
-    actual.Should().HaveSucceeded().And.HaveValue(expected);
-  }
-
-  [Fact]
   public async Task UpdateRoles_UpdatesUserRoles()
   {
     User oldUser = _mocker.CreateInstance<User>();
