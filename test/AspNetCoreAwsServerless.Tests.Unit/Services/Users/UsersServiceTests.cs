@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using Amazon.DynamoDBv2.Model;
 using AspNetCoreAwsServerless.Converters.Users;
 using AspNetCoreAwsServerless.Dtos.Session;
 using AspNetCoreAwsServerless.Dtos.Users;
+using AspNetCoreAwsServerless.Entities.Roles;
 using AspNetCoreAwsServerless.Entities.Users;
 using AspNetCoreAwsServerless.Repositories.Users;
 using AspNetCoreAwsServerless.Services.Jwt;
@@ -102,7 +104,19 @@ public class UsersServiceTests
   [Fact]
   public async Task Patch_Fails_WhenTargetUserIsNotFound()
   {
-    // TODO: Implement
+    User oldUser = _mocker.CreateInstance<User>();
+    oldUser.Id = new Id<User>(Guid.NewGuid());
+    oldUser.DisplayName = "Old Display Name";
+
+    UserPatchDto dto = new() { DisplayName = "New Display Name" };
+
+    _usersRepositoryMock
+      .Setup(mock => mock.Get(It.IsAny<Id<User>>()))
+      .ReturnsAsync(ApiResult<User>.NotFound);
+
+    ApiResult<User> result = await _service.Patch(oldUser.Id, dto);
+
+    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.NotFound);
   }
 
   [Fact]
@@ -123,6 +137,7 @@ public class UsersServiceTests
     _usersConverterMock
       .Setup(mock => mock.FromEntityAndPatchDto(It.IsAny<User>(), It.IsAny<UserPatchDto>()))
       .Returns(expected);
+
     ApiResult<User> actual = await _service.Patch(oldUser.Id, dto);
 
     _usersRepositoryMock.Verify(mock => mock.Put(expected), Times.Once);
@@ -132,18 +147,64 @@ public class UsersServiceTests
   [Fact]
   public async Task UpdateRoles_UpdatesUserRoles()
   {
-    // TODO: Implement
+    User oldUser = _mocker.CreateInstance<User>();
+    oldUser.Id = new Id<User>(Guid.NewGuid());
+    oldUser.Roles = [];
+
+    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+
+    User expected = _mocker.CreateInstance<User>();
+    expected.Id = oldUser.Id;
+    expected.Roles = dto.Roles;
+
+    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(oldUser);
+    _usersRepositoryMock.Setup(mock => mock.Put(It.IsAny<User>())).ReturnsAsync(expected);
+
+    ApiResult<User> actual = await _service.UpdateRoles(oldUser.Id, dto);
+
+    _usersRepositoryMock.Verify(mock => mock.Put(expected), Times.Once);
+    actual.Should().HaveSucceeded().And.HaveValue(expected);
   }
 
   [Fact]
   public async Task UpdateRoles_Fails_WhenTargetUserIsNotFound()
   {
-    // TODO: Implement
+    User oldUser = _mocker.CreateInstance<User>();
+    oldUser.Id = new Id<User>(Guid.NewGuid());
+    oldUser.Roles = [];
+
+    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+
+    User expected = _mocker.CreateInstance<User>();
+    expected.Id = oldUser.Id;
+    expected.Roles = dto.Roles;
+
+    _usersRepositoryMock
+      .Setup(mock => mock.Get(It.IsAny<Id<User>>()))
+      .ReturnsAsync(ApiResultErrors.NotFound);
+
+    ApiResult<User> result = await _service.UpdateRoles(oldUser.Id, dto);
+
+    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.NotFound);
   }
 
   [Fact]
   public async Task UpdateRoles_ReturnsBadRequest_WhenTargetUserIsAlreadySuperAdmin()
   {
-    // TODO: Implement
+    User oldUser = _mocker.CreateInstance<User>();
+    oldUser.Id = new Id<User>(Guid.NewGuid());
+    oldUser.Roles = [UserRole.SuperAdmin];
+
+    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+
+    User expected = _mocker.CreateInstance<User>();
+    expected.Id = oldUser.Id;
+    expected.Roles = dto.Roles;
+
+    _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(oldUser);
+
+    ApiResult<User> result = await _service.UpdateRoles(oldUser.Id, dto);
+
+    result.Should().HaveFailed().And.HaveErrors(ApiResultErrors.BadRequest);
   }
 }
