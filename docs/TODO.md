@@ -33,3 +33,9 @@ Need to create logout function (front end currently just logs out memory)
 ## Failed integration tests are hanging the test runner... but only the test runner in vscode, CLI is fine
 
 This seems to be only a problem on my laptop ¯\_(ツ)_/¯
+
+## User Profile
+
+Split user data that the user should be able to change from user data that is effectively immutable (username, roles)
+
+Allow users to change the former, but not the latter
