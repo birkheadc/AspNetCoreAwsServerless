@@ -14,7 +14,11 @@ namespace AspNetCoreAwsServerless.Controllers.Me;
 [ApiController]
 [Route("me")]
 [Authorize]
-public class MeController(IUsersService usersService, IUsersConverter usersConverter, ILogger<MeController> logger) : ResolvedUserControllerBase<MeController>(logger, usersService)
+public class MeController(
+  IUsersService usersService,
+  IUsersConverter usersConverter,
+  ILogger<MeController> logger
+) : ResolvedUserControllerBase<MeController>(logger, usersService)
 {
   private readonly IUsersConverter _usersConverter = usersConverter;
 
