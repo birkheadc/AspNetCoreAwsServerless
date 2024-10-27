@@ -12,12 +12,22 @@ public class UsersConverter : IUsersConverter
       Id = user.Id.ToString(),
       EmailAddress = user.EmailAddress,
       Profile = ToDto(user.Profile),
-      Roles = user.Roles,
+      Roles = ToDto(user.Roles),
     };
   }
 
   public UserProfileDto ToDto(UserProfile profile)
   {
     return new() { DisplayName = profile.DisplayName };
+  }
+
+  public UserRolesDto ToDto(UserRoles roles)
+  {
+    return new() { Roles = roles.Roles };
+  }
+
+  public UserRoles ToEntity(UserRolesDto dto)
+  {
+    return new() { Roles = dto.Roles };
   }
 }

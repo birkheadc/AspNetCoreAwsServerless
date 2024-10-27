@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace AspNetCoreAwsServerless.Validators.Users;
 
-public class UserRolesPatchDtoValidator : AbstractValidator<UserRolesPatchDto>
+public class UserRolesPatchDtoValidator : AbstractValidator<UserRolesDto>
 {
   public UserRolesPatchDtoValidator()
   {

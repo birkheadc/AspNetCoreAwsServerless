@@ -25,7 +25,7 @@ public class UsersController(
   [RequiresPermission([UserPermission.CanModifyUserRoles])]
   public async Task<ActionResult<UserDto>> UpdateUserRoles(
     [FromRoute] string id,
-    [FromBody] UserRolesPatchDto dto
+    [FromBody] UserRolesDto dto
   )
   {
     ApiResult<User> result = await _usersService.UpdateRoles(id, dto);

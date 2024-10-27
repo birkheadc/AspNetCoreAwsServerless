@@ -11,6 +11,5 @@ public interface IUsersService
   // public Task<ApiResult<User>> GetOrCreateNew(string? id, string? accessToken);
   public Task<ApiResult<User>> GetOrCreateNew(IdToken token);
   public Task<ApiResult<User>> Get(Id<User> id);
-  public Task<ApiResult<User>> Put(UserPutDto dto);
-  public Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesPatchDto dto);
+  public Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesDto dto);
 }

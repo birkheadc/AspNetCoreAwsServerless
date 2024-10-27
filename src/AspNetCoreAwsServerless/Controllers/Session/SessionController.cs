@@ -55,7 +55,7 @@ public class SessionController(
   private async Task SigninUser(SessionContext context)
   {
     Claim[] roleClaims = context
-      .User.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString()))
+      .User.Roles.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString()))
       .ToArray();
     Claim nameIdentifierClaim = new(ClaimTypes.NameIdentifier, context.User.Id.ToString());
 

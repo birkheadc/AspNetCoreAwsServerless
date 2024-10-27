@@ -1,5 +1,4 @@
 using Amazon.DynamoDBv2.DataModel;
-using AspNetCoreAwsServerless.Entities.Roles;
 using AspNetCoreAwsServerless.Utils.Id;
 
 namespace AspNetCoreAwsServerless.Entities.Users;
@@ -12,5 +11,5 @@ public record User
   public required Id<User> Id { get; set; }
   public required string EmailAddress { get; set; }
   public required UserProfile Profile { get; set; }
-  public UserRole[] Roles { get; set; } = [];
+  public required UserRoles Roles { get; set; }
 }

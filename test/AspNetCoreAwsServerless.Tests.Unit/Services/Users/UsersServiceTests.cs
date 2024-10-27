@@ -106,16 +106,19 @@ public class UsersServiceTests
   {
     User oldUser = _mocker.CreateInstance<User>();
     oldUser.Id = new Id<User>(Guid.NewGuid());
-    oldUser.Roles = [];
+    oldUser.Roles = new() { Roles = [] };
 
-    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+    UserRolesDto dto = new() { Roles = [UserRole.Admin] };
 
     User expected = _mocker.CreateInstance<User>();
     expected.Id = oldUser.Id;
-    expected.Roles = dto.Roles;
+    expected.Roles = new() { Roles = dto.Roles };
 
     _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(oldUser);
     _usersRepositoryMock.Setup(mock => mock.Put(It.IsAny<User>())).ReturnsAsync(expected);
+    _usersConverterMock
+      .Setup(mock => mock.ToEntity(It.IsAny<UserRolesDto>()))
+      .Returns(expected.Roles);
 
     ApiResult<User> actual = await _service.UpdateRoles(oldUser.Id, dto);
 
@@ -128,13 +131,12 @@ public class UsersServiceTests
   {
     User oldUser = _mocker.CreateInstance<User>();
     oldUser.Id = new Id<User>(Guid.NewGuid());
-    oldUser.Roles = [];
 
-    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+    UserRolesDto dto = new() { Roles = [UserRole.Admin] };
 
     User expected = _mocker.CreateInstance<User>();
     expected.Id = oldUser.Id;
-    expected.Roles = dto.Roles;
+    expected.Roles = new() { Roles = dto.Roles };
 
     _usersRepositoryMock
       .Setup(mock => mock.Get(It.IsAny<Id<User>>()))
@@ -150,13 +152,13 @@ public class UsersServiceTests
   {
     User oldUser = _mocker.CreateInstance<User>();
     oldUser.Id = new Id<User>(Guid.NewGuid());
-    oldUser.Roles = [UserRole.SuperAdmin];
+    oldUser.Roles = new() { Roles = [UserRole.SuperAdmin] };
 
-    UserRolesPatchDto dto = new() { Roles = [UserRole.Admin] };
+    UserRolesDto dto = new() { Roles = [UserRole.Admin] };
 
     User expected = _mocker.CreateInstance<User>();
     expected.Id = oldUser.Id;
-    expected.Roles = dto.Roles;
+    expected.Roles = new() { Roles = dto.Roles };
 
     _usersRepositoryMock.Setup(mock => mock.Get(It.IsAny<Id<User>>())).ReturnsAsync(oldUser);
 

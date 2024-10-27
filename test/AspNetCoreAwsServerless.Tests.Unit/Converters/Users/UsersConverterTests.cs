@@ -29,7 +29,7 @@ public class UsersConverterTests
         Id = id,
         EmailAddress = "email@address.com",
         Profile = new() { DisplayName = "Display Name" },
-        Roles = [UserRole.Admin],
+        Roles = new() { Roles = [UserRole.Admin] },
       };
 
     UserDto expectedDto =
@@ -38,7 +38,7 @@ public class UsersConverterTests
         Id = id.ToString(),
         EmailAddress = "email@address.com",
         Profile = new() { DisplayName = "Display Name" },
-        Roles = [UserRole.Admin],
+        Roles = new() { Roles = [UserRole.Admin] },
       };
 
     UserDto actualDto = _converter.ToDto(user);

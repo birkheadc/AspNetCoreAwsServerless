@@ -2,7 +2,7 @@ using AspNetCoreAwsServerless.Entities.Roles;
 
 namespace AspNetCoreAwsServerless.Dtos.Users;
 
-public class UserRolesPatchDto
+public class UserRolesDto
 {
-  public required UserRole[] Roles { get; set; }
+  public UserRole[] Roles { get; set; } = [];
 }

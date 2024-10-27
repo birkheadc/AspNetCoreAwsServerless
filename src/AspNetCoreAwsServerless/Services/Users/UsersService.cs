@@ -13,11 +13,13 @@ namespace AspNetCoreAwsServerless.Services.Users;
 
 public class UsersService(
   IUsersRepository usersRepository,
+  IUsersConverter usersConverter,
   ILogger<UsersService> logger,
   IJwtService jwtService
 ) : IUsersService
 {
   private readonly IUsersRepository _usersRepository = usersRepository;
+  private readonly IUsersConverter _usersConverter = usersConverter;
   private readonly ILogger<UsersService> _logger = logger;
 
   private readonly IJwtService _jwtService = jwtService;
@@ -61,12 +63,13 @@ public class UsersService(
         Id = userId,
         EmailAddress = email,
         Profile = new(),
+        Roles = new(),
       };
 
     return await _usersRepository.Put(user);
   }
 
-  public async Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesPatchDto dto)
+  public async Task<ApiResult<User>> UpdateRoles(Id<User> id, UserRolesDto dto)
   {
     _logger.LogInformation("Updating roles for user {Id} to roles {roles}", id, dto.Roles);
     ApiResult<User> userResult = await Get(id);
@@ -75,7 +78,7 @@ public class UsersService(
       return userResult;
     }
 
-    if (userResult.Value.Roles.Contains(UserRole.SuperAdmin))
+    if (userResult.Value.Roles.Roles.Contains(UserRole.SuperAdmin))
     {
       _logger.LogError(
         "User {Id} is a Super Admin and cannot have their roles modified through the API.",
@@ -84,13 +87,8 @@ public class UsersService(
       return ApiResultErrors.BadRequest;
     }
 
-    User newUser = userResult.Value with { Roles = dto.Roles };
+    User newUser = userResult.Value with { Roles = _usersConverter.ToEntity(dto) };
 
     return await _usersRepository.Put(newUser);
-  }
-
-  public Task<ApiResult<User>> Put(UserPutDto dto)
-  {
-    throw new NotImplementedException();
   }
 }
