@@ -21,10 +21,10 @@ public class RequiresPermissionAttribute(UserPermission[] requiredPermissions)
 
     foreach (UserPermission permission in _requiredPermissions)
     {
-      Console.WriteLine($"Checking permission {permission}");
       if (!userPermissions.Contains(permission))
       {
         context.Result = new ForbidResult();
+        context.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
       }
     }

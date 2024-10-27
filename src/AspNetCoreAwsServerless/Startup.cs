@@ -47,11 +47,10 @@ public class Startup(IConfiguration configuration)
       )
       .AddCookie(options =>
       {
-        options.Events.OnRedirectToAccessDenied =
-        options.Events.OnRedirectToLogin = c =>
+        options.Events.OnRedirectToAccessDenied = options.Events.OnRedirectToLogin = c =>
         {
-          c.Response.StatusCode = StatusCodes.Status401Unauthorized;
-          return Task.FromResult(ApiResultErrors.Unauthorized);
+          c.Response.StatusCode = c.Response.StatusCode;
+          return Task.FromResult(new ApiResultErrors(c.Response.StatusCode));
         };
       });
 
@@ -108,7 +107,11 @@ public class Startup(IConfiguration configuration)
           name: "All",
           builder =>
           {
-            builder.AllowAnyHeader().AllowAnyMethod().WithOrigins(allowedOrigins).AllowCredentials();
+            builder
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .WithOrigins(allowedOrigins)
+              .AllowCredentials();
           }
         );
       }

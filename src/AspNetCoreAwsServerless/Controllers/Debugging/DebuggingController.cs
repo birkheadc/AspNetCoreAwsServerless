@@ -12,8 +12,9 @@ namespace AspNetCoreAwsServerless.Controllers.Debug;
 /// </summary>
 [ApiController]
 [Route("debug")]
-public class DebuggingController(ILogger<DebugController> logger, IUsersService usersService)
-  : ResolvedUserControllerBase<DebugController>(logger, usersService)
+[Authorize]
+public class DebuggingController(ILogger<DebuggingController> logger, IUsersService usersService)
+  : ResolvedUserControllerBase<DebuggingController>(logger, usersService)
 {
   [HttpGet]
   [RequiresPermission([UserPermission.CanModifyBooks])]
