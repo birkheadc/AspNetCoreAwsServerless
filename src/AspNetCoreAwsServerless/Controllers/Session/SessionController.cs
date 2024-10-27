@@ -44,6 +44,14 @@ public class SessionController(
     return Ok(_userConverter.ToDto(result.Value.User));
   }
 
+  [HttpDelete]
+  public async Task<ActionResult> Logout()
+  {
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    DeleteRefreshTokenCookie();
+    return Ok();
+  }
+
   private async Task SigninUser(SessionContext context)
   {
     Claim[] roleClaims = context
@@ -60,6 +68,11 @@ public class SessionController(
     SetRefreshTokenCookie(context.Tokens.RefreshToken, context.Tokens.ExpiresInSeconds);
   }
 
+  /// <summary>
+  /// Appends the user's refresh token to the response cookies as a secure http-only cookie.
+  /// </summary>
+  /// <param name="refreshToken">The refresh token to set.</param>
+  /// <param name="expiresInSeconds">The number of seconds until the refresh token expires.</param>
   private void SetRefreshTokenCookie(string refreshToken, int? expiresInSeconds)
   {
     HttpContext.Response.Cookies.Append(
@@ -75,5 +88,10 @@ public class SessionController(
           : null,
       }
     );
+  }
+
+  private void DeleteRefreshTokenCookie()
+  {
+    HttpContext.Response.Cookies.Delete("refresh_token");
   }
 }
