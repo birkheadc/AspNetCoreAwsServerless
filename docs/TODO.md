@@ -33,10 +33,3 @@ Need to create logout function (front end currently just logs out memory)
 ## Failed integration tests are hanging the test runner... but only the test runner in vscode, CLI is fine
 
 This seems to be only a problem on my laptop ¯\_(ツ)_/¯
-
-## Test authorization
-
-Test that a user with no roles in the database fetches properly and has an empty array for roles.
-
-First need to create a framework for granting a user roles and make sure it updates in the DB, then implement authorization based on permissions which are attached to roles.
-  - Use UsersController.UpdateUser to test adding / removing user roles.
