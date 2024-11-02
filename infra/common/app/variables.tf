@@ -13,6 +13,10 @@ variable "env_name" {
   type        = string
 }
 
+variable "allowed_origins" {
+  type = list(string)
+}
+
 variable "email_arn" {
   description = "The ARN of the email address used to send verification email etc. with Cognito"
   type        = string
