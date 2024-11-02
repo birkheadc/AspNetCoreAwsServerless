@@ -48,7 +48,7 @@ public class Startup(IConfiguration configuration)
       .AddCookie(options =>
       {
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SameSite = SameSiteMode.Lax;
         // Hacky nonsense, please fix
         // Problem is that the framework attempts to redirect in two cases:
         // 1. When the user is not authenticated and attempts to access a protected route
