@@ -69,7 +69,6 @@ module "api_gateway" {
   source     = "../modules/api_gateway"
   api_name   = "${var.app_name}_Api"
   stage_name       = var.env_name
-  allowed_origins  = var.allowed_origins
 }
 
 module "api_gateway_lambda_integration" {

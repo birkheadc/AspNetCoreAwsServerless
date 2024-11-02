@@ -82,7 +82,7 @@ public class SessionController(
       {
         HttpOnly = true,
         Secure = true,
-        SameSite = SameSiteMode.Strict,
+        SameSite = SameSiteMode.None,
         Expires = expiresInSeconds.HasValue
           ? DateTime.UtcNow.AddSeconds((double)expiresInSeconds)
           : null,

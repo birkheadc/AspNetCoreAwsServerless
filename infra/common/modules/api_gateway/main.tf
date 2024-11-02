@@ -1,13 +1,6 @@
 resource "aws_apigatewayv2_api" "lambda_api" {
   name          = "${var.api_name}_${var.stage_name}"
   protocol_type = "HTTP"
-  # cors_configuration {
-  #   allow_credentials = true
-  #   allow_origins     = var.allowed_origins
-  #   allow_methods     = ["*"]
-  #   allow_headers     = ["*"]
-  #   max_age           = 300
-  # }
 }
 
 resource "aws_cloudwatch_log_group" "api_gateway" {

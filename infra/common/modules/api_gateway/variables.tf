@@ -5,7 +5,3 @@ variable "api_name" {
 variable "stage_name" {
   type = string
 }
-
-variable "allowed_origins" {
-  type = list(string)
-}
