@@ -22,5 +22,5 @@ module "app" {
   publish_directory_path = "AspNetCoreAwsServerless/bin/Release/net8.0/linux-x64/publish"
   frontend_url           = "https://vite-template-development.birkheadc.me"
   lambda_handler         = "AspNetCoreAwsServerless::AspNetCoreAwsServerless.LambdaEntryPoint::FunctionHandlerAsync"
-  allowed_origins        = ["https://vite-template-development.birkheadc.me"]
+  allowed_origins        = ["http://localhost:5173", "https://vite-template-development.birkheadc.me"]
 }
