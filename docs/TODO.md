@@ -39,3 +39,11 @@ This seems to be only a problem on my laptop ¯\_(ツ)_/¯
 Split user data that the user should be able to change from user data that is effectively immutable (username, roles)
 
 Allow users to change the former, but not the latter
+
+## Cookies
+
+Two things with cookies:
+  - Cookies are not being set properly in the frontend
+    - Something about the api gateway?
+  - Cookies probably won't work great with lambda atm because the next time the lambda restarts the API will not recognize the cookies from last session
+    - Something about DataProtection?
