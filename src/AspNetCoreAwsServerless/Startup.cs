@@ -111,6 +111,8 @@ public class Startup(IConfiguration configuration)
 
     string[] allowedOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
 
+    Console.WriteLine($"AllowedOrigins: {string.Join(", ", allowedOrigins)}");
+
     services.AddCors(
       (options) =>
       {
