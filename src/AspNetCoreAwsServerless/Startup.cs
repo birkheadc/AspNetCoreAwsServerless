@@ -47,8 +47,12 @@ public class Startup(IConfiguration configuration)
       )
       .AddCookie(options =>
       {
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+        options.Cookie.SameSite =
+          Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+            ? SameSiteMode.Strict
+            : SameSiteMode.None;
         // Hacky nonsense, please fix
         // Problem is that the framework attempts to redirect in two cases:
         // 1. When the user is not authenticated and attempts to access a protected route

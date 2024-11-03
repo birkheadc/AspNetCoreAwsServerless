@@ -16,12 +16,12 @@ public class ApiResultErrors
         extensions: new Dictionary<string, object?>
         {
           { "errorCode", ErrorCode },
-          { "errors", Errors }
+          { "errors", Errors },
         }
       )
     )
     {
-      StatusCode = StatusCode
+      StatusCode = StatusCode,
     };
 
   public ApiResultErrors(int statusCode)

@@ -65,7 +65,7 @@ public class SessionController(
     ClaimsPrincipal principal = new(identity);
 
     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-    SetRefreshTokenCookie(context.Tokens.RefreshToken, context.Tokens.ExpiresInSeconds);
+    SetRefreshTokenCookie(context.Tokens.RefreshToken);
   }
 
   /// <summary>
@@ -73,7 +73,7 @@ public class SessionController(
   /// </summary>
   /// <param name="refreshToken">The refresh token to set.</param>
   /// <param name="expiresInSeconds">The number of seconds until the refresh token expires.</param>
-  private void SetRefreshTokenCookie(string refreshToken, int? expiresInSeconds)
+  private void SetRefreshTokenCookie(string refreshToken)
   {
     HttpContext.Response.Cookies.Append(
       "refresh_token",
@@ -83,9 +83,6 @@ public class SessionController(
         HttpOnly = true,
         Secure = true,
         SameSite = SameSiteMode.None,
-        Expires = expiresInSeconds.HasValue
-          ? DateTime.UtcNow.AddSeconds((double)expiresInSeconds)
-          : null,
       }
     );
   }

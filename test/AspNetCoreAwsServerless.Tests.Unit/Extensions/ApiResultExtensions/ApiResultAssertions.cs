@@ -5,7 +5,8 @@ using FluentAssertions.Primitives;
 
 namespace AspNetCoreAwsServerless.Tests.Unit.Extensions.ApiResultExtensions;
 
-public class ApiResultAssertions(ApiResult result) : ReferenceTypeAssertions<ApiResult, ApiResultAssertions>(result)
+public class ApiResultAssertions(ApiResult result)
+  : ReferenceTypeAssertions<ApiResult, ApiResultAssertions>(result)
 {
   private ApiResult _result = result;
   protected override string Identifier => "ApiResultAssertions";
@@ -32,7 +33,8 @@ public class ApiResultAssertions(ApiResult result) : ReferenceTypeAssertions<Api
   }
 }
 
-public class ApiResultAssertions<T>(ApiResult<T> result) : ReferenceTypeAssertions<ApiResult<T>, ApiResultAssertions<T>>(result)
+public class ApiResultAssertions<T>(ApiResult<T> result)
+  : ReferenceTypeAssertions<ApiResult<T>, ApiResultAssertions<T>>(result)
 {
   private ApiResult<T> _result = result;
   protected override string Identifier => "ApiResultAssertions";
@@ -59,7 +61,10 @@ public class ApiResultAssertions<T>(ApiResult<T> result) : ReferenceTypeAssertio
   }
 
   [CustomAssertion]
-  public AndConstraint<ApiResultAssertions<T>> HaveValue(T expected, Func<EquivalencyAssertionOptions<T>, EquivalencyAssertionOptions<T>> options)
+  public AndConstraint<ApiResultAssertions<T>> HaveValue(
+    T expected,
+    Func<EquivalencyAssertionOptions<T>, EquivalencyAssertionOptions<T>> options
+  )
   {
     _result.Value.Should().BeEquivalentTo(expected, options);
     return new AndConstraint<ApiResultAssertions<T>>(this);
