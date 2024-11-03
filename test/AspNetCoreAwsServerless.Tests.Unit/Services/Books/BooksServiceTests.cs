@@ -65,7 +65,7 @@ public class BooksServiceTests
       {
         Title = "New Book",
         Author = "New Author",
-        Pages = 50
+        Pages = 50,
       };
 
     Book expected =
@@ -74,7 +74,7 @@ public class BooksServiceTests
         Id = new(),
         Title = dto.Title,
         Author = dto.Author,
-        Pages = dto.Pages
+        Pages = dto.Pages,
       };
 
     _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book input) => input);
@@ -96,7 +96,7 @@ public class BooksServiceTests
         Id = _testBooks[2].Id.ToString(),
         Title = "New Title",
         Author = "New Author",
-        Pages = 150
+        Pages = 150,
       };
 
     Book expected =
@@ -105,40 +105,13 @@ public class BooksServiceTests
         Id = new(dto.Id),
         Title = dto.Title,
         Author = dto.Author,
-        Pages = dto.Pages
+        Pages = dto.Pages,
       };
 
     _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
     _converterMock.Setup(mock => mock.ToEntity(It.IsAny<BookPutDto>())).Returns(expected);
 
     ApiResult<Book> result = await _service.Put(dto);
-
-    _repositoryMock.Verify(mock => mock.Put(expected), Times.Once);
-
-    result.Should().HaveSucceeded().And.HaveValue(expected);
-  }
-
-  [Fact]
-  public async Task Patch_FetchesBookFromRepository_AndCallsRepositoryPut_AndReturnsResult()
-  {
-    BookPatchDto dto = new() { Title = "New Title", };
-
-    Book expected =
-      new()
-      {
-        Id = _testBooks[0].Id,
-        Title = dto.Title,
-        Author = _testBooks[0].Author,
-        Pages = _testBooks[0].Pages
-      };
-
-    _repositoryMock.Setup(mock => mock.Get(It.IsAny<Id<Book>>())).ReturnsAsync(_testBooks[0]);
-    _repositoryMock.Setup(mock => mock.Put(It.IsAny<Book>())).ReturnsAsync((Book book) => book);
-    _converterMock
-      .Setup(mock => mock.ToEntity(It.IsAny<BookPatchDto>(), It.IsAny<Book>()))
-      .Returns(expected);
-
-    ApiResult<Book> result = await _service.Patch(_testBooks[0].Id, dto);
 
     _repositoryMock.Verify(mock => mock.Put(expected), Times.Once);
 
@@ -169,7 +142,7 @@ public class BooksServiceTests
         {
           Title = expected[i].Title,
           Author = expected[i].Author,
-          Pages = expected[i].Pages
+          Pages = expected[i].Pages,
         };
       dtos.Add(_dto);
       _converterMock.Setup(mock => mock.ToEntity(_dto)).Returns(expected[i]);

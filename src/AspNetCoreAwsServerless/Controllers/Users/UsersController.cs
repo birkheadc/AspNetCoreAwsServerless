@@ -22,7 +22,7 @@ public class UsersController(
   private readonly IUsersConverter _usersConverter = usersConverter;
 
   [HttpPatch("{id}/roles")]
-  [RequiresPermission([UserPermission.CanModifyUserRoles])]
+  [RequiresPermission([UserPermission.ModifyUserRoles])]
   public async Task<ActionResult<UserDto>> UpdateUserRoles(
     [FromRoute] string id,
     [FromBody] UserRolesDto dto

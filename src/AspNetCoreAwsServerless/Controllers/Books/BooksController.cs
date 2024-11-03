@@ -1,7 +1,9 @@
 using AspNetCoreAwsServerless.Attributes.IsEnvironment;
+using AspNetCoreAwsServerless.Authorization;
 using AspNetCoreAwsServerless.Converters.Books;
 using AspNetCoreAwsServerless.Dtos.Books;
 using AspNetCoreAwsServerless.Entities.Books;
+using AspNetCoreAwsServerless.Entities.Permissions;
 using AspNetCoreAwsServerless.Services.Books;
 using AspNetCoreAwsServerless.Utils.Id;
 using AspNetCoreAwsServerless.Utils.Paginated;
@@ -53,6 +55,7 @@ public class BooksController(
   }
 
   [HttpPost]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   public async Task<ActionResult<BookDto>> Create([FromBody] BookCreateDto createDto)
   {
     _logger.LogInformation("Create");
@@ -62,6 +65,7 @@ public class BooksController(
 
   [HttpPost]
   [Route("many")]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   public async Task<ActionResult> CreateMany([FromBody] BookCreateManyDto createManyDto)
   {
     _logger.LogInformation("CreateMany");
@@ -70,6 +74,7 @@ public class BooksController(
   }
 
   [HttpPut]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   public async Task<ActionResult<BookDto>> Put([FromBody] BookPutDto putDto)
   {
     _logger.LogInformation("Put");
@@ -77,20 +82,9 @@ public class BooksController(
     return result.GetActionResult(_booksConverter.ToDto);
   }
 
-  [HttpPatch]
-  [Route("{id}")]
-  public async Task<ActionResult<BookDto>> Patch(
-    [FromRoute] Id<Book> id,
-    [FromBody] BookPatchDto patchDto
-  )
-  {
-    _logger.LogInformation("Patch");
-    ApiResult<Book> result = await _booksService.Patch(id, patchDto);
-    return result.GetActionResult(_booksConverter.ToDto);
-  }
-
   [HttpDelete]
   [Route("{id}")]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   public async Task<ActionResult> Delete([FromRoute] Id<Book> id)
   {
     _logger.LogInformation("Delete");
@@ -101,6 +95,7 @@ public class BooksController(
   [HttpPost]
   [Route("seed/{num}")]
   [IsEnvironment(["Development", "Staging"])]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   public async Task<ActionResult> SeedMany([FromRoute] int num)
   {
     _logger.LogInformation("SeedMany");

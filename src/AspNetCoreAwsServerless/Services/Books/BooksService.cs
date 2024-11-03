@@ -50,17 +50,6 @@ public class BooksService(IBooksRepository booksRepository, IBooksConverter book
     return await _booksRepository.GetPage(paginationToken);
   }
 
-  public async Task<ApiResult<Book>> Patch(Id<Book> id, BookPatchDto dto)
-  {
-    ApiResult<Book> result = await _booksRepository.Get(id);
-    if (result.IsFailure)
-    {
-      return result;
-    }
-    Book newBook = _booksConverter.ToEntity(dto, result.Value);
-    return await _booksRepository.Put(newBook);
-  }
-
   public async Task<ApiResult<Book>> Put(BookPutDto dto)
   {
     Book book = _booksConverter.ToEntity(dto);

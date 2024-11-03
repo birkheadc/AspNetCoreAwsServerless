@@ -17,7 +17,7 @@ public class DebuggingController(ILogger<DebuggingController> logger, IUsersServ
   : ResolvedUserControllerBase<DebuggingController>(logger, usersService)
 {
   [HttpGet]
-  [RequiresPermission([UserPermission.CanModifyBooks])]
+  [RequiresPermission([UserPermission.ModifyBooks])]
   [Route("can-i/modify-books")]
   public ActionResult CanIModifyBooks()
   {
@@ -25,7 +25,7 @@ public class DebuggingController(ILogger<DebuggingController> logger, IUsersServ
   }
 
   [HttpGet]
-  [RequiresPermission([UserPermission.CanModifyUserRoles])]
+  [RequiresPermission([UserPermission.ModifyUserRoles])]
   [Route("can-i/modify-user-roles")]
   public ActionResult CanIModifyUserRoles()
   {

@@ -14,6 +14,5 @@ public interface IBooksService
   public Task<ApiResult<Book>> Create(BookCreateDto dto);
   public Task<ApiResult> CreateMany(BookCreateManyDto dto);
   public Task<ApiResult<Book>> Put(BookPutDto dto);
-  public Task<ApiResult<Book>> Patch(Id<Book> id, BookPatchDto dto);
   public Task<ApiResult> Delete(Id<Book> id);
 }

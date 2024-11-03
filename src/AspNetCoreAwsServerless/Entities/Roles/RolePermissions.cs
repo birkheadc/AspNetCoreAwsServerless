@@ -12,7 +12,7 @@ public static class RolePermissions
     new()
     {
       { UserRole.SuperAdmin, Enum.GetValues<UserPermission>().ToArray() },
-      { UserRole.Admin, new[] { UserPermission.CanModifyBooks, UserPermission.CanModifyUsers } },
+      { UserRole.Admin, new[] { UserPermission.ModifyBooks, UserPermission.ModifyUsers } },
     };
 
   public static UserPermission[] GetPermissionsForRoles(UserRole[] roles)

@@ -6,6 +6,6 @@ namespace AspNetCoreAwsServerless.Entities.Roles;
 /// </summary>
 public enum UserRole
 {
-  SuperAdmin,
-  Admin,
+  SuperAdmin = 0,
+  Admin = 1,
 }
