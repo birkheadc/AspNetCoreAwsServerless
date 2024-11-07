@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v4
 
       - name: Run Tests
-        run: dotnet test
+        run: ASPNETCORE_ENVIRONMENT=Testing dotnet test ./test/AspNetCoreAwsServerless.Tests.Unit/AspNetCoreAwsServerless.Tests.Unit.csprojtest
         continue-on-error: false
 
       - name: Build Api
