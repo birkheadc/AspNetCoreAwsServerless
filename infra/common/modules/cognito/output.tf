@@ -3,5 +3,5 @@ output "client_id" {
 }
 
 output "url" {
-  value = "${aws_cognito_user_pool_domain.this.domain}.auth.${var.region}.amazoncognito.com"
+  value = "https://${aws_cognito_user_pool_domain.this.domain}.auth.${var.region}.amazoncognito.com"
 }
