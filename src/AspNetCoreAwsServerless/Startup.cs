@@ -76,11 +76,8 @@ public class Startup(IConfiguration configuration)
     // Configure Cognito options from environment variables injected by Terraform
     services.Configure<CognitoOptions>(o =>
     {
-      string clientId = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_CLIENT_ID") ?? "";
-      string url = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_URL") ?? "";
-      Console.WriteLine($"Client ID: {clientId} | URL: {url}");
-      o.ClientId = clientId;
-      o.Url = url;
+      o.ClientId = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_CLIENT_ID") ?? "";
+      o.Url = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_URL") ?? "";
     });
 
     // Configure AWS services
@@ -119,8 +116,6 @@ public class Startup(IConfiguration configuration)
     });
 
     string[] allowedOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
-
-    Console.WriteLine($"AllowedOrigins: {string.Join(", ", allowedOrigins)}");
 
     services.AddCors(
       (options) =>
