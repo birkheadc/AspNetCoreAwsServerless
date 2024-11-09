@@ -24,3 +24,16 @@ data "aws_iam_policy_document" "cloudwatch_put_metrics" {
     resources = ["*"]
   }
 }
+
+data "aws_iam_policy_document" "ssm_data_protection" {
+
+
+  statement {
+    actions = [
+      "ssm:AddTagsToResource",
+      "ssm:GetParametersByPath",
+      "ssm:PutParameter"
+    ]
+    resources = ["arn:aws:ssm:*:*:parameter/DataProtection*"]
+  }
+}

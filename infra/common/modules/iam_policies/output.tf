@@ -5,3 +5,7 @@ output "dynamo_db_full_access" {
 output "cloudwatch_put_metrics" {
   value = aws_iam_policy.cloudwatch_put_metrics.arn
 }
+
+output "ssm_data_protection" {
+  value = aws_iam_policy.ssm_data_protection.arn
+}

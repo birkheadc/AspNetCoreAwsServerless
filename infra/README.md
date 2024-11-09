@@ -9,3 +9,5 @@ It is important to keep infrastructure changes in sync with the environment bran
 ## Applying TF changes locally
 
 Github actions are in place to update infrastructure when pushing to `development`, `staging`, or `production`. Github holds repository secrets needed to access the S3 backend. In order to sync TF to this backend locally, these environment variables must be provided. Do so by exporting `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` into the terminal before performing terraform commands. I haven't come up with a good solution for doing this automatically, so it must be done every time a new terminal is opened. Most of the time, terraform updates should be performed by simply pushing to the relevant branch.
+
+`AWS_ACCESS_KEY_ID=<your key> AWS_SECRET_ACCESS_KEY=<your secret> terraform init -backend-config=backend.conf`

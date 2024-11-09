@@ -36,6 +36,9 @@ public class Startup(IConfiguration configuration)
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
     services.AddSerilog();
 
+    // Add Data persistence so that cookies can be shared between cold starts on Lambda
+    services.AddDataProtection().PersistKeysToAWSSystemsManager("/DataProtection");
+
     services
       .AddAuthentication(
         (o) =>

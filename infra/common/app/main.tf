@@ -51,9 +51,9 @@ module "api_lambda_function" {
   handler       = var.lambda_handler
 
   environment_variables = {
-    ASPNETCORE_ENVIRONMENT          = var.env_name
-    ASPNETCORE_COGNITO_URL          = module.cognito.url
-    ASPNETCORE_COGNITO_CLIENT_ID    = module.cognito.client_id
+    ASPNETCORE_ENVIRONMENT       = var.env_name
+    ASPNETCORE_COGNITO_URL       = module.cognito.url
+    ASPNETCORE_COGNITO_CLIENT_ID = module.cognito.client_id
   }
 }
 
@@ -67,10 +67,15 @@ resource "aws_iam_role_policy_attachment" "api_lambda_cloudwatch_metrics" {
   policy_arn = module.iam_policies.cloudwatch_put_metrics
 }
 
+resource "aws_iam_role_policy_attachment" "api_lambda_ssm_data_protection" {
+  role       = module.api_lambda_function.function_role_name
+  policy_arn = module.iam_policies.ssm_data_protection
+}
+
 module "api_gateway" {
   source     = "../modules/api_gateway"
   api_name   = "${var.app_name}_Api"
-  stage_name       = var.env_name
+  stage_name = var.env_name
 }
 
 module "api_gateway_lambda_integration" {
