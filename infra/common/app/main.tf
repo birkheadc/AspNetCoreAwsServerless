@@ -4,6 +4,7 @@ module "cognito" {
   email_arn      = var.email_arn
   frontend_url   = var.frontend_url
   is_development = var.env_name == "Development"
+  region         = var.region
 }
 
 resource "aws_dynamodb_table" "books_table" {
