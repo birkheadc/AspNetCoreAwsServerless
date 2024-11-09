@@ -42,6 +42,9 @@ public class Startup(IConfiguration configuration)
 
     // Add Data persistence so that cookies can be shared between cold starts on Lambda
     // May need to set key lifetime if keys piling up becomes a problem
+    //
+    // The application is also probably not registered,
+    // not sure if that is important but can be done through Terraform at some point
     services
       .AddDataProtection()
       .PersistKeysToAWSSystemsManager("/DataProtection")
