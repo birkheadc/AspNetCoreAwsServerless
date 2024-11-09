@@ -76,8 +76,11 @@ public class Startup(IConfiguration configuration)
     // Configure Cognito options from environment variables injected by Terraform
     services.Configure<CognitoOptions>(o =>
     {
-      o.ClientId = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_CLIENT_ID") ?? "";
-      o.Url = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_URL") ?? "";
+      string clientId = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_CLIENT_ID") ?? "";
+      string url = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_URL") ?? "";
+      Console.WriteLine($"Client ID: {clientId} | URL: {url}");
+      o.ClientId = clientId;
+      o.Url = url;
     });
 
     // Configure AWS services
