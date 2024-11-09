@@ -2,6 +2,10 @@ variable "user_pool_name" {
   type = string
 }
 
+variable "region" {
+  type = string
+}
+
 variable "email_arn" {
   type = string
 }

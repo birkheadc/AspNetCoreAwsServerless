@@ -13,6 +13,12 @@ variable "env_name" {
   type        = string
 }
 
+variable "region" {
+  description = "The region to deploy the application"
+  type        = string
+  default     = "ap-southeast-2"
+}
+
 variable "email_arn" {
   description = "The ARN of the email address used to send verification email etc. with Cognito"
   type        = string
