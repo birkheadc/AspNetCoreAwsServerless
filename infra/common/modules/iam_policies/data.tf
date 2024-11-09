@@ -34,6 +34,6 @@ data "aws_iam_policy_document" "ssm_data_protection" {
       "ssm:GetParametersByPath",
       "ssm:PutParameter"
     ]
-    resources = ["arn:aws:ssm:*:*:parameter/DataProtection*"]
+    resources = ["arn:aws:ssm:*:*:parameter/${var.app_name}_${var.stage_name}/DataProtection*"]
   }
 }
