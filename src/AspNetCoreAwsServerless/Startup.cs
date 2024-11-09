@@ -22,6 +22,7 @@ using AspNetCoreAwsServerless.Utils.Result;
 using AspNetCoreAwsServerless.Validators.Example;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Serilog;
 
 namespace AspNetCoreAwsServerless;
@@ -33,11 +34,18 @@ public class Startup(IConfiguration configuration)
   // This method gets called by the runtime. Use this method to add services to the container
   public void ConfigureServices(IServiceCollection services)
   {
+    string envName =
+      Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "ENV_NAME_NOT_SET";
+
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
     services.AddSerilog();
 
     // Add Data persistence so that cookies can be shared between cold starts on Lambda
-    services.AddDataProtection().PersistKeysToAWSSystemsManager("/DataProtection");
+    // May need to set key lifetime if keys piling up becomes a problem
+    services
+      .AddDataProtection()
+      .PersistKeysToAWSSystemsManager("/DataProtection")
+      .SetApplicationName($"AspNetCoreAwsServerless_{envName}");
 
     services
       .AddAuthentication(
