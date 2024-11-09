@@ -72,7 +72,13 @@ public class Startup(IConfiguration configuration)
     // Create and register custom configuration that can be injected via IOptions<RootOptions>
     services.Configure<BooksOptions>(Configuration.GetSection("Books"));
     services.Configure<RootOptions>(Configuration.GetSection("Root"));
-    services.Configure<CognitoOptions>(Configuration.GetSection("Cognito"));
+
+    // Configure Cognito options from environment variables injected by Terraform
+    services.Configure<CognitoOptions>(o =>
+    {
+      o.ClientId = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_CLIENT_ID") ?? "";
+      o.Url = Environment.GetEnvironmentVariable("ASPNETCORE_COGNITO_URL") ?? "";
+    });
 
     // Configure AWS services
     AWSOptions awsOptions = Configuration.GetAWSOptions();
