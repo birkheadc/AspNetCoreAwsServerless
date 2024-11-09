@@ -47,7 +47,7 @@ public class Startup(IConfiguration configuration)
     // not sure if that is important but can be done through Terraform at some point
     services
       .AddDataProtection()
-      .PersistKeysToAWSSystemsManager($"/AspNetCoreAwsServerless_{envName}/DataProtection")
+      .PersistKeysToAWSSystemsManager($"/AspNetCoreServerless_{envName}/DataProtection")
       .SetApplicationName($"AspNetCoreAwsServerless_{envName}");
 
     services
